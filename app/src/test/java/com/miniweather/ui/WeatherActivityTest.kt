@@ -44,7 +44,8 @@ class WeatherActivityTest {
         Weather(
             "Sunny",
             69,
-            42, "North",
+            42,
+            "North",
             "London, UK",
             "https://weather.icon/0"
         )
@@ -74,10 +75,10 @@ class WeatherActivityTest {
         onView(withId(R.id.weather_card)).check(matches(isDisplayed()))
         onView(withId(R.id.weather_last_updated_text)).check(matches(not(isDisplayed())))
 
-        onView(withId(R.id.weather_condition_text)).check(matches(withText(containsString("Sunny"))))
-        onView(withId(R.id.weather_temperature_text)).check(matches(withText(containsString("69"))))
-        onView(withId(R.id.weather_wind_speed_text)).check(matches(withText(containsString("42"))))
-        onView(withId(R.id.weather_wind_direction_text)).check(matches(withText(containsString("North"))))
+        onView(withId(R.id.weather_condition_text)).check(matches(withText(containsString(fakeWeather.condition))))
+        onView(withId(R.id.weather_temperature_text)).check(matches(withText(containsString(fakeWeather.temperature.toString()))))
+        onView(withId(R.id.weather_wind_speed_text)).check(matches(withText(containsString(fakeWeather.windSpeed.toString()))))
+        onView(withId(R.id.weather_wind_direction_text)).check(matches(withText(containsString(fakeWeather.windDirection))))
 
         verify(mockImageService).loadImage(any(), eq(fakeWeather.iconUrl))
     }
