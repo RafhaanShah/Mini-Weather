@@ -2,7 +2,7 @@ package com.miniweather.di
 
 import android.content.Context
 import com.google.android.gms.location.LocationServices
-import com.miniweather.Constants
+import com.miniweather.BuildConfig
 import com.miniweather.service.*
 import dagger.Module
 import dagger.Provides
@@ -28,7 +28,7 @@ class ServiceModule {
         val httpClient = OkHttpClient.Builder()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl(Constants.ApiBaseUrl)
+            .baseUrl(BuildConfig.API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient.build())
             .build()

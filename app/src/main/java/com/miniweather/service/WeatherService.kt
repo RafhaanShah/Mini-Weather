@@ -1,6 +1,6 @@
 package com.miniweather.service
 
-import com.miniweather.Constants
+import com.miniweather.BuildConfig
 import com.miniweather.model.Weather
 import javax.inject.Inject
 import kotlin.math.floor
@@ -22,7 +22,7 @@ class WeatherService @Inject constructor(private val networkService: NetworkServ
                         resp?.wind?.speed?.roundToInt() ?: 0,
                         formatBearing(resp?.wind?.direction ?: -1.0),
                         resp?.location ?: "",
-                        Constants.ImgBaseUrl + "/img/wn/" + (resp?.weatherList?.firstOrNull()?.icon
+                        BuildConfig.IMAGE_BASE_URL + "/img/wn/" + (resp?.weatherList?.firstOrNull()?.icon
                             ?: "") + ".png"
                     ), true
                 )
