@@ -1,17 +1,16 @@
 package com.miniweather.service
 
+import com.miniweather.BuildConfig
 import com.miniweather.model.WeatherResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface WeatherApiInterface {
+interface WeatherApi {
 
-    @GET("data/2.5/weather")
+    @GET("data/2.5/weather?units=metric&appid=" + BuildConfig.API_KEY)
     fun getWeather(
         @Query("lat") lat: Double,
-        @Query("lon") lon: Double,
-        @Query("appid") key: String,
-        @Query("units") units: String
+        @Query("lon") lon: Double
     ): Call<WeatherResponse>
 }

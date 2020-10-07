@@ -1,5 +1,6 @@
 package com.miniweather.ui
 
+import com.miniweather.model.DataResult
 import com.miniweather.model.Weather
 import com.miniweather.service.LocationService
 import com.miniweather.service.SharedPreferenceService
@@ -31,7 +32,6 @@ class WeatherPresenter @Inject constructor(
         if (checkPermission()) {
             getLocation()
         }
-
     }
 
     override fun onStop() {
@@ -70,15 +70,16 @@ class WeatherPresenter @Inject constructor(
     }
 
     private fun getWeather(lat: Double, lon: Double) {
-        weatherService.getWeather(lat, lon) { weather, success ->
-            view?.hideLoading()
-            if (success) {
-                weather?.let {
-                    view?.updateWeather(it)
-                    cacheWeather(it)
+        weatherService.getWeather(lat, lon) {
+            when (it) {
+                is DataResult.Success -> {
+                    val weather = it.data
+                    view?.updateWeather(weather)
+                    cacheWeather(weather)
                 }
-            } else {
-                showCachedDataIfAvailable()
+                is DataResult.Failure -> {
+                    showCachedDataIfAvailable()
+                }
             }
         }
     }

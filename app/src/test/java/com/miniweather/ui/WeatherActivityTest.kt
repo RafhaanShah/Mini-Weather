@@ -26,7 +26,6 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-
 @Config(application = TestApplication::class)
 @RunWith(RobolectricTestRunner::class)
 class WeatherActivityTest {
@@ -79,6 +78,9 @@ class WeatherActivityTest {
         onView(withId(R.id.weather_temperature_text)).check(matches(withText(containsString(fakeWeather.temperature.toString()))))
         onView(withId(R.id.weather_wind_speed_text)).check(matches(withText(containsString(fakeWeather.windSpeed.toString()))))
         onView(withId(R.id.weather_wind_direction_text)).check(matches(withText(containsString(fakeWeather.windDirection))))
+
+        onView(withId(R.id.weather_progress)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.weather_error_message_card)).check(matches(not(isDisplayed())))
 
         verify(mockImageService).loadImage(any(), eq(fakeWeather.iconUrl))
     }

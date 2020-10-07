@@ -52,6 +52,7 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
             getString(R.string.weather_wind_speed_text, weather.windSpeed)
         binding.weatherCard.weatherWindDirectionText.text = weather.windDirection
         binding.weatherCard.weatherLastUpdatedText.visibility = View.GONE
+        binding.weatherProgress.visibility = View.GONE
 
         imageService.loadImage(binding.weatherLayout.weather_icon, weather.iconUrl)
     }

@@ -1,11 +1,9 @@
 package com.miniweather.service
 
-import com.miniweather.model.Condition
-import com.miniweather.model.Temperature
-import com.miniweather.model.WeatherResponse
-import com.miniweather.model.Wind
+import com.miniweather.model.*
 import com.nhaarman.mockitokotlin2.*
-import junit.framework.TestCase.*
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,7 +20,10 @@ import retrofit2.Response
 class NetworkServiceTest {
 
     @Mock
-    private lateinit var mockApiService: WeatherApiInterface
+    private lateinit var mockApiService: WeatherApi
+
+    @Mock
+    private lateinit var mockStringResourceService: StringResourceService
 
     private lateinit var networkService: NetworkService
 
@@ -36,7 +37,7 @@ class NetworkServiceTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        networkService = NetworkService(mockApiService)
+        networkService = NetworkService(mockApiService, mockStringResourceService)
     }
 
     @Test
@@ -45,25 +46,23 @@ class NetworkServiceTest {
         val mockResponse: Response<WeatherResponse?> = mock(Response::class.java) as Response<WeatherResponse?>
         val mockCall: Call<WeatherResponse> = mock(Call::class.java) as Call<WeatherResponse>
 
-        var weatherResponse: WeatherResponse? = null
-        var success = false
+        var result: DataResult<WeatherResponse>? = null
 
-        whenever(mockApiService.getWeather(any(), any(), any(), any())).thenReturn(mockCall)
+        whenever(mockApiService.getWeather(any(), any())).thenReturn(mockCall)
         whenever(mockResponse.body()).thenReturn(fakeWeatherResponse)
+        whenever(mockResponse.isSuccessful).thenReturn(true)
 
-        networkService.makeWeatherRequest(1.0, 1.0) { resp, succ ->
-            weatherResponse = resp
-            success = succ
+        networkService.makeWeatherRequest(1.0, 1.0) {
+            result = it
         }
 
-        verify(mockApiService).getWeather(eq(1.0), eq(1.0), any(), any())
+        verify(mockApiService).getWeather(eq(1.0), eq(1.0))
         verify(mockCall).enqueue(callbackCaptor.capture())
 
         val callback = callbackCaptor.firstValue
         callback.onResponse(null, mockResponse)
 
-        assertEquals(fakeWeatherResponse, weatherResponse)
-        assertTrue(success)
+        assertEquals(fakeWeatherResponse, (result as DataResult.Success).data)
     }
 
     @Test
@@ -72,25 +71,22 @@ class NetworkServiceTest {
         val mockResponse: Response<WeatherResponse?> = mock(Response::class.java) as Response<WeatherResponse?>
         val mockCall: Call<WeatherResponse> = mock(Call::class.java) as Call<WeatherResponse>
 
-        var weatherResponse: WeatherResponse? = null
-        var success = true
+        var result: DataResult<WeatherResponse>? = null
 
-        whenever(mockApiService.getWeather(any(), any(), any(), any())).thenReturn(mockCall)
+        whenever(mockApiService.getWeather(any(), any())).thenReturn(mockCall)
         whenever(mockResponse.body()).thenReturn(fakeWeatherResponse)
 
-        networkService.makeWeatherRequest(1.0, 1.0) { resp, succ ->
-            weatherResponse = resp
-            success = succ
+        networkService.makeWeatherRequest(1.0, 1.0) {
+            result = it
         }
 
-        verify(mockApiService).getWeather(eq(1.0), eq(1.0), any(), any())
+        verify(mockApiService).getWeather(eq(1.0), eq(1.0))
         verify(mockCall).enqueue(callbackCaptor.capture())
 
         val callback = callbackCaptor.firstValue
         callback.onFailure(null, null)
 
-        assertNull(weatherResponse)
-        assertFalse(success)
+        assertTrue(result is DataResult.Failure)
     }
 
 }

@@ -19,7 +19,7 @@ android {
 
         buildConfigField("String", "API_KEY", secretProperties.getProperty("API_KEY"))
         buildConfigField "String", "API_BASE_URL", '"https://api.openweathermap.org/"'
-        buildConfigField "String", "IMAGE_BASE_URL", '"https://openweathermap.org/"'
+        buildConfigField "String", "IMAGE_BASE_URL", '"https://openweathermap.org/img/wn/"'
     }
 
     buildTypes {

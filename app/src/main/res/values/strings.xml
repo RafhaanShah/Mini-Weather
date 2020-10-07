@@ -1,14 +1,6 @@
 <resources>
     <string name="app_name">Mini Weather</string>
-    <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="weather_current_condition">Current Condition :</string>
     <string name="weather_temperature">Temperature :</string>
     <string name="weather_wind_speed">Wind Speed :</string>
@@ -19,4 +11,21 @@
     <string name="weather_wind_speed_text">%1$dm/s</string>
     <string name="weather_error_offline">Please connect to the internet to fetch updated Weather data</string>
     <string name="weather_error_permission">Location permissions are required to fetch accurate weather data</string>
+
+    <string name="error_network">Network error</string>
+
+    <string name="unknown">Unknown</string>
+
+    <string-array name="directions">
+        <item>North</item>
+        <item>North East</item>
+        <item>East</item>
+        <item>South East</item>
+        <item>South</item>
+        <item>South West</item>
+        <item>West</item>
+        <item>North West</item>
+        <item>North</item>
+    </string-array>
+
 </resources>

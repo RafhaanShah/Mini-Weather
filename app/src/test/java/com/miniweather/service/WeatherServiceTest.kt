@@ -1,11 +1,10 @@
 package com.miniweather.service
 
 import com.miniweather.model.*
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.*
 import junit.framework.TestCase
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,6 +16,9 @@ class WeatherServiceTest {
 
     @Mock
     private lateinit var mockNetworkService: NetworkService
+
+    @Mock
+    private lateinit var mockStringResourceService: StringResourceService
 
     private lateinit var weatherService: WeatherService
 
@@ -31,48 +33,55 @@ class WeatherServiceTest {
 
     @Before
     fun setup() {
-        weatherService = WeatherService(mockNetworkService)
+        weatherService = WeatherService(mockNetworkService, mockStringResourceService)
+        whenever(mockStringResourceService.getStringArray(any())).thenReturn(
+            arrayOf(
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h"
+            )
+        )
     }
 
     @Test
     fun whenGetWeather_andNetworkServiceSucceeds_returnsWeather() {
-        val weatherCaptor = argumentCaptor<(response: WeatherResponse?, success: Boolean) -> Unit>()
-        var weather: Weather? = null
-        var success = false
+        val weatherCaptor = argumentCaptor<(DataResult<WeatherResponse>) -> Unit>()
+        var result: DataResult<Weather>? = null
 
-        weatherService.getWeather(fakeLat, fakeLon) { w, s ->
-            weather = w
-            success = s
+        weatherService.getWeather(fakeLat, fakeLon) {
+            result = it
         }
 
         verify(mockNetworkService).makeWeatherRequest(eq(fakeLat), eq(fakeLon), weatherCaptor.capture())
-        weatherCaptor.firstValue.invoke(fakeWeatherResponse, true)
+        weatherCaptor.firstValue.invoke(DataResult.Success(fakeWeatherResponse))
 
-        assertTrue(success)
-        assertTrue(fakeWeatherResponse.weatherList.first().icon.contains("01m"))
-        assertEquals(fakeWeatherResponse.weatherList.first().condition, weather?.condition)
-        assertEquals(fakeWeatherResponse.temp.value.toInt(), weather?.temperature)
-        assertEquals(fakeWeatherResponse.wind.speed.toInt(), weather?.windSpeed)
-        assertEquals("East", weather?.windDirection)
-        assertEquals(fakeWeatherResponse.location, weather?.location)
+        val weather = (result as DataResult.Success).data
+        assertTrue(weather.iconUrl.contains(fakeWeatherResponse.weatherList.first().icon))
+        assertEquals(fakeWeatherResponse.weatherList.first().condition, weather.condition)
+        assertEquals(fakeWeatherResponse.temp.value.toInt(), weather.temperature)
+        assertEquals(fakeWeatherResponse.wind.speed.toInt(), weather.windSpeed)
+        assertEquals("c", weather.windDirection)
+        assertEquals(fakeWeatherResponse.location, weather.location)
     }
 
     @Test
     fun whenGetWeather_andNetworkServiceFails_returnsFailure() {
-        val weatherCaptor = argumentCaptor<(response: WeatherResponse?, success: Boolean) -> Unit>()
-        var success = true
-        var weather: Weather? = null
+        val weatherCaptor = argumentCaptor<(DataResult<WeatherResponse>) -> Unit>()
+        var result: DataResult<Weather>? = null
 
-        weatherService.getWeather(fakeLat, fakeLon) { w, s ->
-            weather = w
-            success = s
+        weatherService.getWeather(fakeLat, fakeLon) {
+            result = it
         }
 
         verify(mockNetworkService).makeWeatherRequest(eq(fakeLat), eq(fakeLon), weatherCaptor.capture())
-        weatherCaptor.firstValue.invoke(null, false)
+        weatherCaptor.firstValue.invoke(DataResult.Failure(Exception("Some Error")))
 
-        TestCase.assertNull(weather)
-        assertFalse(success)
+        TestCase.assertTrue(result is DataResult.Failure)
     }
 
 }
