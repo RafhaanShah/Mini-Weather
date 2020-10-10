@@ -1,37 +1,43 @@
 package com.miniweather.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class WeatherResponse(
-    @SerializedName("weather")
+    @SerialName("weather")
     val weatherList: List<Condition>,
-    @SerializedName("main")
+    @SerialName("main")
     val temp: Temperature,
-    @SerializedName("wind")
+    @SerialName("wind")
     val wind: Wind,
-    @SerializedName("name")
+    @SerialName("name")
     val location: String
 )
 
+@Serializable
 data class Condition(
-    @SerializedName("main")
+    @SerialName("main")
     val condition: String,
-    @SerializedName("icon")
+    @SerialName("icon")
     val icon: String
 )
 
+@Serializable
 data class Temperature(
-    @SerializedName("temp")
+    @SerialName("temp")
     val value: Double
 )
 
+@Serializable
 data class Wind(
-    @SerializedName("speed")
+    @SerialName("speed")
     val speed: Double,
-    @SerializedName("deg")
+    @SerialName("deg")
     val direction: Double
 )
 
+@Serializable
 data class Weather(
     val condition: String,
     val temperature: Int,

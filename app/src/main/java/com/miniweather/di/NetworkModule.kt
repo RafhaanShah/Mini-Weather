@@ -1,23 +1,27 @@
 package com.miniweather.di
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.miniweather.BuildConfig
 import com.miniweather.service.WeatherApi
 import dagger.Module
 import dagger.Provides
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
 class NetworkModule {
 
+    @ExperimentalSerializationApi
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient, gsonConverterFactory: GsonConverterFactory): Retrofit {
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.API_BASE_URL)
-            .addConverterFactory(gsonConverterFactory)
+            .addConverterFactory(Json { ignoreUnknownKeys = true }.asConverterFactory("application/json".toMediaType()))
             .client(okHttpClient)
             .build()
     }
@@ -34,9 +38,5 @@ class NetworkModule {
         val clientBuilder = OkHttpClient.Builder()
         return clientBuilder.build()
     }
-
-    @Singleton
-    @Provides
-    fun provideGson(): GsonConverterFactory = GsonConverterFactory.create()
 
 }
