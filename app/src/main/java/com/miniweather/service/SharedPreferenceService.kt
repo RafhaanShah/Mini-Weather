@@ -1,22 +1,25 @@
 package com.miniweather.service
 
 import android.content.SharedPreferences
+import com.miniweather.model.Weather
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class SharedPreferenceService @Inject constructor(private val sharedPref: SharedPreferences) {
 
-    fun saveString(key: String, value: String) {
+    fun hasSavedValue(key: String) = sharedPref.contains(key)
+
+    fun saveWeather(key: String, value: Weather) {
         with(sharedPref.edit()) {
-            putString(key, value)
+            putString(key, Json.encodeToString(value))
             commit()
         }
     }
 
-    fun saveInt(key: String, value: Int) {
-        with(sharedPref.edit()) {
-            putInt(key, value)
-            commit()
-        }
+    fun getWeather(key: String): Weather {
+        return Json.decodeFromString(sharedPref.getString(key, null)!!)
     }
 
     fun saveLong(key: String, value: Long) {
@@ -26,15 +29,6 @@ class SharedPreferenceService @Inject constructor(private val sharedPref: Shared
         }
     }
 
-    fun getString(key: String): String {
-        return sharedPref.getString(key, "") ?: ""
-    }
+    fun getLong(key: String) = sharedPref.getLong(key, 0)
 
-    fun getInt(key: String): Int {
-        return sharedPref.getInt(key, 0)
-    }
-
-    fun getLong(key: String): Long {
-        return sharedPref.getLong(key, 0)
-    }
 }

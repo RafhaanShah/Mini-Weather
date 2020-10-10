@@ -82,11 +82,7 @@ class WeatherPresenterTest {
 
         verify(mockView).updateWeather(fakeWeather)
         verify(mockTimeService).getCurrentTime()
-        verify(mockSharedPreferenceService).saveString(WeatherPresenter.PREF_CONDITION, fakeWeather.condition)
-        verify(mockSharedPreferenceService).saveInt(WeatherPresenter.PREF_TEMP, fakeWeather.temperature)
-        verify(mockSharedPreferenceService).saveInt(WeatherPresenter.PREF_WIND_SPEED, fakeWeather.windSpeed)
-        verify(mockSharedPreferenceService).saveString(WeatherPresenter.PREF_WIND_DIRECTION, fakeWeather.windDirection)
-        verify(mockSharedPreferenceService).saveString(WeatherPresenter.PREF_LOCATION, fakeWeather.location)
+        verify(mockSharedPreferenceService).saveWeather(WeatherPresenter.PREF_CACHE, fakeWeather)
         verify(mockSharedPreferenceService).saveLong(WeatherPresenter.PREF_UPDATE_TIME, fakeTime)
     }
 
@@ -142,15 +138,8 @@ class WeatherPresenterTest {
         whenever(mockTimeService.getRelativeTime(any())).thenReturn("12 Hours Ago")
 
         whenever(mockSharedPreferenceService.getLong(WeatherPresenter.PREF_UPDATE_TIME)).thenReturn(fakeTime)
-        whenever(mockSharedPreferenceService.getString(WeatherPresenter.PREF_CONDITION)).thenReturn(
-            fakeWeather.condition
-        )
-        whenever(mockSharedPreferenceService.getInt(WeatherPresenter.PREF_TEMP)).thenReturn(fakeWeather.temperature)
-        whenever(mockSharedPreferenceService.getInt(WeatherPresenter.PREF_WIND_SPEED)).thenReturn(fakeWeather.windSpeed)
-        whenever(mockSharedPreferenceService.getString(WeatherPresenter.PREF_WIND_DIRECTION)).thenReturn(
-            fakeWeather.windDirection
-        )
-        whenever(mockSharedPreferenceService.getString(WeatherPresenter.PREF_LOCATION)).thenReturn(fakeWeather.location)
+        whenever(mockSharedPreferenceService.hasSavedValue(WeatherPresenter.PREF_CACHE)).thenReturn(true)
+        whenever(mockSharedPreferenceService.getWeather(WeatherPresenter.PREF_CACHE)).thenReturn(fakeWeather)
 
         presenter.onStart(mockView)
 
@@ -163,15 +152,11 @@ class WeatherPresenterTest {
         verify(mockWeatherService).getWeather(eq(fakeLat), eq(fakeLon), weatherCaptor.capture())
         weatherCaptor.firstValue.invoke(DataResult.Failure(Exception("Some Error")))
 
-        verify(mockView).updateWeather(fakeWeather.copy(iconUrl = ""))
+        verify(mockView).updateWeather(fakeWeather)
         verify(mockView).showCachedDataInfo(fakeWeather.location, "12 Hours Ago")
         verify(mockTimeService).getRelativeTime(fakeTime)
 
-        verify(mockSharedPreferenceService).getString(WeatherPresenter.PREF_CONDITION)
-        verify(mockSharedPreferenceService).getInt(WeatherPresenter.PREF_TEMP)
-        verify(mockSharedPreferenceService).getInt(WeatherPresenter.PREF_WIND_SPEED)
-        verify(mockSharedPreferenceService).getString(WeatherPresenter.PREF_WIND_DIRECTION)
-        verify(mockSharedPreferenceService).getString(WeatherPresenter.PREF_LOCATION)
+        verify(mockSharedPreferenceService).getWeather(WeatherPresenter.PREF_CACHE)
         verify(mockSharedPreferenceService).getLong(WeatherPresenter.PREF_UPDATE_TIME)
     }
 

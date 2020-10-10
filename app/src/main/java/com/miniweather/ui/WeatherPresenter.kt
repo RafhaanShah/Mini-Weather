@@ -16,12 +16,8 @@ class WeatherPresenter @Inject constructor(
 ) : WeatherContract.Presenter {
 
     companion object {
-        const val PREF_CONDITION = "condition"
-        const val PREF_TEMP = "temp"
-        const val PREF_WIND_SPEED = "wind_speed"
-        const val PREF_WIND_DIRECTION = "wind_direction"
-        const val PREF_LOCATION = "location"
-        const val PREF_UPDATE_TIME = "update_time"
+        const val PREF_CACHE = "weather_cache"
+        const val PREF_UPDATE_TIME = "weather_update_time"
     }
 
     private var view: WeatherContract.View? = null
@@ -87,8 +83,8 @@ class WeatherPresenter @Inject constructor(
     private fun showCachedDataIfAvailable() {
         val cachedTime = sharedPreferenceService.getLong(PREF_UPDATE_TIME)
 
-        if (timeService.timeDifferenceInHours(cachedTime) < 24) {
-            val weather = getCachedWeather()
+        if (timeService.timeDifferenceInHours(cachedTime) < 24 && sharedPreferenceService.hasSavedValue(PREF_CACHE)) {
+            val weather: Weather = sharedPreferenceService.getWeather(PREF_CACHE)
             view?.updateWeather(weather)
             view?.showCachedDataInfo(
                 weather.location,
@@ -100,22 +96,8 @@ class WeatherPresenter @Inject constructor(
     }
 
     private fun cacheWeather(weather: Weather) {
-        sharedPreferenceService.saveString(PREF_CONDITION, weather.condition)
-        sharedPreferenceService.saveInt(PREF_TEMP, weather.temperature)
-        sharedPreferenceService.saveInt(PREF_WIND_SPEED, weather.windSpeed)
-        sharedPreferenceService.saveString(PREF_WIND_DIRECTION, weather.windDirection)
-        sharedPreferenceService.saveString(PREF_LOCATION, weather.location)
         sharedPreferenceService.saveLong(PREF_UPDATE_TIME, timeService.getCurrentTime())
+        sharedPreferenceService.saveWeather(PREF_CACHE, weather)
     }
 
-    private fun getCachedWeather(): Weather {
-        return Weather(
-            sharedPreferenceService.getString(PREF_CONDITION),
-            sharedPreferenceService.getInt(PREF_TEMP),
-            sharedPreferenceService.getInt(PREF_WIND_SPEED),
-            sharedPreferenceService.getString(PREF_WIND_DIRECTION),
-            sharedPreferenceService.getString(PREF_LOCATION),
-            "",
-        )
-    }
 }

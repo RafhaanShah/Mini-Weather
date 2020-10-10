@@ -82,7 +82,7 @@ class WeatherActivityTest {
         onView(withId(R.id.weather_progress)).check(matches(not(isDisplayed())))
         onView(withId(R.id.weather_error_message_card)).check(matches(not(isDisplayed())))
 
-        verify(mockImageService).loadImage(any(), eq(fakeWeather.iconUrl))
+        verify(mockImageService).loadImage(any(), eq(fakeWeather.iconUrl), any())
     }
 
     @Test
