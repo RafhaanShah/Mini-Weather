@@ -1,4 +1,4 @@
-package com.miniweather.service
+package com.miniweather.service.location
 
 import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -73,4 +73,5 @@ class LocationServiceTest {
         assertEquals(1.1, lat)
         assertEquals(2.2, lon)
     }
+
 }

@@ -8,9 +8,9 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.miniweather.R
-import com.miniweather.TestApplication
-import com.miniweather.model.Weather
-import com.miniweather.service.ImageService
+import com.miniweather.app.TestApplication
+import com.miniweather.service.network.ImageService
+import com.miniweather.testutil.FakeDataProvider
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.spy
@@ -30,24 +30,16 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 class WeatherActivityTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-    private lateinit var activity: WeatherActivity
-
     @Mock
     private lateinit var mockPresenter: WeatherContract.Presenter
-
     @Mock
     private lateinit var mockImageService: ImageService
 
-    private val fakeWeather =
-        Weather(
-            "Sunny",
-            69,
-            42,
-            "North",
-            "London, UK",
-            "https://weather.icon/0"
-        )
+    private lateinit var activity: WeatherActivity
+
+    private val context: Context = ApplicationProvider.getApplicationContext()
+
+    private val fakeWeather = FakeDataProvider.provideFakeWeather()
 
     @Before
     fun setup() {
@@ -60,7 +52,7 @@ class WeatherActivityTest {
     }
 
     @Test
-    fun whenRefreshButtonClicked_presenterIsCalled() {
+    fun whenRefreshButtonClicked_callsPresenter() {
         onView(withId(R.id.weather_fab)).check(matches(isDisplayed()))
         onView(withId(R.id.weather_fab)).perform(click())
 
@@ -101,13 +93,15 @@ class WeatherActivityTest {
         onView(withId(R.id.weather_progress)).check(matches(isDisplayed()))
         onView(withId(R.id.weather_card)).check(matches(not(isDisplayed())))
         onView(withId(R.id.weather_error_message_card)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.weather_fab)).check(matches(not(isDisplayed())))
     }
 
     @Test
-    fun whenHideLoading_hidesSpinner() {
+    fun whenHideLoading_hidesSpinner_andShowsFab() {
         activity.hideLoading()
 
         onView(withId(R.id.weather_progress)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.weather_fab)).check(matches(isDisplayed()))
     }
 
     @Test

@@ -1,7 +1,6 @@
-package com.miniweather.service
+package com.miniweather.service.util
 
 import android.text.format.DateUtils
-import kotlin.math.abs
 
 class TimeService {
 
@@ -9,12 +8,8 @@ class TimeService {
         return System.currentTimeMillis()
     }
 
-    fun getRelativeTime(time: Long): String {
+    fun getRelativeTimeString(time: Long): String {
         return DateUtils.getRelativeTimeSpanString(time, getCurrentTime(), DateUtils.MINUTE_IN_MILLIS).toString()
     }
 
-    fun timeDifferenceInHours(time: Long): Long {
-        val diff = abs(time - getCurrentTime())
-        return diff / (60 * 60 * 1000)
-    }
 }

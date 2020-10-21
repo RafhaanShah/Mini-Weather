@@ -1,4 +1,4 @@
-package com.miniweather
+package com.miniweather.app
 
 import com.miniweather.di.AppComponent
 import com.miniweather.di.AppModule
@@ -18,4 +18,5 @@ class WeatherApplication : BaseDaggerApplication() {
     override fun getAppComponent(): AppComponent {
         return appComponent
     }
+
 }

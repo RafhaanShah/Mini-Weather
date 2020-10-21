@@ -1,4 +1,4 @@
-package com.miniweather.service
+package com.miniweather.service.location
 
 import android.annotation.SuppressLint
 import android.os.Looper
@@ -37,4 +37,5 @@ class LocationService @Inject constructor(private val fusedLocationClient: Fused
             Looper.getMainLooper()
         )
     }
+
 }

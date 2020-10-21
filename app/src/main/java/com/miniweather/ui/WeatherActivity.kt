@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.miniweather.BaseDaggerApplication
+import com.miniweather.app.BaseDaggerApplication
 import com.miniweather.R
 import com.miniweather.databinding.ActivityWeatherBinding
 import com.miniweather.model.Weather
-import com.miniweather.service.ImageService
+import com.miniweather.service.network.ImageService
 import kotlinx.android.synthetic.main.view_weather.view.*
 import javax.inject.Inject
 
@@ -44,6 +44,8 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
     }
 
     override fun updateWeather(weather: Weather) {
+        hideLoading()
+
         binding.weatherCard.weatherCardLayout.visibility = View.VISIBLE
         binding.weatherCard.weatherConditionText.text = weather.condition
         binding.weatherCard.weatherTemperatureText.text =
@@ -52,7 +54,6 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
             getString(R.string.weather_wind_speed_text, weather.windSpeed)
         binding.weatherCard.weatherWindDirectionText.text = weather.windDirection
         binding.weatherCard.weatherLastUpdatedText.visibility = View.GONE
-        binding.weatherProgress.visibility = View.GONE
 
         imageService.loadImage(binding.weatherLayout.weather_icon, weather.iconUrl)
     }
@@ -81,10 +82,12 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
         binding.weatherProgress.visibility = View.VISIBLE
         binding.weatherCard.weatherCardLayout.visibility = View.GONE
         binding.weatherErrorMessageCard.visibility = View.GONE
+        binding.weatherFab.visibility = View.GONE
     }
 
-    override fun hideLoading() {
+    fun hideLoading() {
         binding.weatherProgress.visibility = View.GONE
+        binding.weatherFab.visibility = View.VISIBLE
     }
 
     override fun showNetworkError() {
@@ -114,8 +117,9 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
     }
 
     private fun showErrorCard() {
+        hideLoading()
         binding.weatherErrorMessageCard.visibility = View.VISIBLE
-        binding.weatherProgress.visibility = View.GONE
         binding.weatherCard.weatherCardLayout.visibility = View.GONE
     }
+
 }

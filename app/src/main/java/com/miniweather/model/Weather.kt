@@ -1,5 +1,6 @@
 package com.miniweather.model
 
+import androidx.room.Entity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -37,12 +38,15 @@ data class Wind(
     val direction: Double
 )
 
-@Serializable
+@Entity(primaryKeys= [ "latitude", "longitude" ])
 data class Weather(
     val condition: String,
     val temperature: Int,
     val windSpeed: Int,
     val windDirection: String,
     val location: String,
-    val iconUrl: String
+    val iconUrl: String,
+    val timestamp: Long,
+    val latitude: Double,
+    val longitude: Double
 )

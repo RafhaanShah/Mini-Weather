@@ -1,4 +1,4 @@
-package com.miniweather.service
+package com.miniweather.service.util
 
 import android.content.res.Resources
 import androidx.annotation.ArrayRes

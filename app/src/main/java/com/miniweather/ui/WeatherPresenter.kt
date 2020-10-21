@@ -1,25 +1,25 @@
 package com.miniweather.ui
 
 import com.miniweather.model.DataResult
-import com.miniweather.model.Weather
-import com.miniweather.service.LocationService
-import com.miniweather.service.SharedPreferenceService
-import com.miniweather.service.TimeService
-import com.miniweather.service.WeatherService
+import com.miniweather.service.location.LocationService
+import com.miniweather.service.util.TimeService
+import com.miniweather.service.weather.WeatherService
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class WeatherPresenter @Inject constructor(
     private val locationService: LocationService,
+    private val timeService: TimeService,
     private val weatherService: WeatherService,
-    private val sharedPreferenceService: SharedPreferenceService,
-    private val timeService: TimeService
+    dispatcher: CoroutineDispatcher
 ) : WeatherContract.Presenter {
 
-    companion object {
-        const val PREF_CACHE = "weather_cache"
-        const val PREF_UPDATE_TIME = "weather_update_time"
-    }
-
+    private val job = Job()
+    private val scope = CoroutineScope(job + dispatcher)
     private var view: WeatherContract.View? = null
 
     override fun onStart(view: WeatherContract.View) {
@@ -31,6 +31,7 @@ class WeatherPresenter @Inject constructor(
     }
 
     override fun onStop() {
+        job.cancel()
         view = null
     }
 
@@ -45,7 +46,6 @@ class WeatherPresenter @Inject constructor(
     }
 
     override fun onLocationPermissionDenied() {
-        view?.hideLoading()
         view?.showPermissionError()
     }
 
@@ -59,6 +59,7 @@ class WeatherPresenter @Inject constructor(
     }
 
     private fun getLocation() {
+
         view?.showLoading()
         locationService.getLocation { lat, lon ->
             getWeather(lat, lon)
@@ -66,38 +67,20 @@ class WeatherPresenter @Inject constructor(
     }
 
     private fun getWeather(lat: Double, lon: Double) {
-        weatherService.getWeather(lat, lon) {
-            when (it) {
+        scope.launch {
+            when (val result = weatherService.getWeather(lat, lon)) {
                 is DataResult.Success -> {
-                    val weather = it.data
+                    val weather = result.data
                     view?.updateWeather(weather)
-                    cacheWeather(weather)
+                    if (weather.timestamp < (timeService.getCurrentTime() - TimeUnit.MINUTES.toMillis(5))) {
+                        view?.showCachedDataInfo(weather.location, timeService.getRelativeTimeString(weather.timestamp))
+                    }
                 }
                 is DataResult.Failure -> {
-                    showCachedDataIfAvailable()
+                    view?.showNetworkError()
                 }
             }
         }
-    }
-
-    private fun showCachedDataIfAvailable() {
-        val cachedTime = sharedPreferenceService.getLong(PREF_UPDATE_TIME)
-
-        if (timeService.timeDifferenceInHours(cachedTime) < 24 && sharedPreferenceService.hasSavedValue(PREF_CACHE)) {
-            val weather: Weather = sharedPreferenceService.getWeather(PREF_CACHE)
-            view?.updateWeather(weather)
-            view?.showCachedDataInfo(
-                weather.location,
-                timeService.getRelativeTime(cachedTime)
-            )
-        } else {
-            view?.showNetworkError()
-        }
-    }
-
-    private fun cacheWeather(weather: Weather) {
-        sharedPreferenceService.saveLong(PREF_UPDATE_TIME, timeService.getCurrentTime())
-        sharedPreferenceService.saveWeather(PREF_CACHE, weather)
     }
 
 }

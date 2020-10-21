@@ -1,18 +1,23 @@
 package com.miniweather.ui
 
 import com.miniweather.model.DataResult
-import com.miniweather.model.Weather
-import com.miniweather.service.LocationService
-import com.miniweather.service.SharedPreferenceService
-import com.miniweather.service.TimeService
-import com.miniweather.service.WeatherService
+import com.miniweather.service.location.LocationService
+import com.miniweather.service.util.TimeService
+import com.miniweather.service.weather.WeatherService
+import com.miniweather.testutil.FakeDataProvider
 import com.nhaarman.mockitokotlin2.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.runBlockingTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import java.util.concurrent.TimeUnit
 
+@ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class WeatherPresenterTest {
 
@@ -23,9 +28,6 @@ class WeatherPresenterTest {
     private lateinit var mockWeatherService: WeatherService
 
     @Mock
-    private lateinit var mockSharedPreferenceService: SharedPreferenceService
-
-    @Mock
     private lateinit var mockTimeService: TimeService
 
     @Mock
@@ -33,26 +35,26 @@ class WeatherPresenterTest {
 
     private lateinit var presenter: WeatherPresenter
 
-    private val fakeTime: Long = 129034871023487
-    private val fakeLat = 1.1
-    private val fakeLon = 2.2
-    private val fakeWeather =
-        Weather(
-            "Sunny",
-            69,
-            42, "North",
-            "London, UK",
-            "https://weather.icon/0"
-        )
+    private val testDispatcher = TestCoroutineDispatcher()
+
+    private val fakeTimestamp: Long = 1000L
+    private val fakeLat = 1.111
+    private val fakeLon = 2.222
+    private val fakeWeather = FakeDataProvider.provideFakeWeather()
 
     @Before
     fun setup() {
         presenter = WeatherPresenter(
             mockLocationService,
+            mockTimeService,
             mockWeatherService,
-            mockSharedPreferenceService,
-            mockTimeService
+            testDispatcher
         )
+    }
+
+    @After
+    fun tearDown() {
+        testDispatcher.cleanupTestCoroutines()
     }
 
     private fun setupWithView() {
@@ -62,12 +64,12 @@ class WeatherPresenterTest {
     }
 
     @Test
-    fun whenPresenterStarts_andPermissionsGranted_fetchesDataAndUpdatesView() {
+    fun whenPresenterStarts_andPermissionsGranted_fetchesDataAndUpdatesView() = runBlockingTest {
         val locationCaptor = argumentCaptor<(lat: Double, lon: Double) -> Unit>()
-        val weatherCaptor = argumentCaptor<(DataResult<Weather>) -> Unit>()
 
         whenever(mockView.hasLocationPermission()).thenReturn(true)
-        whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTime)
+        whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
+        whenever(mockWeatherService.getWeather(any(), any())).thenReturn(DataResult.Success(fakeWeather))
 
         presenter.onStart(mockView)
 
@@ -77,13 +79,8 @@ class WeatherPresenterTest {
         verify(mockLocationService).getLocation(locationCaptor.capture())
         locationCaptor.firstValue.invoke(fakeLat, fakeLon)
 
-        verify(mockWeatherService).getWeather(eq(fakeLat), eq(fakeLon), weatherCaptor.capture())
-        weatherCaptor.firstValue.invoke(DataResult.Success(fakeWeather))
-
+        verify(mockWeatherService).getWeather(fakeLat, fakeLon)
         verify(mockView).updateWeather(fakeWeather)
-        verify(mockTimeService).getCurrentTime()
-        verify(mockSharedPreferenceService).saveWeather(WeatherPresenter.PREF_CACHE, fakeWeather)
-        verify(mockSharedPreferenceService).saveLong(WeatherPresenter.PREF_UPDATE_TIME, fakeTime)
     }
 
     @Test
@@ -124,22 +121,17 @@ class WeatherPresenterTest {
 
         presenter.onLocationPermissionDenied()
 
-        verify(mockView).hideLoading()
         verify(mockView).showPermissionError()
     }
 
     @Test
-    fun whenWeatherServiceFails_fetchesCachedDataAndUpdatesView() {
+    fun whenWeatherServiceReturnsCachedData_updatesView() = runBlockingTest {
+        val fakeWeather = fakeWeather.copy(timestamp = fakeTimestamp - TimeUnit.MINUTES.toMillis(10))
         val locationCaptor = argumentCaptor<(lat: Double, lon: Double) -> Unit>()
-        val weatherCaptor = argumentCaptor<(DataResult<Weather>) -> Unit>()
 
         whenever(mockView.hasLocationPermission()).thenReturn(true)
-        whenever(mockTimeService.timeDifferenceInHours(any())).thenReturn(12)
-        whenever(mockTimeService.getRelativeTime(any())).thenReturn("12 Hours Ago")
-
-        whenever(mockSharedPreferenceService.getLong(WeatherPresenter.PREF_UPDATE_TIME)).thenReturn(fakeTime)
-        whenever(mockSharedPreferenceService.hasSavedValue(WeatherPresenter.PREF_CACHE)).thenReturn(true)
-        whenever(mockSharedPreferenceService.getWeather(WeatherPresenter.PREF_CACHE)).thenReturn(fakeWeather)
+        whenever(mockTimeService.getRelativeTimeString(any())).thenReturn("12 Hours ago")
+        whenever(mockWeatherService.getWeather(any(), any())).thenReturn(DataResult.Success(fakeWeather))
 
         presenter.onStart(mockView)
 
@@ -149,25 +141,20 @@ class WeatherPresenterTest {
         verify(mockLocationService).getLocation(locationCaptor.capture())
         locationCaptor.firstValue.invoke(fakeLat, fakeLon)
 
-        verify(mockWeatherService).getWeather(eq(fakeLat), eq(fakeLon), weatherCaptor.capture())
-        weatherCaptor.firstValue.invoke(DataResult.Failure(Exception("Some Error")))
+        verify(mockWeatherService).getWeather(fakeLat, fakeLon)
 
         verify(mockView).updateWeather(fakeWeather)
-        verify(mockView).showCachedDataInfo(fakeWeather.location, "12 Hours Ago")
-        verify(mockTimeService).getRelativeTime(fakeTime)
-
-        verify(mockSharedPreferenceService).getWeather(WeatherPresenter.PREF_CACHE)
-        verify(mockSharedPreferenceService).getLong(WeatherPresenter.PREF_UPDATE_TIME)
+        verify(mockView).showCachedDataInfo(fakeWeather.location, "12 Hours ago")
+        verify(mockTimeService).getRelativeTimeString(fakeWeather.timestamp)
     }
 
     @Test
-    fun whenWeatherServiceFails_andNoValidCachedData_updatesView() {
+    fun whenWeatherServiceFails_updatesView() = runBlockingTest {
         val locationCaptor = argumentCaptor<(lat: Double, lon: Double) -> Unit>()
-        val weatherCaptor = argumentCaptor<(DataResult<Weather>) -> Unit>()
 
         whenever(mockView.hasLocationPermission()).thenReturn(true)
-        whenever(mockTimeService.timeDifferenceInHours(any())).thenReturn(69)
-        whenever(mockSharedPreferenceService.getLong(WeatherPresenter.PREF_UPDATE_TIME)).thenReturn(fakeTime)
+        whenever(mockWeatherService.getWeather(any(), any()))
+            .thenReturn(DataResult.Failure(Exception("Something went wrong")))
 
         presenter.onStart(mockView)
 
@@ -177,11 +164,7 @@ class WeatherPresenterTest {
         verify(mockLocationService).getLocation(locationCaptor.capture())
         locationCaptor.firstValue.invoke(fakeLat, fakeLon)
 
-        verify(mockWeatherService).getWeather(eq(fakeLat), eq(fakeLon), weatherCaptor.capture())
-        weatherCaptor.firstValue.invoke(DataResult.Failure(Exception("Some Error")))
-
-        verify(mockSharedPreferenceService).getLong(WeatherPresenter.PREF_UPDATE_TIME)
-        verify(mockTimeService).timeDifferenceInHours(fakeTime)
+        verify(mockWeatherService).getWeather(fakeLat, fakeLon)
         verify(mockView).showNetworkError()
     }
 

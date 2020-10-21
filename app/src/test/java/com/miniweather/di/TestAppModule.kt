@@ -1,7 +1,7 @@
 package com.miniweather.di
 
 import android.content.Context
-import com.miniweather.TestApplication
+import com.miniweather.app.TestApplication
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

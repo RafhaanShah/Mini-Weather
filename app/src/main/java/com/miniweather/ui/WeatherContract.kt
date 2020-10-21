@@ -3,9 +3,9 @@ package com.miniweather.ui
 import com.miniweather.model.Weather
 
 interface WeatherContract {
+
     interface View {
         fun showLoading()
-        fun hideLoading()
         fun updateWeather(weather: Weather)
         fun showNetworkError()
         fun showCachedDataInfo(location: String, time: String)
@@ -21,4 +21,5 @@ interface WeatherContract {
         fun onLocationPermissionGranted()
         fun onLocationPermissionDenied()
     }
+
 }

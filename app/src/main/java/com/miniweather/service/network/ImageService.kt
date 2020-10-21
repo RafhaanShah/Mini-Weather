@@ -1,4 +1,4 @@
-package com.miniweather.service
+package com.miniweather.service.network
 
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
