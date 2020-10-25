@@ -4,6 +4,7 @@ import com.miniweather.di.AppComponent
 import com.miniweather.di.DaggerTestAppComponent
 import com.miniweather.di.TestAppModule
 
+@Suppress("DEPRECATION")
 class TestApplication : BaseDaggerApplication() {
 
     private lateinit var appComponent: AppComponent
