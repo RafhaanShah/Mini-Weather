@@ -61,7 +61,7 @@ class WeatherActivityTest {
 
     @Test
     fun whenUpdateWeatherCalled_updatesWeatherCard() {
-        activity.updateWeather(fakeWeather)
+        activity.showWeather(fakeWeather)
 
         onView(withId(R.id.weather_card)).check(matches(isDisplayed()))
         onView(withId(R.id.weather_last_updated_text)).check(matches(not(isDisplayed())))
@@ -79,7 +79,7 @@ class WeatherActivityTest {
 
     @Test
     fun whenShowCachedDataInfo_showsLastUpdatedText() {
-        activity.showCachedDataInfo(fakeWeather.location, "12 hours ago")
+        activity.showLastUpdatedInfo(fakeWeather.location, "12 hours ago")
 
         onView(withId(R.id.weather_last_updated_text)).check(matches(not(isDisplayed())))
         onView(withId(R.id.weather_last_updated_text)).check(matches(withText(containsString(fakeWeather.location))))
@@ -110,7 +110,7 @@ class WeatherActivityTest {
 
         onView(withId(R.id.weather_error_message_card)).check(matches(isDisplayed()))
         onView(withId(R.id.weather_error_message_text))
-            .check(matches(withText(containsString(context.getString(R.string.weather_error_offline)))))
+            .check(matches(withText(containsString(context.getString(R.string.error_network_request)))))
 
         onView(withId(R.id.weather_progress)).check(matches(not(isDisplayed())))
         onView(withId(R.id.weather_card)).check(matches(not(isDisplayed())))
@@ -122,7 +122,7 @@ class WeatherActivityTest {
 
         onView(withId(R.id.weather_error_message_card)).check(matches(isDisplayed()))
         onView(withId(R.id.weather_error_message_text))
-            .check(matches(withText(containsString(context.getString(R.string.weather_error_permission)))))
+            .check(matches(withText(containsString(context.getString(R.string.error_permission_location)))))
 
         onView(withId(R.id.weather_progress)).check(matches(not(isDisplayed())))
         onView(withId(R.id.weather_card)).check(matches(not(isDisplayed())))

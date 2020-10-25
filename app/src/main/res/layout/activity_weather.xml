@@ -59,7 +59,7 @@
             android:padding="@dimen/large_margin"
             android:textAlignment="center"
             android:textSize="20sp"
-            tools:text="@string/weather_error_offline" />
+            tools:text="@string/error_network_request" />
     </androidx.cardview.widget.CardView>
 
     <ProgressBar

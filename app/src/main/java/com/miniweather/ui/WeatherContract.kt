@@ -5,13 +5,14 @@ import com.miniweather.model.Weather
 interface WeatherContract {
 
     interface View {
-        fun showLoading()
-        fun updateWeather(weather: Weather)
-        fun showNetworkError()
-        fun showCachedDataInfo(location: String, time: String)
         fun hasLocationPermission(): Boolean
         fun requestLocationPermission()
+        fun showLoading()
+        fun showWeather(weather: Weather)
+        fun showLastUpdatedInfo(location: String, time: String)
+        fun showNetworkError()
         fun showPermissionError()
+        fun showLocationError()
     }
 
     interface Presenter {

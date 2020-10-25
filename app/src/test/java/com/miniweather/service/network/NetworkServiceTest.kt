@@ -1,8 +1,8 @@
 package com.miniweather.service.network
 
-import com.miniweather.model.*
+import com.miniweather.model.DataResult
+import com.miniweather.testutil.FakeDataProvider
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.TestCase.assertEquals
@@ -29,12 +29,8 @@ class NetworkServiceTest {
 
     private val testDispatcher = TestCoroutineDispatcher()
 
-    private val fakeWeatherResponse = WeatherResponse(
-        weatherList = listOf(Condition("Clear", "01m")),
-        temp = Temperature(42.0),
-        wind = Wind(23.0, 70.0),
-        location = "London, UK"
-    )
+    private val fakeLocation = FakeDataProvider.provideFakeLocation()
+    private val fakeWeatherResponse = FakeDataProvider.provideFakeWeatherResponse()
 
     @Before
     fun setup() {
@@ -51,20 +47,20 @@ class NetworkServiceTest {
     fun whenMakeWeatherRequest_andSuccessfulResponse_returnsTheResponse() = runBlockingTest {
         whenever(mockApiService.getWeather(any(), any())).thenReturn(fakeWeatherResponse)
 
-        val result = networkService.getWeather(1.0, 1.0)
+        val actual = networkService.getWeather(fakeLocation)
 
-        verify(mockApiService).getWeather(eq(1.0), eq(1.0))
-        assertEquals(fakeWeatherResponse, (result as DataResult.Success).data)
+        verify(mockApiService).getWeather(fakeLocation.latitude, fakeLocation.longitude)
+        assertEquals(fakeWeatherResponse, (actual as DataResult.Success).data)
     }
 
     @Test
     fun whenMakeWeatherRequest_andFailureResponse_returnsFailure() = runBlockingTest {
         whenever(mockApiService.getWeather(any(), any())).thenThrow(RuntimeException("Something went wrong"))
 
-        val result = networkService.getWeather(1.0, 1.0)
+        val actual = networkService.getWeather(fakeLocation)
 
-        verify(mockApiService).getWeather(eq(1.0), eq(1.0))
-        assertTrue(result is DataResult.Failure)
+        verify(mockApiService).getWeather(fakeLocation.latitude, fakeLocation.longitude)
+        assertTrue(actual is DataResult.Failure)
     }
 
 }

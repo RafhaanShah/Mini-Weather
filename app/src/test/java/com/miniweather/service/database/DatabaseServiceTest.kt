@@ -1,5 +1,6 @@
 package com.miniweather.service.database
 
+import com.miniweather.model.Location
 import com.miniweather.testutil.FakeDataProvider
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
@@ -26,8 +27,7 @@ class DatabaseServiceTest {
 
     private val testDispatcher = TestCoroutineDispatcher()
 
-    private val fakeLat = 1.111
-    private val fakeLon = 2.222
+    private val fakeLocation = Location(1.111, 2.222)
     private val fakeTimestamp = 1000L
     private val fakeWeather = FakeDataProvider.provideFakeWeather()
 
@@ -45,9 +45,9 @@ class DatabaseServiceTest {
     fun whenGetCachedData_callsDao() = runBlockingTest {
         whenever(mockWeatherDao.getCachedData(any(), any(), any())).thenReturn(listOf(fakeWeather))
 
-        val actual = databaseService.getCachedData(fakeLat, fakeLon, fakeTimestamp)
+        val actual = databaseService.getCachedData(fakeLocation, fakeTimestamp)
 
-        verify(mockWeatherDao).getCachedData(fakeLat, fakeLon, fakeTimestamp)
+        verify(mockWeatherDao).getCachedData(fakeLocation.latitude, fakeLocation.longitude, fakeTimestamp)
         assertEquals(listOf(fakeWeather), actual)
     }
 

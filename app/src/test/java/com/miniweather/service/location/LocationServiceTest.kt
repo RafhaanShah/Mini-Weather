@@ -10,6 +10,9 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,35 +21,53 @@ import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 
+@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class LocationServiceTest {
 
     @Mock
-    private lateinit var mockFusedLocationClient: FusedLocationProviderClient
+    private lateinit var mockFusedLocationProviderClient: FusedLocationProviderClient
 
     private lateinit var locationService: LocationService
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        locationService = LocationService(mockFusedLocationClient)
+        locationService = LocationService(mockFusedLocationProviderClient)
     }
 
     @Test
-    fun whenGetLocation_requestsLocationUpdates() {
+    fun whenGetLocation_requestsLocationUpdates() = runBlockingTest {
         val requestCaptor = argumentCaptor<LocationRequest>()
+        val job = launch {
+            locationService.getLocation()
+        }
 
-        locationService.getLocation { _, _ -> }
-
-        verify(mockFusedLocationClient).requestLocationUpdates(requestCaptor.capture(), any(), any())
-
+        verify(mockFusedLocationProviderClient).requestLocationUpdates(requestCaptor.capture(), any(), any())
         val request = requestCaptor.firstValue
+
         assertEquals(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, request.priority)
         assertEquals(1, request.numUpdates)
+
+        job.cancel()
     }
 
     @Test
-    fun whenLocationResultCallbackInvoked_invokesGetLocationCallback() {
+    fun whenGetLocationCancelled_removesLocationUpdates() = runBlockingTest {
+        val locationCallbackCaptor = argumentCaptor<LocationCallback>()
+        val job = launch {
+            locationService.getLocation()
+        }
+
+        verify(mockFusedLocationProviderClient).requestLocationUpdates(any(), locationCallbackCaptor.capture(), any())
+
+        job.cancel()
+
+        verify(mockFusedLocationProviderClient).removeLocationUpdates(locationCallbackCaptor.firstValue)
+    }
+
+    @Test
+    fun whenLocationResultCallbackInvoked_returnsLocation() = runBlockingTest {
         val locationCallbackCaptor = argumentCaptor<LocationCallback>()
         val mockLocationResult = mock(LocationResult::class.java)
         val mockLocation = mock(Location::class.java)
@@ -55,23 +76,17 @@ class LocationServiceTest {
         whenever(mockLocation.latitude).thenReturn(1.1)
         whenever(mockLocation.longitude).thenReturn(2.2)
 
-        var lat = 0.0
-        var lon = 0.0
-
-        locationService.getLocation { la, lo ->
-            lat = la
-            lon = lo
+        launch {
+            val actual = locationService.getLocation()
+            assertEquals(1.1, actual.latitude)
+            assertEquals(2.2, actual.longitude)
         }
 
-        verify(mockFusedLocationClient).requestLocationUpdates(any(), locationCallbackCaptor.capture(), any())
-
+        verify(mockFusedLocationProviderClient).requestLocationUpdates(any(), locationCallbackCaptor.capture(), any())
         val callback = locationCallbackCaptor.firstValue
         callback.onLocationResult(mockLocationResult)
 
-        verify(mockFusedLocationClient).removeLocationUpdates(callback)
-
-        assertEquals(1.1, lat)
-        assertEquals(2.2, lon)
+        verify(mockFusedLocationProviderClient).removeLocationUpdates(callback)
     }
 
 }

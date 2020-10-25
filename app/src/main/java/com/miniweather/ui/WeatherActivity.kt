@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.miniweather.app.BaseDaggerApplication
 import com.miniweather.R
+import com.miniweather.app.BaseDaggerApplication
 import com.miniweather.databinding.ActivityWeatherBinding
 import com.miniweather.model.Weather
 import com.miniweather.service.network.ImageService
@@ -43,7 +43,7 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
         super.onDestroy()
     }
 
-    override fun updateWeather(weather: Weather) {
+    override fun showWeather(weather: Weather) {
         hideLoading()
 
         binding.weatherCard.weatherCardLayout.visibility = View.VISIBLE
@@ -58,7 +58,7 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
         imageService.loadImage(binding.weatherLayout.weather_icon, weather.iconUrl)
     }
 
-    override fun showCachedDataInfo(location: String, time: String) {
+    override fun showLastUpdatedInfo(location: String, time: String) {
         binding.weatherCard.weatherLastUpdatedText.visibility = View.VISIBLE
         binding.weatherCard.weatherLastUpdatedText.text =
             getString(R.string.weather_last_updated, time, location)
@@ -91,12 +91,17 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
     }
 
     override fun showNetworkError() {
-        binding.weatherErrorMessageText.text = getString(R.string.weather_error_offline)
+        binding.weatherErrorMessageText.text = getString(R.string.error_network_request)
         showErrorCard()
     }
 
     override fun showPermissionError() {
-        binding.weatherErrorMessageText.text = getString(R.string.weather_error_permission)
+        binding.weatherErrorMessageText.text = getString(R.string.error_permission_location)
+        showErrorCard()
+    }
+
+    override fun showLocationError() {
+        binding.weatherErrorMessageText.text = getString(R.string.error_location_timeout)
         showErrorCard()
     }
 

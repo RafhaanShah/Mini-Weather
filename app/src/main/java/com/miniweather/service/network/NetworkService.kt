@@ -1,6 +1,7 @@
 package com.miniweather.service.network
 
 import com.miniweather.model.DataResult
+import com.miniweather.model.Location
 import com.miniweather.model.WeatherResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -11,9 +12,9 @@ class NetworkService @Inject constructor(
     private val dispatcher: CoroutineDispatcher
 ) {
 
-    suspend fun getWeather(lat: Double, lon: Double): DataResult<WeatherResponse> = makeRequest {
+    suspend fun getWeather(location: Location): DataResult<WeatherResponse> = makeRequest {
         try {
-            DataResult.Success(apiService.getWeather(lat, lon))
+            DataResult.Success(apiService.getWeather(location.latitude, location.longitude))
         } catch (e: Exception) {
             DataResult.Failure(e)
         }

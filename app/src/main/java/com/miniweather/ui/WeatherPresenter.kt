@@ -1,13 +1,12 @@
 package com.miniweather.ui
 
 import com.miniweather.model.DataResult
+import com.miniweather.model.Location
+import com.miniweather.model.Weather
 import com.miniweather.service.location.LocationService
 import com.miniweather.service.util.TimeService
 import com.miniweather.service.weather.WeatherService
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -26,7 +25,7 @@ class WeatherPresenter @Inject constructor(
         this.view = view
 
         if (checkPermission()) {
-            getLocation()
+            getWeather()
         }
     }
 
@@ -37,12 +36,12 @@ class WeatherPresenter @Inject constructor(
 
     override fun onRefreshButtonClicked() {
         if (checkPermission()) {
-            getLocation()
+            getWeather()
         }
     }
 
     override fun onLocationPermissionGranted() {
-        getLocation()
+        getWeather()
     }
 
     override fun onLocationPermissionDenied() {
@@ -58,28 +57,31 @@ class WeatherPresenter @Inject constructor(
         }
     }
 
-    private fun getLocation() {
-
+    private fun getWeather() {
         view?.showLoading()
-        locationService.getLocation { lat, lon ->
-            getWeather(lat, lon)
+        scope.launch {
+            try {
+                when (val weatherResult = weatherService.getWeather(getLocation())) {
+                    is DataResult.Success -> showWeather(weatherResult.data)
+                    is DataResult.Failure -> view?.showNetworkError()
+                }
+            } catch (e: TimeoutCancellationException) {
+                view?.showLocationError()
+            }
         }
     }
 
-    private fun getWeather(lat: Double, lon: Double) {
-        scope.launch {
-            when (val result = weatherService.getWeather(lat, lon)) {
-                is DataResult.Success -> {
-                    val weather = result.data
-                    view?.updateWeather(weather)
-                    if (weather.timestamp < (timeService.getCurrentTime() - TimeUnit.MINUTES.toMillis(5))) {
-                        view?.showCachedDataInfo(weather.location, timeService.getRelativeTimeString(weather.timestamp))
-                    }
-                }
-                is DataResult.Failure -> {
-                    view?.showNetworkError()
-                }
-            }
+    @Throws(TimeoutCancellationException::class)
+    suspend fun getLocation(): Location {
+        return withTimeout(TimeUnit.MINUTES.toMillis(1)) {
+            locationService.getLocation()
+        }
+    }
+
+    private fun showWeather(weather: Weather) {
+        view?.showWeather(weather)
+        if (weather.timestamp < (timeService.getCurrentTime() - TimeUnit.MINUTES.toMillis(5))) {
+            view?.showLastUpdatedInfo(weather.location, timeService.getRelativeTimeString(weather.timestamp))
         }
     }
 

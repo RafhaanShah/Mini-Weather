@@ -17,7 +17,7 @@ import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-class LocationServiceTest {
+class WeatherDaoTest {
 
     private lateinit var weatherDao: WeatherDao
 

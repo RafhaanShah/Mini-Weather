@@ -1,5 +1,6 @@
 package com.miniweather.service.database
 
+import com.miniweather.model.Location
 import com.miniweather.model.Weather
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -10,8 +11,8 @@ class DatabaseService @Inject constructor(
     private val dispatcher: CoroutineDispatcher
 ) {
 
-    suspend fun getCachedData(lat: Double, lon: Double, maxAge: Long): List<Weather> =
-        execute { weatherDao.getCachedData(lat, lon, maxAge) }
+    suspend fun getCachedData(location: Location, maxAge: Long): List<Weather> =
+        execute { weatherDao.getCachedData(location.latitude, location.longitude, maxAge) }
 
     suspend fun insertIntoCache(weather: Weather) = execute { weatherDao.insertIntoCache(weather) }
 
