@@ -1,6 +1,6 @@
 package com.miniweather.di
 
-import com.miniweather.ui.WeatherContract
+import com.miniweather.ui.weather.WeatherContract
 import dagger.Module
 import dagger.Provides
 import org.mockito.Mockito

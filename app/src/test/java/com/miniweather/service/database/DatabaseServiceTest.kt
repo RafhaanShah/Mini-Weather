@@ -1,6 +1,7 @@
 package com.miniweather.service.database
 
 import com.miniweather.model.Location
+import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.FakeDataProvider
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
@@ -12,13 +13,10 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
-class DatabaseServiceTest {
+class DatabaseServiceTest : BaseTest() {
 
     @Mock
     private lateinit var mockWeatherDao: WeatherDao

@@ -30,7 +30,20 @@ class FakeDataProvider {
         )
 
         fun provideFakeLocation(): Location = Location(1.111, 2.222)
+
         fun provideFakeLocationRounded(): Location = Location(1.11, 2.22)
+
+        fun provideFakeCardinalDirections() = arrayOf(
+            "North",
+            "North East",
+            "East",
+            "South East",
+            "South",
+            "South West",
+            "West",
+            "North West",
+            "North"
+        )
     }
 
 }

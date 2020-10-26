@@ -1,26 +1,23 @@
 package com.miniweather.service.network
 
 import com.miniweather.model.DataResult
+import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.FakeDataProvider
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.junit.MockitoJUnitRunner
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
-class NetworkServiceTest {
+class NetworkServiceTest : BaseTest() {
 
     @Mock
     private lateinit var mockApiService: WeatherApi
@@ -34,7 +31,6 @@ class NetworkServiceTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
         networkService = NetworkService(mockApiService, testDispatcher)
     }
 

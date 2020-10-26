@@ -5,6 +5,7 @@ import com.miniweather.service.database.DatabaseService
 import com.miniweather.service.network.NetworkService
 import com.miniweather.service.util.StringResourceService
 import com.miniweather.service.util.TimeService
+import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.FakeDataProvider
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
@@ -16,23 +17,17 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
-class WeatherServiceTest {
+class WeatherServiceTest : BaseTest() {
 
     @Mock
     private lateinit var mockNetworkService: NetworkService
-
     @Mock
     private lateinit var mockTimeService: TimeService
-
     @Mock
     private lateinit var mockDatabaseService: DatabaseService
-
     @Mock
     private lateinit var mockStringResourceService: StringResourceService
 
@@ -43,6 +38,7 @@ class WeatherServiceTest {
     private val fakeLocation = FakeDataProvider.provideFakeLocation()
     private val fakeLocationRounded = FakeDataProvider.provideFakeLocationRounded()
     private val fakeWeatherResponse = FakeDataProvider.provideFakeWeatherResponse()
+    private val fakeCardinalDirections = FakeDataProvider.provideFakeCardinalDirections()
 
     @Before
     fun setup() {
@@ -50,23 +46,11 @@ class WeatherServiceTest {
             WeatherService(mockNetworkService, mockTimeService, mockDatabaseService, mockStringResourceService)
 
         whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
-        whenever(mockStringResourceService.getStringArray(any())).thenReturn(
-            arrayOf(
-                "North",
-                "North East",
-                "East",
-                "South East",
-                "South",
-                "South West",
-                "West",
-                "North West",
-                "North"
-            )
-        )
     }
 
     @Test
     fun whenGetWeather_andNetworkServiceSucceeds_returnsWeather_andCaches() = runBlockingTest {
+        whenever(mockStringResourceService.getStringArray(any())).thenReturn(fakeCardinalDirections)
         whenever(mockNetworkService.getWeather(any())).thenReturn(DataResult.Success(fakeWeatherResponse))
 
         val actual = weatherService.getWeather(fakeLocation)
@@ -78,7 +62,7 @@ class WeatherServiceTest {
         assertEquals(fakeWeatherResponse.weatherList.first().condition, weather.condition)
         assertEquals(fakeWeatherResponse.temp.value.toInt(), weather.temperature)
         assertEquals(fakeWeatherResponse.wind.speed.toInt(), weather.windSpeed)
-        assertEquals("East", weather.windDirection)
+        assertEquals(fakeCardinalDirections[2], weather.windDirection)
         assertEquals(fakeWeatherResponse.location, weather.location)
         assertEquals(fakeLocationRounded.latitude, weather.latitude, 0.0)
         assertEquals(fakeLocationRounded.longitude, weather.longitude, 0.0)
@@ -107,7 +91,7 @@ class WeatherServiceTest {
         assertEquals(fakeWeatherResponse.weatherList.first().condition, weather.condition)
         assertEquals(fakeWeatherResponse.temp.value.toInt(), weather.temperature)
         assertEquals(fakeWeatherResponse.wind.speed.toInt(), weather.windSpeed)
-        assertEquals("East", weather.windDirection)
+        assertEquals(fakeCardinalDirections[2], weather.windDirection)
         assertEquals(fakeWeatherResponse.location, weather.location)
         assertEquals(fakeWeather.latitude, weather.latitude, 0.0)
         assertEquals(fakeWeather.longitude, weather.longitude, 0.0)

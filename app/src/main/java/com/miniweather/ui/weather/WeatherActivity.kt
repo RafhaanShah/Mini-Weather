@@ -1,4 +1,4 @@
-package com.miniweather.ui
+package com.miniweather.ui.weather
 
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -15,7 +15,9 @@ import javax.inject.Inject
 
 class WeatherActivity : AppCompatActivity(), WeatherContract.View {
 
-    private val permissionCodeLocation = 100
+    companion object {
+        const val PERMISSION_CODE_LOCATION = 100
+    }
 
     private lateinit var binding: ActivityWeatherBinding
 
@@ -74,7 +76,7 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
     override fun requestLocationPermission() {
         requestPermissions(
             arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-            permissionCodeLocation
+            PERMISSION_CODE_LOCATION
         )
     }
 
@@ -110,14 +112,12 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode == permissionCodeLocation) {
+        if (requestCode == PERMISSION_CODE_LOCATION) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 presenter.onLocationPermissionGranted()
             } else {
                 presenter.onLocationPermissionDenied()
             }
-            return
-
         }
     }
 

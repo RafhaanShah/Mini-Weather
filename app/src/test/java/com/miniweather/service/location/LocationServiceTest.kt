@@ -5,25 +5,22 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.miniweather.testutil.BaseInstrumentedTest
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.mock
-import org.mockito.MockitoAnnotations
-import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
-class LocationServiceTest {
+class LocationServiceTest : BaseInstrumentedTest() {
 
     @Mock
     private lateinit var mockFusedLocationProviderClient: FusedLocationProviderClient
@@ -32,7 +29,6 @@ class LocationServiceTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
         locationService = LocationService(mockFusedLocationProviderClient)
     }
 
@@ -78,8 +74,8 @@ class LocationServiceTest {
 
         launch {
             val actual = locationService.getLocation()
-            assertEquals(1.1, actual.latitude)
-            assertEquals(2.2, actual.longitude)
+            assertEquals(1.1, actual.latitude, 0.0)
+            assertEquals(2.2, actual.longitude, 0.0)
         }
 
         verify(mockFusedLocationProviderClient).requestLocationUpdates(any(), locationCallbackCaptor.capture(), any())

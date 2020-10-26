@@ -5,7 +5,10 @@ import com.miniweather.model.Location
 import com.miniweather.service.location.LocationService
 import com.miniweather.service.util.TimeService
 import com.miniweather.service.weather.WeatherService
+import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.FakeDataProvider
+import com.miniweather.ui.weather.WeatherContract
+import com.miniweather.ui.weather.WeatherPresenter
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
@@ -14,24 +17,18 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
-class WeatherPresenterTest {
+class WeatherPresenterTest : BaseTest() {
 
     @Mock
     private lateinit var mockLocationService: LocationService
-
     @Mock
     private lateinit var mockWeatherService: WeatherService
-
     @Mock
     private lateinit var mockTimeService: TimeService
-
     @Mock
     private lateinit var mockView: WeatherContract.View
 
@@ -56,12 +53,6 @@ class WeatherPresenterTest {
     @After
     fun tearDown() {
         testDispatcher.cleanupTestCoroutines()
-    }
-
-    private fun setupWithLocationDenied() {
-        whenever(mockView.hasLocationPermission()).thenReturn(false)
-        presenter.onStart(mockView)
-        clearInvocations(mockView)
     }
 
     @Test
@@ -157,6 +148,12 @@ class WeatherPresenterTest {
         presenter.onStart(mockView)
 
         verify(mockView).showLocationError()
+    }
+
+    private fun setupWithLocationDenied() {
+        whenever(mockView.hasLocationPermission()).thenReturn(false)
+        presenter.onStart(mockView)
+        clearInvocations(mockView)
     }
 
 }

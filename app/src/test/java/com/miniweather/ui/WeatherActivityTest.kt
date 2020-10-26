@@ -1,54 +1,48 @@
 package com.miniweather.ui
 
-import android.content.Context
+import android.app.Application
 import android.content.pm.PackageManager
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.miniweather.R
-import com.miniweather.app.TestApplication
 import com.miniweather.service.network.ImageService
+import com.miniweather.testutil.BaseActivityTest
 import com.miniweather.testutil.FakeDataProvider
+import com.miniweather.ui.weather.WeatherActivity
+import com.miniweather.ui.weather.WeatherContract
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.not
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.robolectric.Robolectric
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
+import org.robolectric.Shadows
 
-@Config(application = TestApplication::class)
-@RunWith(RobolectricTestRunner::class)
-class WeatherActivityTest {
+
+class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::class.java) {
 
     @Mock
     private lateinit var mockPresenter: WeatherContract.Presenter
+
     @Mock
     private lateinit var mockImageService: ImageService
-
-    private lateinit var activity: WeatherActivity
-
-    private val context: Context = ApplicationProvider.getApplicationContext()
 
     private val fakeWeather = FakeDataProvider.provideFakeWeather()
 
     @Before
-    fun setup() {
-        MockitoAnnotations.openMocks(this)
-        val controller = Robolectric.buildActivity(WeatherActivity::class.java)
-
-        activity = controller.setup().get()
-        activity.presenter = mockPresenter
-        activity.imageService = mockImageService
+    override fun setup() {
+        super.setup()
+        scenario.onActivity { activity ->
+            activity.presenter = mockPresenter
+            activity.imageService = mockImageService
+        }
     }
 
     @Test
@@ -61,7 +55,9 @@ class WeatherActivityTest {
 
     @Test
     fun whenUpdateWeatherCalled_updatesWeatherCard() {
-        activity.showWeather(fakeWeather)
+        scenario.onActivity { activity ->
+            activity.showWeather(fakeWeather)
+        }
 
         onView(withId(R.id.weather_card)).check(matches(isDisplayed()))
         onView(withId(R.id.weather_last_updated_text)).check(matches(not(isDisplayed())))
@@ -79,7 +75,9 @@ class WeatherActivityTest {
 
     @Test
     fun whenShowCachedDataInfo_showsLastUpdatedText() {
-        activity.showLastUpdatedInfo(fakeWeather.location, "12 hours ago")
+        scenario.onActivity { activity ->
+            activity.showLastUpdatedInfo(fakeWeather.location, "12 hours ago")
+        }
 
         onView(withId(R.id.weather_last_updated_text)).check(matches(not(isDisplayed())))
         onView(withId(R.id.weather_last_updated_text)).check(matches(withText(containsString(fakeWeather.location))))
@@ -88,7 +86,9 @@ class WeatherActivityTest {
 
     @Test
     fun whenShowLoading_showsSpinnerAndHidesOtherViews() {
-        activity.showLoading()
+        scenario.onActivity { activity ->
+            activity.showLoading()
+        }
 
         onView(withId(R.id.weather_progress)).check(matches(isDisplayed()))
         onView(withId(R.id.weather_card)).check(matches(not(isDisplayed())))
@@ -98,7 +98,9 @@ class WeatherActivityTest {
 
     @Test
     fun whenHideLoading_hidesSpinner_andShowsFab() {
-        activity.hideLoading()
+        scenario.onActivity { activity ->
+            activity.hideLoading()
+        }
 
         onView(withId(R.id.weather_progress)).check(matches(not(isDisplayed())))
         onView(withId(R.id.weather_fab)).check(matches(isDisplayed()))
@@ -106,7 +108,9 @@ class WeatherActivityTest {
 
     @Test
     fun whenShowNetworkError_showsErrorMessage() {
-        activity.showNetworkError()
+        scenario.onActivity { activity ->
+            activity.showNetworkError()
+        }
 
         onView(withId(R.id.weather_error_message_card)).check(matches(isDisplayed()))
         onView(withId(R.id.weather_error_message_text))
@@ -118,7 +122,9 @@ class WeatherActivityTest {
 
     @Test
     fun whenShowPermissionError_showsErrorMessage() {
-        activity.showPermissionError()
+        scenario.onActivity { activity ->
+            activity.showPermissionError()
+        }
 
         onView(withId(R.id.weather_error_message_card)).check(matches(isDisplayed()))
         onView(withId(R.id.weather_error_message_text))
@@ -130,21 +136,58 @@ class WeatherActivityTest {
 
     @Test
     fun whenLocationPermissionGranted_callsPresenter() {
-        activity.onRequestPermissionsResult(100, arrayOf(), intArrayOf(PackageManager.PERMISSION_GRANTED))
+        scenario.onActivity { activity ->
+            activity.onRequestPermissionsResult(
+                WeatherActivity.PERMISSION_CODE_LOCATION,
+                arrayOf(), intArrayOf(PackageManager.PERMISSION_GRANTED)
+            )
+        }
         verify(mockPresenter).onLocationPermissionGranted()
     }
 
     @Test
     fun whenLocationPermissionDenied_callsPresenter() {
-        activity.onRequestPermissionsResult(100, arrayOf(), intArrayOf(PackageManager.PERMISSION_DENIED))
+        scenario.onActivity { activity ->
+            activity.onRequestPermissionsResult(
+                WeatherActivity.PERMISSION_CODE_LOCATION,
+                arrayOf(), intArrayOf(PackageManager.PERMISSION_DENIED)
+            )
+        }
         verify(mockPresenter).onLocationPermissionDenied()
     }
 
     @Test
     fun whenRequestLocationPermission_requestsPermission() {
-        val spy = spy(activity)
-        spy.requestLocationPermission()
-        verify(spy).requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 100)
+        scenario.onActivity { activity ->
+            val spy = spy(activity)
+            spy.requestLocationPermission()
+            verify(spy).requestPermissions(
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                WeatherActivity.PERMISSION_CODE_LOCATION
+            )
+        }
+    }
+
+    @Test
+    fun whenHasLocationPermission_andPermissionDenied_returnsFalse() {
+        val app = Shadows.shadowOf(context as Application)
+        app.denyPermissions(android.Manifest.permission.ACCESS_FINE_LOCATION)
+
+        scenario.onActivity { activity ->
+            val actual = activity.hasLocationPermission()
+            assertFalse(actual)
+        }
+    }
+
+    @Test
+    fun whenHasLocationPermission_andPermissionGranted_returnsTrue() {
+        val app = Shadows.shadowOf(context as Application)
+        app.grantPermissions(android.Manifest.permission.ACCESS_FINE_LOCATION)
+
+        scenario.onActivity { activity ->
+            val actual = activity.hasLocationPermission()
+            assertTrue(actual)
+        }
     }
 
 }

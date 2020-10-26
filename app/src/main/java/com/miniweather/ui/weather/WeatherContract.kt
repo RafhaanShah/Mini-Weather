@@ -1,4 +1,4 @@
-package com.miniweather.ui
+package com.miniweather.ui.weather
 
 import com.miniweather.model.Weather
 

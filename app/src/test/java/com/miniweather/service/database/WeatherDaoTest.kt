@@ -3,6 +3,7 @@ package com.miniweather.service.database
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.miniweather.testutil.BaseInstrumentedTest
 import com.miniweather.testutil.FakeDataProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asExecutor
@@ -12,12 +13,9 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
-class WeatherDaoTest {
+class WeatherDaoTest : BaseInstrumentedTest() {
 
     private lateinit var weatherDao: WeatherDao
 

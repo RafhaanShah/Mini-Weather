@@ -1,7 +1,7 @@
 package com.miniweather.di
 
 import com.miniweather.app.BaseDaggerApplication
-import com.miniweather.ui.WeatherActivity
+import com.miniweather.ui.weather.WeatherActivity
 import dagger.Component
 import javax.inject.Singleton
 

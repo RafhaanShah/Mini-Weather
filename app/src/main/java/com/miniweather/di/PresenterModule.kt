@@ -3,8 +3,8 @@ package com.miniweather.di
 import com.miniweather.service.location.LocationService
 import com.miniweather.service.util.TimeService
 import com.miniweather.service.weather.WeatherService
-import com.miniweather.ui.WeatherContract
-import com.miniweather.ui.WeatherPresenter
+import com.miniweather.ui.weather.WeatherContract
+import com.miniweather.ui.weather.WeatherPresenter
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineDispatcher
