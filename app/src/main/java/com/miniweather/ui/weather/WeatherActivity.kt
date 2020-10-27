@@ -57,7 +57,7 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
         binding.weatherCard.weatherWindDirectionText.text = weather.windDirection
         binding.weatherCard.weatherLastUpdatedText.visibility = View.GONE
 
-        imageService.loadImage(binding.weatherLayout.weather_icon, weather.iconUrl)
+        imageService.loadImage(this, binding.weatherLayout.weather_icon, weather.iconUrl)
     }
 
     override fun showLastUpdatedInfo(location: String, time: String) {
