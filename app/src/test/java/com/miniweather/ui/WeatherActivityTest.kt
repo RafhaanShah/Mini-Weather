@@ -97,16 +97,6 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
     }
 
     @Test
-    fun whenHideLoading_hidesSpinner_andShowsFab() {
-        scenario.onActivity { activity ->
-            activity.hideLoading()
-        }
-
-        onView(withId(R.id.weather_progress)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.weather_fab)).check(matches(isDisplayed()))
-    }
-
-    @Test
     fun whenShowNetworkError_showsErrorMessage() {
         scenario.onActivity { activity ->
             activity.showNetworkError()

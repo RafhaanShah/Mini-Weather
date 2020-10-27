@@ -87,11 +87,6 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
         binding.weatherFab.visibility = View.GONE
     }
 
-    fun hideLoading() {
-        binding.weatherProgress.visibility = View.GONE
-        binding.weatherFab.visibility = View.VISIBLE
-    }
-
     override fun showNetworkError() {
         binding.weatherErrorMessageText.text = getString(R.string.error_network_request)
         showErrorCard()
@@ -125,6 +120,11 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
         hideLoading()
         binding.weatherErrorMessageCard.visibility = View.VISIBLE
         binding.weatherCard.weatherCardLayout.visibility = View.GONE
+    }
+
+    private fun hideLoading() {
+        binding.weatherProgress.visibility = View.GONE
+        binding.weatherFab.visibility = View.VISIBLE
     }
 
 }
