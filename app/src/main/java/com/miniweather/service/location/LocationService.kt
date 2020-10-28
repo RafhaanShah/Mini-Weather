@@ -10,6 +10,7 @@ import com.miniweather.model.Location
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.coroutines.resume
 
 class LocationService @Inject constructor(private val fusedLocationProviderClient: FusedLocationProviderClient) {

@@ -30,7 +30,6 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
 
     @Mock
     private lateinit var mockPresenter: WeatherContract.Presenter
-
     @Mock
     private lateinit var mockImageService: ImageService
 

@@ -10,12 +10,13 @@ import com.miniweather.ui.base.BasePresenter
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Named
 
 class WeatherPresenter @Inject constructor(
     private val locationService: LocationService,
     private val timeService: TimeService,
     private val weatherService: WeatherService,
-    dispatcher: CoroutineDispatcher
+    @Named("Main") dispatcher: CoroutineDispatcher
 ) : BasePresenter<WeatherContract.View>(), WeatherContract.Presenter {
 
     private val job = Job()

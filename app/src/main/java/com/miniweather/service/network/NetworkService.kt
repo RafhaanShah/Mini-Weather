@@ -6,10 +6,11 @@ import com.miniweather.model.WeatherResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Named
 
 class NetworkService @Inject constructor(
     private val apiService: WeatherApi,
-    private val dispatcher: CoroutineDispatcher
+    @Named("IO") private val dispatcher: CoroutineDispatcher
 ) {
 
     suspend fun getWeather(location: Location): DataResult<WeatherResponse> = makeRequest {

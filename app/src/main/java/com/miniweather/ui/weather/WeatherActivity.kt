@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.miniweather.R
-import com.miniweather.app.BaseApplication
 import com.miniweather.databinding.ActivityWeatherBinding
 import com.miniweather.model.Weather
 import com.miniweather.service.network.ImageService
 import com.miniweather.ui.base.BaseActivity
+import com.miniweather.ui.base.injector
 import javax.inject.Inject
 
 class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Presenter>(), WeatherContract.View {
@@ -34,7 +34,7 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
     }
 
     override fun injectDependencies() {
-        (application as BaseApplication).getAppComponent().inject(this)
+        injector.inject(this)
     }
 
     override fun bindView() {

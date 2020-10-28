@@ -1,7 +1,6 @@
 package com.miniweather.app
 
 import com.miniweather.di.AppComponent
-import com.miniweather.di.AppModule
 import com.miniweather.di.DaggerAppComponent
 
 class WeatherApplication : BaseApplication() {
@@ -10,9 +9,9 @@ class WeatherApplication : BaseApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        appComponent = DaggerAppComponent.builder()
-            .appModule(AppModule(this))
-            .build()
+        appComponent = DaggerAppComponent
+            .factory()
+            .create(this)
     }
 
     override fun getAppComponent(): AppComponent {

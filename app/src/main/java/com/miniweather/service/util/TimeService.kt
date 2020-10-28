@@ -1,8 +1,10 @@
 package com.miniweather.service.util
 
 import android.text.format.DateUtils
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class TimeService {
+class TimeService @Inject constructor() {
 
     fun getCurrentTime(): Long {
         return System.currentTimeMillis()

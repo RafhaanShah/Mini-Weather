@@ -7,14 +7,18 @@ import kotlinx.coroutines.Dispatchers
 import javax.inject.Named
 
 @Module
-class CoroutineModule {
+interface CoroutineModule {
 
-    @Provides
-    @Named("Main")
-    fun provideMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
+    companion object {
 
-    @Provides
-    @Named("IO")
-    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+        @Provides
+        @Named("Main")
+        fun provideMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
+
+        @Provides
+        @Named("IO")
+        fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+    }
 
 }

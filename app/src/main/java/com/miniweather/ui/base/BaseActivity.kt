@@ -1,8 +1,10 @@
 package com.miniweather.ui.base
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
+import com.miniweather.app.BaseApplication
 
 abstract class BaseActivity<V : BaseContract.View, P : BaseContract.Presenter<V>> : AppCompatActivity(),
                                                                                     BaseContract.View {
@@ -28,3 +30,5 @@ abstract class BaseActivity<V : BaseContract.View, P : BaseContract.Presenter<V>
     abstract fun bindView()
 
 }
+
+val Activity.injector get() = (application as BaseApplication).getAppComponent()

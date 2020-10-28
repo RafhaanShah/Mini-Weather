@@ -4,13 +4,15 @@ import com.miniweather.ui.weather.WeatherContract
 import dagger.Module
 import dagger.Provides
 import org.mockito.Mockito
-import javax.inject.Singleton
 
 @Module
-class TestPresenterModule {
+interface TestPresenterModule {
 
-    @Singleton
-    @Provides
-    fun provideWeatherPresenter(): WeatherContract.Presenter = Mockito.mock(WeatherContract.Presenter::class.java)
+    companion object {
+
+        @Provides
+        fun provideWeatherPresenter(): WeatherContract.Presenter = Mockito.mock(WeatherContract.Presenter::class.java)
+
+    }
 
 }

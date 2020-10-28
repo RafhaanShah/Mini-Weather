@@ -1,24 +1,14 @@
 package com.miniweather.di
 
-import com.miniweather.service.location.LocationService
-import com.miniweather.service.util.TimeService
-import com.miniweather.service.weather.WeatherService
 import com.miniweather.ui.weather.WeatherContract
 import com.miniweather.ui.weather.WeatherPresenter
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import kotlinx.coroutines.CoroutineDispatcher
-import javax.inject.Named
 
 @Module
-class PresenterModule {
+interface PresenterModule {
 
-    @Provides
-    fun provideWeatherPresenter(
-        locationService: LocationService,
-        timeService: TimeService,
-        weatherService: WeatherService,
-        @Named("Main") dispatcher: CoroutineDispatcher
-    ): WeatherContract.Presenter = WeatherPresenter(locationService, timeService, weatherService, dispatcher)
+    @Binds
+    fun provideWeatherPresenter(weatherPresenter: WeatherPresenter): WeatherContract.Presenter
 
 }

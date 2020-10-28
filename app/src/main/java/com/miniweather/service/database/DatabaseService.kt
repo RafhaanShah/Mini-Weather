@@ -5,10 +5,11 @@ import com.miniweather.model.Weather
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Named
 
 class DatabaseService @Inject constructor(
     private val weatherDao: WeatherDao,
-    private val dispatcher: CoroutineDispatcher
+    @Named("IO") private val dispatcher: CoroutineDispatcher
 ) {
 
     suspend fun getCachedData(location: Location, maxAge: Long): List<Weather> =
