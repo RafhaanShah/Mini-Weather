@@ -56,13 +56,13 @@ class WeatherPresenterTest : BaseTest() {
     }
 
     @Test
-    fun whenPresenterStarts_andPermissionsGranted_fetchesDataAndUpdatesView() = runBlockingTest {
+    fun whenViewAttached_andPermissionsGranted_fetchesDataAndUpdatesView() = runBlockingTest {
         whenever(mockView.hasLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
         whenever(mockWeatherService.getWeather(any())).thenReturn(DataResult.Success(fakeWeather))
         whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
 
-        presenter.onStart(mockView)
+        presenter.onAttachView(mockView)
 
         verify(mockView).hasLocationPermission()
         verify(mockView).showLoading()
@@ -72,10 +72,10 @@ class WeatherPresenterTest : BaseTest() {
     }
 
     @Test
-    fun whenPresenterStarts_andPermissionsNotGranted_requestsPermission() {
+    fun whenViewAttached_andPermissionsNotGranted_requestsPermission() {
         whenever(mockView.hasLocationPermission()).thenReturn(false)
 
-        presenter.onStart(mockView)
+        presenter.onAttachView(mockView)
 
         verify(mockView).requestLocationPermission()
     }
@@ -122,7 +122,7 @@ class WeatherPresenterTest : BaseTest() {
         whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
         whenever(mockTimeService.getRelativeTimeString(any())).thenReturn("12 Hours ago")
 
-        presenter.onStart(mockView)
+        presenter.onAttachView(mockView)
 
         verify(mockView).showWeather(fakeWeather)
         verify(mockView).showLastUpdatedInfo(fakeWeather.location, "12 Hours ago")
@@ -135,7 +135,7 @@ class WeatherPresenterTest : BaseTest() {
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
         whenever(mockWeatherService.getWeather(any())).thenReturn(DataResult.Failure(Exception("Something went wrong")))
 
-        presenter.onStart(mockView)
+        presenter.onAttachView(mockView)
 
         verify(mockView).showNetworkError()
     }
@@ -145,14 +145,14 @@ class WeatherPresenterTest : BaseTest() {
         whenever(mockView.hasLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).doThrow(mock<TimeoutCancellationException>())
 
-        presenter.onStart(mockView)
+        presenter.onAttachView(mockView)
 
         verify(mockView).showLocationError()
     }
 
     private fun setupWithLocationDenied() {
         whenever(mockView.hasLocationPermission()).thenReturn(false)
-        presenter.onStart(mockView)
+        presenter.onAttachView(mockView)
         clearInvocations(mockView)
     }
 

@@ -6,6 +6,7 @@ import com.miniweather.model.Weather
 import com.miniweather.service.location.LocationService
 import com.miniweather.service.util.TimeService
 import com.miniweather.service.weather.WeatherService
+import com.miniweather.ui.base.BasePresenter
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -15,23 +16,22 @@ class WeatherPresenter @Inject constructor(
     private val timeService: TimeService,
     private val weatherService: WeatherService,
     dispatcher: CoroutineDispatcher
-) : WeatherContract.Presenter {
+) : BasePresenter<WeatherContract.View>(), WeatherContract.Presenter {
 
     private val job = Job()
     private val scope = CoroutineScope(job + dispatcher)
-    private var view: WeatherContract.View? = null
 
-    override fun onStart(view: WeatherContract.View) {
-        this.view = view
+    override fun onAttachView(view: WeatherContract.View) {
+        super.onAttachView(view)
 
         if (checkPermission()) {
             getWeather()
         }
     }
 
-    override fun onStop() {
+    override fun onDetachView() {
         job.cancel()
-        view = null
+        super.onDetachView()
     }
 
     override fun onRefreshButtonClicked() {
@@ -47,6 +47,7 @@ class WeatherPresenter @Inject constructor(
     override fun onLocationPermissionDenied() {
         view?.showPermissionError()
     }
+
 
     private fun checkPermission(): Boolean {
         return if (view?.hasLocationPermission() == true) {

@@ -3,46 +3,43 @@ package com.miniweather.ui.weather
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.miniweather.R
-import com.miniweather.app.BaseDaggerApplication
+import com.miniweather.app.BaseApplication
 import com.miniweather.databinding.ActivityWeatherBinding
 import com.miniweather.model.Weather
 import com.miniweather.service.network.ImageService
-import kotlinx.android.synthetic.main.view_weather.view.*
+import com.miniweather.ui.base.BaseActivity
 import javax.inject.Inject
 
-class WeatherActivity : AppCompatActivity(), WeatherContract.View {
+class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Presenter>(), WeatherContract.View {
 
     companion object {
         const val PERMISSION_CODE_LOCATION = 100
     }
 
-    private lateinit var binding: ActivityWeatherBinding
-
     @Inject
     lateinit var imageService: ImageService
-
     @Inject
-    lateinit var presenter: WeatherContract.Presenter
+    override lateinit var presenter: WeatherContract.Presenter
+
+    override lateinit var binding: ActivityWeatherBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (application as BaseDaggerApplication).getAppComponent().inject(this)
         super.onCreate(savedInstanceState)
-        binding = ActivityWeatherBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        presenter.onStart(this)
 
         binding.weatherFab.setOnClickListener {
             presenter.onRefreshButtonClicked()
         }
     }
 
-    override fun onDestroy() {
-        presenter.onStop()
-        super.onDestroy()
+    override fun injectDependencies() {
+        (application as BaseApplication).getAppComponent().inject(this)
+    }
+
+    override fun bindView() {
+        binding = ActivityWeatherBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 
     override fun showWeather(weather: Weather) {
@@ -57,7 +54,7 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
         binding.weatherCard.weatherWindDirectionText.text = weather.windDirection
         binding.weatherCard.weatherLastUpdatedText.visibility = View.GONE
 
-        imageService.loadImage(this, binding.weatherLayout.weather_icon, weather.iconUrl)
+        imageService.loadImage(this, binding.weatherCard.weatherIcon, weather.iconUrl)
     }
 
     override fun showLastUpdatedInfo(location: String, time: String) {
@@ -126,5 +123,6 @@ class WeatherActivity : AppCompatActivity(), WeatherContract.View {
         binding.weatherProgress.visibility = View.GONE
         binding.weatherFab.visibility = View.VISIBLE
     }
+
 
 }

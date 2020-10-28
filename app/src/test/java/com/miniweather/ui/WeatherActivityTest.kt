@@ -54,7 +54,7 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
     }
 
     @Test
-    fun whenUpdateWeatherCalled_updatesWeatherCard() {
+    fun whenShowWeather_updatesWeatherCard() {
         scenario.onActivity { activity ->
             activity.showWeather(fakeWeather)
         }

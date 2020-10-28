@@ -1,6 +1,6 @@
 package com.miniweather.di
 
-import com.miniweather.app.BaseDaggerApplication
+import com.miniweather.app.BaseApplication
 import com.miniweather.ui.weather.WeatherActivity
 import dagger.Component
 import javax.inject.Singleton
@@ -16,7 +16,7 @@ import javax.inject.Singleton
 )
 interface AppComponent {
 
-    fun inject(application: BaseDaggerApplication)
+    fun inject(application: BaseApplication)
 
     fun inject(activity: WeatherActivity)
 

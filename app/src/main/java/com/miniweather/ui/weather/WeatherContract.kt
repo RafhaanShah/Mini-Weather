@@ -1,10 +1,11 @@
 package com.miniweather.ui.weather
 
 import com.miniweather.model.Weather
+import com.miniweather.ui.base.BaseContract
 
-interface WeatherContract {
+interface WeatherContract : BaseContract {
 
-    interface View {
+    interface View : BaseContract.View {
         fun hasLocationPermission(): Boolean
         fun requestLocationPermission()
         fun showLoading()
@@ -15,9 +16,7 @@ interface WeatherContract {
         fun showLocationError()
     }
 
-    interface Presenter {
-        fun onStart(view: View)
-        fun onStop()
+    interface Presenter : BaseContract.Presenter<View> {
         fun onRefreshButtonClicked()
         fun onLocationPermissionGranted()
         fun onLocationPermissionDenied()

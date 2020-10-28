@@ -4,7 +4,7 @@ import com.miniweather.di.AppComponent
 import com.miniweather.di.AppModule
 import com.miniweather.di.DaggerAppComponent
 
-class WeatherApplication : BaseDaggerApplication() {
+class WeatherApplication : BaseApplication() {
 
     private lateinit var appComponent: AppComponent
 
