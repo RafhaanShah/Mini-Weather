@@ -70,7 +70,7 @@ android {
 }
 
 dependencies {
-    def coroutines_version = "1.4.0-M1"
+    def coroutines_version = "1.4.0"
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0'
@@ -81,7 +81,7 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.3'
 
     // Dependency injection
     def dagger_version = "2.29.1"
