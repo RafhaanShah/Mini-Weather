@@ -1,11 +1,10 @@
 package com.miniweather.ui
 
-import android.app.Application
-import android.content.pm.PackageManager
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.rule.GrantPermissionRule
 import com.miniweather.R
 import com.miniweather.service.network.ImageService
 import com.miniweather.testutil.BaseActivityTest
@@ -14,19 +13,24 @@ import com.miniweather.ui.weather.WeatherActivity
 import com.miniweather.ui.weather.WeatherContract
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.not
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
-import org.robolectric.Shadows
 
-
+@ExperimentalCoroutinesApi
 class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::class.java) {
+
+    @get:Rule
+    val grantPermissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
     @Mock
     private lateinit var mockPresenter: WeatherContract.Presenter
@@ -124,58 +128,12 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
     }
 
     @Test
-    fun whenLocationPermissionGranted_callsPresenter() {
+    fun whenRequestLocationPermission_andPermissionGranted_returnsTrue() = runBlockingTest {
         scenario.onActivity { activity ->
-            activity.onRequestPermissionsResult(
-                WeatherActivity.PERMISSION_CODE_LOCATION,
-                arrayOf(), intArrayOf(PackageManager.PERMISSION_GRANTED)
-            )
-        }
-        verify(mockPresenter).onLocationPermissionGranted()
-    }
-
-    @Test
-    fun whenLocationPermissionDenied_callsPresenter() {
-        scenario.onActivity { activity ->
-            activity.onRequestPermissionsResult(
-                WeatherActivity.PERMISSION_CODE_LOCATION,
-                arrayOf(), intArrayOf(PackageManager.PERMISSION_DENIED)
-            )
-        }
-        verify(mockPresenter).onLocationPermissionDenied()
-    }
-
-    @Test
-    fun whenRequestLocationPermission_requestsPermission() {
-        scenario.onActivity { activity ->
-            val spy = spy(activity)
-            spy.requestLocationPermission()
-            verify(spy).requestPermissions(
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                WeatherActivity.PERMISSION_CODE_LOCATION
-            )
-        }
-    }
-
-    @Test
-    fun whenHasLocationPermission_andPermissionDenied_returnsFalse() {
-        val app = Shadows.shadowOf(context as Application)
-        app.denyPermissions(android.Manifest.permission.ACCESS_FINE_LOCATION)
-
-        scenario.onActivity { activity ->
-            val actual = activity.hasLocationPermission()
-            assertFalse(actual)
-        }
-    }
-
-    @Test
-    fun whenHasLocationPermission_andPermissionGranted_returnsTrue() {
-        val app = Shadows.shadowOf(context as Application)
-        app.grantPermissions(android.Manifest.permission.ACCESS_FINE_LOCATION)
-
-        scenario.onActivity { activity ->
-            val actual = activity.hasLocationPermission()
-            assertTrue(actual)
+            launch {
+                val actual = activity.requestLocationPermission()
+                assertTrue(actual)
+            }
         }
     }
 

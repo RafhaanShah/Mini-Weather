@@ -6,8 +6,7 @@ import com.miniweather.ui.base.BaseContract
 interface WeatherContract : BaseContract {
 
     interface View : BaseContract.View {
-        fun hasLocationPermission(): Boolean
-        fun requestLocationPermission()
+        suspend fun requestLocationPermission(): Boolean
         fun showLoading()
         fun showWeather(weather: Weather)
         fun showLastUpdatedInfo(location: String, time: String)
@@ -18,8 +17,6 @@ interface WeatherContract : BaseContract {
 
     interface Presenter : BaseContract.Presenter<View> {
         fun onRefreshButtonClicked()
-        fun onLocationPermissionGranted()
-        fun onLocationPermissionDenied()
     }
 
 }

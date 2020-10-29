@@ -24,10 +24,7 @@ class WeatherPresenter @Inject constructor(
 
     override fun onAttachView(view: WeatherContract.View) {
         super.onAttachView(view)
-
-        if (checkPermission()) {
-            getWeather()
-        }
+        checkLocationPermission()
     }
 
     override fun onDetachView() {
@@ -36,40 +33,30 @@ class WeatherPresenter @Inject constructor(
     }
 
     override fun onRefreshButtonClicked() {
-        if (checkPermission()) {
-            getWeather()
-        }
+        checkLocationPermission()
     }
 
-    override fun onLocationPermissionGranted() {
-        getWeather()
-    }
-
-    override fun onLocationPermissionDenied() {
-        view?.showPermissionError()
-    }
-
-
-    private fun checkPermission(): Boolean {
-        return if (view?.hasLocationPermission() == true) {
-            true
-        } else {
-            view?.requestLocationPermission()
-            false
-        }
-    }
-
-    private fun getWeather() {
-        view?.showLoading()
+    private fun checkLocationPermission() {
         scope.launch {
-            try {
-                when (val weatherResult = weatherService.getWeather(getLocation())) {
-                    is DataResult.Success -> showWeather(weatherResult.data)
-                    is DataResult.Failure -> view?.showNetworkError()
+            view?.let { v ->
+                if (v.requestLocationPermission()) {
+                    getWeather()
+                } else {
+                    view?.showPermissionError()
                 }
-            } catch (e: TimeoutCancellationException) {
-                view?.showLocationError()
             }
+        }
+    }
+
+    private suspend fun getWeather() {
+        view?.showLoading()
+        try {
+            when (val weatherResult = weatherService.getWeather(getLocation())) {
+                is DataResult.Success -> showWeather(weatherResult.data)
+                is DataResult.Failure -> view?.showNetworkError()
+            }
+        } catch (e: TimeoutCancellationException) {
+            view?.showLocationError()
         }
     }
 

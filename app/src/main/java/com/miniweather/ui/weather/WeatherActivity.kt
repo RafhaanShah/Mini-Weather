@@ -1,9 +1,8 @@
 package com.miniweather.ui.weather
 
-import android.content.pm.PackageManager
+import android.Manifest.permission
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import com.miniweather.R
 import com.miniweather.databinding.ActivityWeatherBinding
 import com.miniweather.model.Weather
@@ -14,12 +13,9 @@ import javax.inject.Inject
 
 class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Presenter>(), WeatherContract.View {
 
-    companion object {
-        const val PERMISSION_CODE_LOCATION = 100
-    }
-
     @Inject
     lateinit var imageService: ImageService
+
     @Inject
     override lateinit var presenter: WeatherContract.Presenter
 
@@ -63,18 +59,8 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
             getString(R.string.weather_last_updated, time, location)
     }
 
-    override fun hasLocationPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            android.Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    override fun requestLocationPermission() {
-        requestPermissions(
-            arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-            PERMISSION_CODE_LOCATION
-        )
+    override suspend fun requestLocationPermission(): Boolean {
+        return checkAndRequestPermission(permission.ACCESS_FINE_LOCATION)
     }
 
     override fun showLoading() {
@@ -99,20 +85,6 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
         showErrorCard()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == PERMISSION_CODE_LOCATION) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                presenter.onLocationPermissionGranted()
-            } else {
-                presenter.onLocationPermissionDenied()
-            }
-        }
-    }
-
     private fun showErrorCard() {
         hideLoading()
         binding.weatherErrorMessageCard.visibility = View.VISIBLE
@@ -123,6 +95,5 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
         binding.weatherProgress.visibility = View.GONE
         binding.weatherFab.visibility = View.VISIBLE
     }
-
 
 }
