@@ -1,12 +1,13 @@
 package com.miniweather.ui
 
+import android.Manifest
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.rule.GrantPermissionRule
 import com.miniweather.R
 import com.miniweather.service.network.ImageService
+import com.miniweather.service.permissions.PermissionService
 import com.miniweather.testutil.BaseActivityTest
 import com.miniweather.testutil.FakeDataProvider
 import com.miniweather.ui.weather.WeatherActivity
@@ -14,6 +15,7 @@ import com.miniweather.ui.weather.WeatherContract
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
@@ -21,21 +23,18 @@ import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.not
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 
 @ExperimentalCoroutinesApi
 class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::class.java) {
 
-    @get:Rule
-    val grantPermissionRule: GrantPermissionRule =
-        GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
-
     @Mock
     private lateinit var mockPresenter: WeatherContract.Presenter
     @Mock
     private lateinit var mockImageService: ImageService
+    @Mock
+    private lateinit var mockPermissionsService: PermissionService
 
     private val fakeWeather = FakeDataProvider.provideFakeWeather()
 
@@ -45,6 +44,7 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
         scenario.onActivity { activity ->
             activity.presenter = mockPresenter
             activity.imageService = mockImageService
+            activity.permissionService = mockPermissionsService
         }
     }
 
@@ -128,11 +128,14 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
     }
 
     @Test
-    fun whenRequestLocationPermission_andPermissionGranted_returnsTrue() = runBlockingTest {
+    fun whenRequestLocationPermission_callsPermissionService() = runBlockingTest {
+        whenever(mockPermissionsService.requestPermission(any(), any())).thenReturn(true)
+
         scenario.onActivity { activity ->
             launch {
                 val actual = activity.requestLocationPermission()
                 assertTrue(actual)
+                verify(mockPermissionsService).requestPermission(any(), eq(Manifest.permission.ACCESS_FINE_LOCATION))
             }
         }
     }

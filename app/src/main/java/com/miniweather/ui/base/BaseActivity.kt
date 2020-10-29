@@ -3,25 +3,22 @@ package com.miniweather.ui.base
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
 import com.miniweather.app.BaseApplication
-import kotlinx.coroutines.CompletableDeferred
+import com.miniweather.service.permissions.PermissionService
+import javax.inject.Inject
 
 abstract class BaseActivity<V : BaseContract.View, P : BaseContract.Presenter<V>> : AppCompatActivity(),
                                                                                     BaseContract.View {
 
-    abstract val presenter: P
+    @Inject
+    lateinit var permissionService: PermissionService
 
     protected abstract val binding: ViewBinding
 
-    private lateinit var permissionCompletable: CompletableDeferred<Boolean>
-    private val permissionRequest =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            permissionCompletable.complete(granted)
-        }
+    abstract val presenter: P
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +30,7 @@ abstract class BaseActivity<V : BaseContract.View, P : BaseContract.Presenter<V>
 
     override fun onDestroy() {
         presenter.onDetachView()
+        permissionService.unregister()
         super.onDestroy()
     }
 
@@ -53,9 +51,7 @@ abstract class BaseActivity<V : BaseContract.View, P : BaseContract.Presenter<V>
     }
 
     private suspend fun requestPermission(permission: String): Boolean {
-        permissionCompletable = CompletableDeferred()
-        permissionRequest.launch(permission)
-        return permissionCompletable.await()
+        return permissionService.requestPermission(activityResultRegistry, permission)
     }
 
 }
