@@ -2,7 +2,7 @@ package com.miniweather.service.database
 
 import androidx.room.Room
 import com.miniweather.testutil.BaseInstrumentedTest
-import com.miniweather.testutil.FakeDataProvider
+import com.miniweather.testutil.fakeWeather
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -20,8 +20,6 @@ class WeatherDaoTest : BaseInstrumentedTest() {
     private lateinit var database: AppDatabase
 
     private val testDispatcher = TestCoroutineDispatcher()
-
-    private val fakeWeather = FakeDataProvider.provideFakeWeather()
 
     @Before
     fun setup() {

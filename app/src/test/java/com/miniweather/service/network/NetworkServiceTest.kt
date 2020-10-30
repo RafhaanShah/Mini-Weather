@@ -2,7 +2,8 @@ package com.miniweather.service.network
 
 import com.miniweather.model.DataResult
 import com.miniweather.testutil.BaseTest
-import com.miniweather.testutil.FakeDataProvider
+import com.miniweather.testutil.fakeLocation
+import com.miniweather.testutil.fakeWeatherResponse
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -25,9 +26,6 @@ class NetworkServiceTest : BaseTest() {
     private lateinit var networkService: NetworkService
 
     private val testDispatcher = TestCoroutineDispatcher()
-
-    private val fakeLocation = FakeDataProvider.provideFakeLocation()
-    private val fakeWeatherResponse = FakeDataProvider.provideFakeWeatherResponse()
 
     @Before
     fun setup() {

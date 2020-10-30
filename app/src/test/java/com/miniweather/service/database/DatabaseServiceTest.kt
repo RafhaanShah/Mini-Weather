@@ -1,8 +1,9 @@
 package com.miniweather.service.database
 
-import com.miniweather.model.Location
 import com.miniweather.testutil.BaseTest
-import com.miniweather.testutil.FakeDataProvider
+import com.miniweather.testutil.fakeLocation
+import com.miniweather.testutil.fakeTimestamp
+import com.miniweather.testutil.fakeWeather
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -24,10 +25,6 @@ class DatabaseServiceTest : BaseTest() {
     private lateinit var databaseService: DatabaseService
 
     private val testDispatcher = TestCoroutineDispatcher()
-
-    private val fakeLocation = Location(1.111, 2.222)
-    private val fakeTimestamp = 1000L
-    private val fakeWeather = FakeDataProvider.provideFakeWeather()
 
     @Before
     fun setup() {

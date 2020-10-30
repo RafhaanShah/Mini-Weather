@@ -1,12 +1,13 @@
 package com.miniweather.ui
 
 import com.miniweather.model.DataResult
-import com.miniweather.model.Location
 import com.miniweather.service.location.LocationService
 import com.miniweather.service.util.TimeService
 import com.miniweather.service.weather.WeatherService
 import com.miniweather.testutil.BaseTest
-import com.miniweather.testutil.FakeDataProvider
+import com.miniweather.testutil.fakeLocation
+import com.miniweather.testutil.fakeTimestamp
+import com.miniweather.testutil.fakeWeather
 import com.miniweather.ui.weather.WeatherContract
 import com.miniweather.ui.weather.WeatherPresenter
 import com.nhaarman.mockitokotlin2.*
@@ -36,9 +37,6 @@ class WeatherPresenterTest : BaseTest() {
 
     private val testDispatcher = TestCoroutineDispatcher()
 
-    private val fakeTimestamp: Long = 1000L
-    private val fakeLocation = Location(1.111, 2.222)
-    private val fakeWeather = FakeDataProvider.provideFakeWeather()
 
     @Before
     fun setup() {

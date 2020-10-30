@@ -5,8 +5,7 @@ import com.miniweather.service.database.DatabaseService
 import com.miniweather.service.network.NetworkService
 import com.miniweather.service.util.StringResourceService
 import com.miniweather.service.util.TimeService
-import com.miniweather.testutil.BaseTest
-import com.miniweather.testutil.FakeDataProvider
+import com.miniweather.testutil.*
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
@@ -32,13 +31,6 @@ class WeatherServiceTest : BaseTest() {
     private lateinit var mockStringResourceService: StringResourceService
 
     private lateinit var weatherService: WeatherService
-
-    private val fakeTimestamp = 1000L
-    private val fakeWeather = FakeDataProvider.provideFakeWeather()
-    private val fakeLocation = FakeDataProvider.provideFakeLocation()
-    private val fakeLocationRounded = FakeDataProvider.provideFakeLocationRounded()
-    private val fakeWeatherResponse = FakeDataProvider.provideFakeWeatherResponse()
-    private val fakeCardinalDirections = FakeDataProvider.provideFakeCardinalDirections()
 
     @Before
     fun setup() {

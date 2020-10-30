@@ -9,7 +9,7 @@ import com.miniweather.R
 import com.miniweather.service.network.ImageService
 import com.miniweather.service.permissions.PermissionService
 import com.miniweather.testutil.BaseActivityTest
-import com.miniweather.testutil.FakeDataProvider
+import com.miniweather.testutil.fakeWeather
 import com.miniweather.ui.weather.WeatherActivity
 import com.miniweather.ui.weather.WeatherContract
 import com.nhaarman.mockitokotlin2.any
@@ -35,8 +35,6 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
     private lateinit var mockImageService: ImageService
     @Mock
     private lateinit var mockPermissionsService: PermissionService
-
-    private val fakeWeather = FakeDataProvider.provideFakeWeather()
 
     @Before
     override fun setup() {
