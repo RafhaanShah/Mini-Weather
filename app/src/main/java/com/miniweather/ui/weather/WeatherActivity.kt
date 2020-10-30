@@ -41,22 +41,13 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
     override fun showWeather(weather: Weather) {
         hideLoading()
 
-        binding.weatherCard.weatherCardLayout.visibility = View.VISIBLE
-        binding.weatherCard.weatherConditionText.text = weather.condition
-        binding.weatherCard.weatherTemperatureText.text =
-            getString(R.string.weather_temperature_text, weather.temperature)
-        binding.weatherCard.weatherWindSpeedText.text =
-            getString(R.string.weather_wind_speed_text, weather.windSpeed)
-        binding.weatherCard.weatherWindDirectionText.text = weather.windDirection
-        binding.weatherCard.weatherLastUpdatedText.visibility = View.GONE
-
-        imageService.loadImage(this, binding.weatherCard.weatherIcon, weather.iconUrl)
+        binding.weatherCard.visibility = View.VISIBLE
+        binding.weatherCard.showWeather(weather)
+        binding.weatherCard.updateIcon(imageService, weather.iconUrl)
     }
 
     override fun showLastUpdatedInfo(location: String, time: String) {
-        binding.weatherCard.weatherLastUpdatedText.visibility = View.VISIBLE
-        binding.weatherCard.weatherLastUpdatedText.text =
-            getString(R.string.weather_last_updated, time, location)
+        binding.weatherCard.showLastUpdatedInfo(getString(R.string.weather_last_updated, time, location))
     }
 
     override suspend fun requestLocationPermission(): Boolean {
@@ -65,7 +56,7 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
 
     override fun showLoading() {
         binding.weatherProgress.visibility = View.VISIBLE
-        binding.weatherCard.weatherCardLayout.visibility = View.GONE
+        binding.weatherCard.visibility = View.GONE
         binding.weatherErrorMessageCard.visibility = View.GONE
         binding.weatherFab.visibility = View.GONE
     }
@@ -88,7 +79,7 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
     private fun showErrorCard() {
         hideLoading()
         binding.weatherErrorMessageCard.visibility = View.VISIBLE
-        binding.weatherCard.weatherCardLayout.visibility = View.GONE
+        binding.weatherCard.visibility = View.GONE
     }
 
     private fun hideLoading() {

@@ -100,7 +100,8 @@
             android:layout_height="40dp"
             android:contentDescription="@string/weather_icon"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_reload_alert" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

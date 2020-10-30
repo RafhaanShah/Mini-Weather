@@ -1,8 +1,6 @@
 package com.miniweather.service.database
 
-import android.content.Context
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import com.miniweather.testutil.BaseInstrumentedTest
 import com.miniweather.testutil.FakeDataProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,7 +25,6 @@ class WeatherDaoTest : BaseInstrumentedTest() {
 
     @Before
     fun setup() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
         database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
             .setTransactionExecutor(testDispatcher.asExecutor())
             .setQueryExecutor(testDispatcher.asExecutor())

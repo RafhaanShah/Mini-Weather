@@ -16,6 +16,8 @@
 
     <string name="unknown">Unknown</string>
 
+    <string name="description_refresh_button">refresh button</string>
+
     <string-array name="directions">
         <item>North</item>
         <item>North East</item>
