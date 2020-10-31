@@ -34,8 +34,6 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
     @Mock
     private lateinit var mockPermissionsService: PermissionService
 
-    private val weatherPage = WeatherPage()
-
     @Before
     override fun setup() {
         super.setup()
@@ -52,7 +50,7 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
             activity.showWeather(fakeWeather)
         }
 
-        onPage(weatherPage) {
+        onPage(WeatherPage()) {
             shouldShowWeather(fakeWeather)
         }
 
@@ -65,7 +63,7 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
             activity.showWeather(fakeWeather)
         }
 
-        onPage(weatherPage) {
+        onPage(WeatherPage()) {
             pressRefresh()
         }
 
@@ -81,7 +79,7 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
             activity.showLastUpdatedInfo(fakeWeather.location, fakeTime)
         }
 
-        onPage(weatherPage) {
+        onPage(WeatherPage()) {
             shouldShowLastUpdated(fakeTime, fakeWeather.location)
         }
     }
@@ -92,7 +90,7 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
             activity.showLoading()
         }
 
-        onPage(weatherPage) {
+        onPage(WeatherPage()) {
             shouldShowLoading()
         }
     }
@@ -103,7 +101,7 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
             activity.showError(fakeError)
         }
 
-        onPage(weatherPage) {
+        onPage(WeatherPage()) {
             shouldShowErrorMessage(fakeError)
         }
     }

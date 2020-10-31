@@ -1,6 +1,8 @@
 package com.miniweather.testutil
 
 import com.miniweather.model.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 val fakeWeather = Weather(
     "Sunny",
@@ -45,3 +47,5 @@ val fakeCardinalDirections = arrayOf(
 const val fakeTimestamp: Long = 1000L
 
 const val fakeError = "Something went wrong"
+
+val fakeWeatherResponseJson by lazy { Json.encodeToString(fakeWeatherResponse) }
