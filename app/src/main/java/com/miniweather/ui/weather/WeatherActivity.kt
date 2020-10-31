@@ -24,7 +24,7 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.weatherFab.setOnClickListener {
+        binding.weatherRefreshButton.setOnClickListener {
             presenter.onRefreshButtonClicked()
         }
     }
@@ -58,21 +58,11 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
         binding.weatherProgress.visibility = View.VISIBLE
         binding.weatherCard.visibility = View.GONE
         binding.weatherErrorMessageCard.visibility = View.GONE
-        binding.weatherFab.visibility = View.GONE
+        binding.weatherRefreshButton.visibility = View.GONE
     }
 
-    override fun showNetworkError() {
-        binding.weatherErrorMessageText.text = getString(R.string.error_network_request)
-        showErrorCard()
-    }
-
-    override fun showPermissionError() {
-        binding.weatherErrorMessageText.text = getString(R.string.error_permission_location)
-        showErrorCard()
-    }
-
-    override fun showLocationError() {
-        binding.weatherErrorMessageText.text = getString(R.string.error_location_timeout)
+    override fun showError(error: String) {
+        binding.weatherErrorMessageText.text = error
         showErrorCard()
     }
 
@@ -84,7 +74,7 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
 
     private fun hideLoading() {
         binding.weatherProgress.visibility = View.GONE
-        binding.weatherFab.visibility = View.VISIBLE
+        binding.weatherRefreshButton.visibility = View.VISIBLE
     }
 
 }

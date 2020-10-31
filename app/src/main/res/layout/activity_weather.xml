@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/weather_layout"
+    android:id="@+id/weather_activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
@@ -65,13 +65,14 @@
         android:id="@+id/weather_progress"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/weather_toolbar_layout" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/weather_fab"
+        android:id="@+id/weather_refresh_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -79,8 +80,10 @@
         android:background="@color/colorAccent"
         android:contentDescription="@string/description_refresh_button"
         android:tint="@android:color/white"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_reload" />
+        app:srcCompat="@drawable/ic_reload"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

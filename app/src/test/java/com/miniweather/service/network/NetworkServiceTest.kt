@@ -2,6 +2,7 @@ package com.miniweather.service.network
 
 import com.miniweather.model.DataResult
 import com.miniweather.testutil.BaseTest
+import com.miniweather.testutil.fakeError
 import com.miniweather.testutil.fakeLocation
 import com.miniweather.testutil.fakeWeatherResponse
 import com.nhaarman.mockitokotlin2.any
@@ -49,7 +50,7 @@ class NetworkServiceTest : BaseTest() {
 
     @Test
     fun whenMakeWeatherRequest_andFailureResponse_returnsFailure() = runBlockingTest {
-        whenever(mockApiService.getWeather(any(), any())).thenThrow(RuntimeException("Something went wrong"))
+        whenever(mockApiService.getWeather(any(), any())).thenThrow(RuntimeException(fakeError))
 
         val actual = networkService.getWeather(fakeLocation)
 

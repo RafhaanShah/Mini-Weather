@@ -2,12 +2,10 @@ package com.miniweather.ui
 
 import com.miniweather.model.DataResult
 import com.miniweather.service.location.LocationService
+import com.miniweather.service.util.StringResourceService
 import com.miniweather.service.util.TimeService
 import com.miniweather.service.weather.WeatherService
-import com.miniweather.testutil.BaseTest
-import com.miniweather.testutil.fakeLocation
-import com.miniweather.testutil.fakeTimestamp
-import com.miniweather.testutil.fakeWeather
+import com.miniweather.testutil.*
 import com.miniweather.ui.weather.WeatherContract
 import com.miniweather.ui.weather.WeatherPresenter
 import com.nhaarman.mockitokotlin2.*
@@ -26,10 +24,16 @@ class WeatherPresenterTest : BaseTest() {
 
     @Mock
     private lateinit var mockLocationService: LocationService
+
     @Mock
     private lateinit var mockWeatherService: WeatherService
+
     @Mock
     private lateinit var mockTimeService: TimeService
+
+    @Mock
+    private lateinit var mockStringResourceService: StringResourceService
+
     @Mock
     private lateinit var mockView: WeatherContract.View
 
@@ -44,6 +48,7 @@ class WeatherPresenterTest : BaseTest() {
             mockLocationService,
             mockTimeService,
             mockWeatherService,
+            mockStringResourceService,
             testDispatcher
         )
     }
@@ -84,6 +89,7 @@ class WeatherPresenterTest : BaseTest() {
 
     @Test
     fun whenRefreshButtonClicked_andPermissionDenied_updatesView() = runBlockingTest {
+        whenever(mockStringResourceService.getString(any())).thenReturn(fakeError)
         setupWithLocationDenied()
 
         whenever(mockView.requestLocationPermission()).thenReturn(false)
@@ -91,46 +97,49 @@ class WeatherPresenterTest : BaseTest() {
         presenter.onRefreshButtonClicked()
 
         verify(mockView).requestLocationPermission()
-        verify(mockView).showPermissionError()
+        verify(mockView).showError(fakeError)
         verifyZeroInteractions(mockLocationService)
     }
 
     @Test
     fun whenWeatherServiceReturnsCachedData_updatesView() = runBlockingTest {
         val fakeWeather = fakeWeather.copy(timestamp = fakeTimestamp - TimeUnit.MINUTES.toMillis(10))
+        val fakeTime = "12 hours ago"
 
         whenever(mockView.requestLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
         whenever(mockWeatherService.getWeather(any())).thenReturn(DataResult.Success(fakeWeather))
         whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
-        whenever(mockTimeService.getRelativeTimeString(any())).thenReturn("12 Hours ago")
+        whenever(mockTimeService.getRelativeTimeString(any())).thenReturn(fakeTime)
 
         presenter.onAttachView(mockView)
 
         verify(mockView).showWeather(fakeWeather)
-        verify(mockView).showLastUpdatedInfo(fakeWeather.location, "12 Hours ago")
+        verify(mockView).showLastUpdatedInfo(fakeWeather.location, fakeTime)
         verify(mockTimeService).getRelativeTimeString(fakeWeather.timestamp)
     }
 
     @Test
     fun whenWeatherServiceFails_updatesView() = runBlockingTest {
+        whenever(mockStringResourceService.getString(any())).thenReturn(fakeError)
         whenever(mockView.requestLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
-        whenever(mockWeatherService.getWeather(any())).thenReturn(DataResult.Failure(Exception("Something went wrong")))
+        whenever(mockWeatherService.getWeather(any())).thenReturn(DataResult.Failure(Exception(fakeError)))
 
         presenter.onAttachView(mockView)
 
-        verify(mockView).showNetworkError()
+        verify(mockView).showError(fakeError)
     }
 
     @Test
     fun whenLocationServiceTimesOut_updatesView() = runBlockingTest {
+        whenever(mockStringResourceService.getString(any())).thenReturn(fakeError)
         whenever(mockView.requestLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).doThrow(mock<TimeoutCancellationException>())
 
         presenter.onAttachView(mockView)
 
-        verify(mockView).showLocationError()
+        verify(mockView).showError(fakeError)
     }
 
     private suspend fun setupWithLocationDenied() {

@@ -66,7 +66,7 @@ class WeatherServiceTest : BaseTest() {
     @Test
     fun whenGetWeather_andNetworkServiceFails_andValidCacheExists_returnsWeather() = runBlockingTest {
         whenever(mockNetworkService.getWeather(any()))
-            .thenReturn(DataResult.Failure(Exception("Something went wrong")))
+            .thenReturn(DataResult.Failure(Exception(fakeError)))
         whenever(mockDatabaseService.getCachedData(any(), any()))
             .thenReturn(listOf(fakeWeather))
 
@@ -94,7 +94,7 @@ class WeatherServiceTest : BaseTest() {
     @Test
     fun whenGetWeather_andNetworkServiceFails_andNoValidCache_returnsFailure() = runBlockingTest {
         whenever(mockNetworkService.getWeather(any()))
-            .thenReturn(DataResult.Failure(Exception("Something went wrong")))
+            .thenReturn(DataResult.Failure(Exception(fakeError)))
         whenever(mockDatabaseService.getCachedData(any(), any()))
             .thenReturn(emptyList())
 

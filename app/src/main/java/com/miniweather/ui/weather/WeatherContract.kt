@@ -10,9 +10,7 @@ interface WeatherContract : BaseContract {
         fun showLoading()
         fun showWeather(weather: Weather)
         fun showLastUpdatedInfo(location: String, time: String)
-        fun showNetworkError()
-        fun showPermissionError()
-        fun showLocationError()
+        fun showError(error: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {

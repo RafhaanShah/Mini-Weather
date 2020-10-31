@@ -42,4 +42,6 @@ val fakeCardinalDirections = arrayOf(
     "North"
 )
 
-val fakeTimestamp: Long = 1000L
+const val fakeTimestamp: Long = 1000L
+
+const val fakeError = "Something went wrong"

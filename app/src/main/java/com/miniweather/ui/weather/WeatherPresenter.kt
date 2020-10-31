@@ -1,9 +1,11 @@
 package com.miniweather.ui.weather
 
+import com.miniweather.R
 import com.miniweather.model.DataResult
 import com.miniweather.model.Location
 import com.miniweather.model.Weather
 import com.miniweather.service.location.LocationService
+import com.miniweather.service.util.StringResourceService
 import com.miniweather.service.util.TimeService
 import com.miniweather.service.weather.WeatherService
 import com.miniweather.ui.base.BasePresenter
@@ -16,6 +18,7 @@ class WeatherPresenter @Inject constructor(
     private val locationService: LocationService,
     private val timeService: TimeService,
     private val weatherService: WeatherService,
+    private val stringResourceService: StringResourceService,
     @Named("Main") dispatcher: CoroutineDispatcher
 ) : BasePresenter<WeatherContract.View>(), WeatherContract.Presenter {
 
@@ -42,7 +45,7 @@ class WeatherPresenter @Inject constructor(
                 if (v.requestLocationPermission()) {
                     getWeather()
                 } else {
-                    view?.showPermissionError()
+                    view?.showError(stringResourceService.getString(R.string.error_permission_location))
                 }
             }
         }
@@ -53,10 +56,12 @@ class WeatherPresenter @Inject constructor(
         try {
             when (val weatherResult = weatherService.getWeather(getLocation())) {
                 is DataResult.Success -> showWeather(weatherResult.data)
-                is DataResult.Failure -> view?.showNetworkError()
+                is DataResult.Failure -> view?.showError(
+                    stringResourceService.getString(R.string.error_network_request)
+                )
             }
         } catch (e: TimeoutCancellationException) {
-            view?.showLocationError()
+            view?.showError(stringResourceService.getString(R.string.error_location_timeout))
         }
     }
 
