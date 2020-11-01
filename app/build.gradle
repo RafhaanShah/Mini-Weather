@@ -43,7 +43,7 @@ android {
             signingConfig signingConfigs.debug
 
             buildConfigField "String", "API_BASE_URL", '"http://localhost:9999/"'
-            buildConfigField "String", "IMAGE_BASE_URL", '"http://localhost:9999/"'
+            buildConfigField "String", "IMAGE_BASE_URL", '"http://invalidhost:9999/"'
             buildConfigField "String", "API_KEY", '"xxxxxxxxxxxxxxxxxxxxx"'
         }
 

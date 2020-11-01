@@ -1,5 +1,6 @@
 package com.miniweather.testutil
 
+import com.miniweather.BuildConfig
 import com.miniweather.model.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -10,7 +11,7 @@ val fakeWeather = Weather(
     17,
     "East",
     "London, UK",
-    "https://weather.icon/01m",
+    BuildConfig.IMAGE_BASE_URL + "01d" + ".png",
     1000,
     1.11,
     2.22,
@@ -20,7 +21,7 @@ val fakeWeatherResponse = WeatherResponse(
     weatherList = listOf(
         Condition(
             "Sunny",
-            "https://weather.icon/"
+            "01d"
         )
     ),
     temp = Temperature(22.toDouble()),

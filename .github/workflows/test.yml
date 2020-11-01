@@ -1,6 +1,6 @@
-# This workflow will test an Android project with Gradle
+# This workflow will test an Android project
 
-name: Test
+name: Tests
 
 on:
   push:
@@ -16,24 +16,22 @@ jobs:
     steps:
     - name: Checkout latest version of repository
       uses: actions/checkout@v2
-      
-    - name: Set up JDK 11
-      uses: actions/setup-java@v1
-      with:
-        java-version: 11
     
     - name: Cache Gradle packages
       uses: actions/cache@v2
       with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
     
     - name: Create fake secrets file
       run: cp secret.properties.example secret.properties
     
-    - name: Build and Test with Gradle
-      run: ./gradlew testDebugUnitTest # unit test debug variant only
+    - name: Run Unit Tests
+      run: ./gradlew testDebugUnitTest
 
     - name: Upload Test Reports
       if: ${{ failure() }}
@@ -41,3 +39,38 @@ jobs:
       with:
         name: reports
         path: app/build/reports
+
+  ui_test:
+    name: Run UI Tests
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout latest version of repository
+        uses: actions/checkout@v2
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Create fake secrets file
+        run: cp secret.properties.example secret.properties
+
+      - name: Run UI Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: google_apis
+          script: ./gradlew connectedLocalTestAndroidTest
+
+      - name: Upload Test Reports
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v1
+        with:
+          name: reports
+          path: app/build/reports

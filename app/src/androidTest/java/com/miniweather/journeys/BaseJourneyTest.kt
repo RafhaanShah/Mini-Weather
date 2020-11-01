@@ -31,9 +31,10 @@ abstract class BaseJourneyTest<T : AppCompatActivity>(private val clazz: Class<T
     @After
     open fun tearDown(){
         server.shutdown()
+        server.verifyRequests()
     }
 
-    fun launchApp() {
+    protected fun launchApp() {
         scenario = ActivityScenario.launch(clazz)
     }
 

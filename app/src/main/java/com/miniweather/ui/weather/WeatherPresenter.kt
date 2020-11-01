@@ -41,11 +41,11 @@ class WeatherPresenter @Inject constructor(
 
     private fun checkLocationPermission() {
         scope.launch {
-            view?.let { v ->
-                if (v.requestLocationPermission()) {
+            view?.let { view ->
+                if (view.requestLocationPermission()) {
                     getWeather()
                 } else {
-                    view?.showError(stringResourceService.getString(R.string.error_permission_location))
+                    view.showError(stringResourceService.getString(R.string.error_permission_location))
                 }
             }
         }
@@ -66,7 +66,7 @@ class WeatherPresenter @Inject constructor(
     }
 
     @Throws(TimeoutCancellationException::class)
-    suspend fun getLocation(): Location {
+    private suspend fun getLocation(): Location {
         return withTimeout(TimeUnit.MINUTES.toMillis(1)) {
             locationService.getLocation()
         }

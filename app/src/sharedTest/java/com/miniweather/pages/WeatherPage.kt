@@ -21,8 +21,8 @@ class WeatherPage : BasePage() {
         shouldHaveText(weather_wind_speed_text, fakeWeather.windSpeed.toString())
         shouldHaveText(weather_wind_direction_text, fakeWeather.windDirection)
 
-        shouldNotBeVisible(weather_last_updated_text)
         shouldNotBeVisible(weather_progress)
+        shouldNotBeVisible(weather_last_updated_text)
         shouldNotBeVisible(weather_error_message_card)
     }
 

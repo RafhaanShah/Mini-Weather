@@ -10,7 +10,6 @@ import com.miniweather.model.Location
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.resume
 
 class LocationService @Inject constructor(private val fusedLocationProviderClient: FusedLocationProviderClient) {
@@ -44,7 +43,7 @@ class LocationService @Inject constructor(private val fusedLocationProviderClien
 
     private fun createLocationRequest(): LocationRequest {
         val request = LocationRequest.create()
-        request.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        request.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         request.numUpdates = 1
         request.setExpirationDuration(TimeUnit.MINUTES.toMillis(1))
         return request

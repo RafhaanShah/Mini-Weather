@@ -42,7 +42,7 @@ class LocationServiceTest : BaseInstrumentedTest() {
         verify(mockFusedLocationProviderClient).requestLocationUpdates(requestCaptor.capture(), any(), any())
         val request = requestCaptor.firstValue
 
-        assertEquals(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, request.priority)
+        assertEquals(LocationRequest.PRIORITY_HIGH_ACCURACY, request.priority)
         assertEquals(1, request.numUpdates)
 
         job.cancel()

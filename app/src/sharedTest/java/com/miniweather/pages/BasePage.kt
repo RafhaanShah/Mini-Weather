@@ -25,12 +25,12 @@ abstract class BasePage {
 
     protected fun shouldBeVisible(@IdRes view: Int) {
         onView(withId(view))
-            .waitUntil(matcher = isDisplayed())
+            .waitUntil(isDisplayed())
     }
 
     protected fun shouldNotBeVisible(@IdRes view: Int) {
         onView(withId(view))
-            .waitUntil(matcher = not(isDisplayed()))
+            .waitUntil(not(isDisplayed()))
     }
 
     protected fun performClick(@IdRes view: Int) {
@@ -43,7 +43,7 @@ abstract class BasePage {
 fun <T : BasePage> onPage(page: T, func: T.() -> Unit): T = page.apply(func)
 
 // https://stackoverflow.com/a/56385404/12519442
-fun ViewInteraction.waitUntil(timeout: Long = TimeUnit.SECONDS.toMillis(5), matcher: Matcher<View>): ViewInteraction {
+fun ViewInteraction.waitUntil(matcher: Matcher<View>, timeout: Long = TimeUnit.SECONDS.toMillis(10)): ViewInteraction {
     val startTime = System.currentTimeMillis()
     val endTime = startTime + timeout
 

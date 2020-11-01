@@ -3,6 +3,7 @@ package com.miniweather.journeys
 import androidx.test.rule.GrantPermissionRule
 import com.miniweather.pages.WeatherPage
 import com.miniweather.pages.onPage
+import com.miniweather.service.network.weatherPath
 import com.miniweather.testutil.fakeWeather
 import com.miniweather.testutil.fakeWeatherResponseJson
 import com.miniweather.ui.weather.WeatherActivity
@@ -17,7 +18,7 @@ class WeatherJourneyTest : BaseJourneyTest<WeatherActivity>(WeatherActivity::cla
 
     @Test
     fun testWeatherJourney() {
-        server.expectRequest(body = fakeWeatherResponseJson)
+        server.expectRequest(fakeWeatherResponseJson, weatherPath)
         launchApp()
 
         onPage(WeatherPage()) {
