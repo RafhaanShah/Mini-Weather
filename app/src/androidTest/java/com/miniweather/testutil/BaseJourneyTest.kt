@@ -1,4 +1,4 @@
-package com.miniweather.journeys
+package com.miniweather.testutil
 
 import android.content.Context
 import androidx.annotation.CallSuper
@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.miniweather.testutil.FakeWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith

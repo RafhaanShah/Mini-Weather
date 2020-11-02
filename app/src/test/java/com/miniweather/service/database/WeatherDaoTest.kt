@@ -2,6 +2,7 @@ package com.miniweather.service.database
 
 import androidx.room.Room
 import com.miniweather.testutil.BaseInstrumentedTest
+import com.miniweather.testutil.fakeTimestamp
 import com.miniweather.testutil.fakeWeather
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asExecutor
@@ -11,6 +12,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 class WeatherDaoTest : BaseInstrumentedTest() {
@@ -42,12 +44,12 @@ class WeatherDaoTest : BaseInstrumentedTest() {
     fun whenValidCacheDataIsInserted_itIsReturnedInTheGet() = runBlockingTest {
         weatherDao.insertIntoCache(fakeWeather)
         weatherDao.insertIntoCache(fakeWeather)
-        weatherDao.insertIntoCache(fakeWeather.copy(latitude = 3.3, longitude = 3.3))
+        weatherDao.insertIntoCache(fakeWeather.copy(latitude = 10.0, longitude = 10.0))
 
         val actual = weatherDao.getCachedData(
             fakeWeather.latitude,
             fakeWeather.longitude,
-            fakeWeather.timestamp - 1000
+            fakeWeather.timestamp - TimeUnit.MINUTES.toMillis(10)
         )
 
         assertEquals(1, actual.size)
@@ -58,18 +60,10 @@ class WeatherDaoTest : BaseInstrumentedTest() {
     fun whenNoValidCacheDataExists_emptyListReturnedInTheGet() = runBlockingTest {
         weatherDao.insertIntoCache(fakeWeather)
 
-        var actual = weatherDao.getCachedData(
+        val actual = weatherDao.getCachedData(
             fakeWeather.latitude,
             fakeWeather.longitude,
-            fakeWeather.timestamp + 1000
-        )
-
-        assertEquals(0, actual.size)
-
-        actual = weatherDao.getCachedData(
-            fakeWeather.longitude,
-            fakeWeather.latitude,
-            fakeWeather.timestamp - 1000
+            fakeWeather.timestamp + TimeUnit.MINUTES.toMillis(10)
         )
 
         assertEquals(0, actual.size)
@@ -77,24 +71,30 @@ class WeatherDaoTest : BaseInstrumentedTest() {
 
     @Test
     fun whenDeleteInvalidCaches_itDeletesTheCorrectRows() = runBlockingTest {
-        val fakeWeather2 = fakeWeather.copy(latitude = 3.3, longitude = 3.3, timestamp = 100)
-        weatherDao.insertIntoCache(fakeWeather)
-        weatherDao.insertIntoCache(fakeWeather2)
+        val oldTimeStamp = fakeTimestamp - TimeUnit.MINUTES.toMillis(10)
+        val maxAge = fakeTimestamp - TimeUnit.MINUTES.toMillis(5)
 
-        weatherDao.deleteInvalidCaches(900)
+        val oldWeather = fakeWeather.copy(
+            latitude = 10.0, longitude = 10.0,
+            timestamp = oldTimeStamp
+        )
+
+        weatherDao.insertIntoCache(fakeWeather)
+        weatherDao.insertIntoCache(oldWeather)
+        weatherDao.deleteInvalidCaches(maxAge)
 
         var actual = weatherDao.getCachedData(
             fakeWeather.latitude,
             fakeWeather.longitude,
-            500
+            maxAge
         )
 
         assertEquals(1, actual.size)
 
         actual = weatherDao.getCachedData(
-            fakeWeather2.latitude,
-            fakeWeather2.longitude,
-            500
+            oldWeather.latitude,
+            oldWeather.longitude,
+            maxAge
         )
 
         assertEquals(0, actual.size)

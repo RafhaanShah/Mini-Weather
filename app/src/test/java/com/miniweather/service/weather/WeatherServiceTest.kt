@@ -23,14 +23,22 @@ class WeatherServiceTest : BaseTest() {
 
     @Mock
     private lateinit var mockNetworkService: NetworkService
+
     @Mock
     private lateinit var mockTimeService: TimeService
+
     @Mock
     private lateinit var mockDatabaseService: DatabaseService
+
     @Mock
     private lateinit var mockStringResourceService: StringResourceService
 
     private lateinit var weatherService: WeatherService
+
+    private val fakeLocationWithDecimals =
+        fakeLocation.copy(latitude = fakeLocation.latitude + 0.1111, longitude = fakeLocation.longitude + 0.99999)
+    private val fakeLocationRounded =
+        fakeLocation.copy(latitude = fakeLocation.latitude + 0.11, longitude = fakeLocation.longitude + 1.00)
 
     @Before
     fun setup() {
@@ -45,9 +53,9 @@ class WeatherServiceTest : BaseTest() {
         whenever(mockStringResourceService.getStringArray(any())).thenReturn(fakeCardinalDirections)
         whenever(mockNetworkService.getWeather(any())).thenReturn(DataResult.Success(fakeWeatherResponse))
 
-        val actual = weatherService.getWeather(fakeLocation)
+        val actual = weatherService.getWeather(fakeLocationWithDecimals)
 
-        verify(mockNetworkService).getWeather(fakeLocation)
+        verify(mockNetworkService).getWeather(fakeLocationWithDecimals)
 
         val weather = (actual as DataResult.Success).data
         assertTrue(weather.iconUrl.contains(fakeWeatherResponse.weatherList.first().icon))
@@ -70,9 +78,9 @@ class WeatherServiceTest : BaseTest() {
         whenever(mockDatabaseService.getCachedData(any(), any()))
             .thenReturn(listOf(fakeWeather))
 
-        val actual = weatherService.getWeather(fakeLocation)
+        val actual = weatherService.getWeather(fakeLocationWithDecimals)
 
-        verify(mockNetworkService).getWeather(fakeLocation)
+        verify(mockNetworkService).getWeather(fakeLocationWithDecimals)
         verify(mockDatabaseService).getCachedData(
             fakeLocationRounded,
             fakeTimestamp - WeatherService.CACHE_MAX_AGE

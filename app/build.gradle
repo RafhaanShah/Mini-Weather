@@ -24,7 +24,7 @@ android {
         buildConfigField "String", "IMAGE_BASE_URL", '"https://openweathermap.org/img/wn/"'
 
         // https://developer.android.com/training/testing/junit-runner
-        testBuildType "localTest"
+        testBuildType "local"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
@@ -36,8 +36,8 @@ android {
             minifyEnabled false
         }
 
-        localTest {
-            applicationIdSuffix ".localtest"
+        local {
+            applicationIdSuffix ".local"
             debuggable true
             minifyEnabled false
             signingConfig signingConfigs.debug
@@ -183,4 +183,28 @@ dependencies {
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
 
     androidTestUtil 'androidx.test:orchestrator:1.3.0'
+}
+
+// Sets the GPS location of the emulator for consistent tests
+// Will fail if the emulator is not running
+task setEmulatorGPS() {
+    doLast {
+        exec {
+            def windows = ['cmd', '/c']
+            def command = ['adb', 'emu', 'geo', 'fix', '0', '51']
+            standardOutput = new ByteArrayOutputStream()
+            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+                commandLine windows + command
+            } else {
+                commandLine command
+            }
+        }
+    }
+}
+
+// Sets the packageLocalAndroidTest task to depend on setEmulatorGPS so it always runs first
+tasks.whenTaskAdded { task ->
+    if (task.name == 'packageLocalAndroidTest') {
+        task.dependsOn setEmulatorGPS
+    }
 }

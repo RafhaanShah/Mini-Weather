@@ -2,7 +2,7 @@ package com.miniweather.ui
 
 import android.Manifest
 import com.miniweather.pages.WeatherPage
-import com.miniweather.pages.onPage
+import com.miniweather.testutil.onPage
 import com.miniweather.service.network.ImageService
 import com.miniweather.service.permissions.PermissionService
 import com.miniweather.testutil.BaseActivityTest

@@ -5,33 +5,18 @@ import com.miniweather.model.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-val fakeWeather = Weather(
-    "Sunny",
-    22,
-    17,
-    "East",
-    "London, UK",
-    BuildConfig.IMAGE_BASE_URL + "01d" + ".png",
-    1000,
-    1.11,
-    2.22,
-)
+const val fakeTimestamp: Long = 1587362940000L
+
+const val fakeError = "Something went wrong"
+
+val fakeLocation = Location(51.0, 0.0)
 
 val fakeWeatherResponse = WeatherResponse(
-    weatherList = listOf(
-        Condition(
-            "Sunny",
-            "01d"
-        )
-    ),
-    temp = Temperature(22.toDouble()),
-    wind = Wind(17.toDouble(), 70.0),
+    weatherList = listOf(Condition("Sunny", "01d")),
+    temp = Temperature(25.0),
+    wind = Wind(10.0, 75.0),
     location = "London, UK"
 )
-
-val fakeLocation = Location(1.111, 2.222)
-
-val fakeLocationRounded = Location(1.11, 2.22)
 
 val fakeCardinalDirections = arrayOf(
     "North",
@@ -45,8 +30,16 @@ val fakeCardinalDirections = arrayOf(
     "North"
 )
 
-const val fakeTimestamp: Long = 1000L
-
-const val fakeError = "Something went wrong"
+val fakeWeather = Weather(
+    fakeWeatherResponse.weatherList.first().condition,
+    fakeWeatherResponse.temp.value.toInt(),
+    fakeWeatherResponse.wind.speed.toInt(),
+    fakeCardinalDirections[2],
+    fakeWeatherResponse.location,
+    BuildConfig.IMAGE_BASE_URL + fakeWeatherResponse.weatherList.first().icon + ".png",
+    fakeTimestamp,
+    fakeLocation.latitude,
+    fakeLocation.longitude,
+)
 
 val fakeWeatherResponseJson by lazy { Json.encodeToString(fakeWeatherResponse) }

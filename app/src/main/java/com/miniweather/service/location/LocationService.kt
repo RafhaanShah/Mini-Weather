@@ -42,11 +42,12 @@ class LocationService @Inject constructor(private val fusedLocationProviderClien
     }
 
     private fun createLocationRequest(): LocationRequest {
-        val request = LocationRequest.create()
-        request.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        request.numUpdates = 1
-        request.setExpirationDuration(TimeUnit.MINUTES.toMillis(1))
-        return request
+        return LocationRequest.create()
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+            .setNumUpdates(1)
+            .setInterval(TimeUnit.SECONDS.toMillis(10))
+            .setFastestInterval(TimeUnit.SECONDS.toMillis(1))
+            .setExpirationDuration(TimeUnit.SECONDS.toMillis(30))
     }
 
 }

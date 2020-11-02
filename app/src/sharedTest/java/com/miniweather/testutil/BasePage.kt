@@ -1,4 +1,4 @@
-package com.miniweather.pages
+package com.miniweather.testutil
 
 import android.view.View
 import androidx.annotation.IdRes

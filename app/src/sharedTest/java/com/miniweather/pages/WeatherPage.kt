@@ -2,6 +2,7 @@ package com.miniweather.pages
 
 import com.miniweather.R.id.*
 import com.miniweather.model.Weather
+import com.miniweather.testutil.BasePage
 
 class WeatherPage : BasePage() {
 

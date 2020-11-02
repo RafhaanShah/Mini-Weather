@@ -67,7 +67,7 @@ class WeatherPresenter @Inject constructor(
 
     @Throws(TimeoutCancellationException::class)
     private suspend fun getLocation(): Location {
-        return withTimeout(TimeUnit.MINUTES.toMillis(1)) {
+        return withTimeout(TimeUnit.SECONDS.toMillis(30)) {
             locationService.getLocation()
         }
     }

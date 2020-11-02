@@ -2,10 +2,11 @@ package com.miniweather.journeys
 
 import androidx.test.rule.GrantPermissionRule
 import com.miniweather.pages.WeatherPage
-import com.miniweather.pages.onPage
 import com.miniweather.service.network.weatherPath
+import com.miniweather.testutil.BaseJourneyTest
 import com.miniweather.testutil.fakeWeather
 import com.miniweather.testutil.fakeWeatherResponseJson
+import com.miniweather.testutil.onPage
 import com.miniweather.ui.weather.WeatherActivity
 import org.junit.Rule
 import org.junit.Test

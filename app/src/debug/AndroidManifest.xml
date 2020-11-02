@@ -4,7 +4,8 @@
     package="com.miniweather">
 
     <application
-        android:usesCleartextTraffic="true"
-        tools:ignore="AllowBackup" />
+        android:label="Mini Weather Debug"
+        tools:ignore="AllowBackup"
+        tools:replace="android:label" />
 
 </manifest>
