@@ -1,53 +1,29 @@
 package com.miniweather.service.location
 
 import android.annotation.SuppressLint
-import android.os.Looper
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.miniweather.model.Location
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeout
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.coroutines.resume
 
-class LocationService @Inject constructor(private val fusedLocationProviderClient: FusedLocationProviderClient) {
-
-    private lateinit var locationCallback: LocationCallback
-
-    suspend fun getLocation(): Location = suspendCancellableCoroutine { continuation ->
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult?) {
-                locationResult?.let {
-                    fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-                    continuation.resume(
-                        Location(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude)
-                    )
-                }
-            }
-        }
-
-        requestLocation(createLocationRequest())
-        continuation.invokeOnCancellation { fusedLocationProviderClient.removeLocationUpdates(locationCallback) }
-    }
+class LocationService @Inject constructor(
+    private val fusedLocationProviderClient: FusedLocationProviderClient,
+) {
 
     @SuppressLint("MissingPermission")
-    private fun requestLocation(request: LocationRequest) {
-        fusedLocationProviderClient.requestLocationUpdates(
-            request,
-            locationCallback,
-            Looper.getMainLooper()
-        )
-    }
+    @Throws(TimeoutCancellationException::class)
+    suspend fun getLocation(): Location = withTimeout(TimeUnit.SECONDS.toMillis(30)) {
+        val location = fusedLocationProviderClient.getCurrentLocation(
+            LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
+            CancellationTokenSource().token
+        ).await()
 
-    private fun createLocationRequest(): LocationRequest {
-        return LocationRequest.create()
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-            .setNumUpdates(1)
-            .setInterval(TimeUnit.SECONDS.toMillis(10))
-            .setFastestInterval(TimeUnit.SECONDS.toMillis(1))
-            .setExpirationDuration(TimeUnit.SECONDS.toMillis(30))
+        Location(location.latitude, location.longitude)
     }
 
 }

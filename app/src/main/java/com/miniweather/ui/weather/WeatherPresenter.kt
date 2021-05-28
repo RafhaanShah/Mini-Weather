@@ -2,7 +2,6 @@ package com.miniweather.ui.weather
 
 import com.miniweather.R
 import com.miniweather.model.DataResult
-import com.miniweather.model.Location
 import com.miniweather.model.Weather
 import com.miniweather.service.location.LocationService
 import com.miniweather.service.util.StringResourceService
@@ -54,7 +53,7 @@ class WeatherPresenter @Inject constructor(
     private suspend fun getWeather() {
         view?.showLoading()
         try {
-            when (val weatherResult = weatherService.getWeather(getLocation())) {
+            when (val weatherResult = weatherService.getWeather(locationService.getLocation())) {
                 is DataResult.Success -> showWeather(weatherResult.data)
                 is DataResult.Failure -> view?.showError(
                     stringResourceService.getString(R.string.error_network_request)
@@ -65,17 +64,13 @@ class WeatherPresenter @Inject constructor(
         }
     }
 
-    @Throws(TimeoutCancellationException::class)
-    private suspend fun getLocation(): Location {
-        return withTimeout(TimeUnit.SECONDS.toMillis(30)) {
-            locationService.getLocation()
-        }
-    }
-
     private fun showWeather(weather: Weather) {
         view?.showWeather(weather)
         if (weather.timestamp < (timeService.getCurrentTime() - TimeUnit.MINUTES.toMillis(5))) {
-            view?.showLastUpdatedInfo(weather.location, timeService.getRelativeTimeString(weather.timestamp))
+            view?.showLastUpdatedInfo(
+                weather.location,
+                timeService.getRelativeTimeString(weather.timestamp)
+            )
         }
     }
 

@@ -2,22 +2,18 @@ package com.miniweather.service.location
 
 import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
+import com.google.android.gms.tasks.Task
 import com.miniweather.testutil.BaseInstrumentedTest
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
-import org.mockito.Mockito.mock
 
 @ExperimentalCoroutinesApi
 class LocationServiceTest : BaseInstrumentedTest() {
@@ -25,64 +21,50 @@ class LocationServiceTest : BaseInstrumentedTest() {
     @Mock
     private lateinit var mockFusedLocationProviderClient: FusedLocationProviderClient
 
+    @Mock
+    private lateinit var mockLocationTask: Task<Location>
+
+    @Mock
+    private lateinit var mockLocation: Location
+
     private lateinit var locationService: LocationService
 
     @Before
     fun setup() {
         locationService = LocationService(mockFusedLocationProviderClient)
+        whenever(
+            mockFusedLocationProviderClient
+                .getCurrentLocation(any(), any())
+        )
+            .thenReturn(mockLocationTask)
     }
 
     @Test
-    fun whenGetLocation_requestsLocationUpdates() = runBlockingTest {
-        val requestCaptor = argumentCaptor<LocationRequest>()
-        val job = launch {
-            locationService.getLocation()
-        }
+    fun whenGetLocationSucceeds_returnsLocation() = runBlockingTest {
+        whenever(mockLocationTask.isComplete).thenReturn(true)
+        whenever(mockLocationTask.isCanceled).thenReturn(false)
+        whenever(mockLocationTask.result).thenReturn(mockLocation)
+        whenever(mockLocation.latitude).thenReturn(1.0)
+        whenever(mockLocation.longitude).thenReturn(2.0)
 
-        verify(mockFusedLocationProviderClient).requestLocationUpdates(requestCaptor.capture(), any(), any())
-        val request = requestCaptor.firstValue
-
-        assertEquals(LocationRequest.PRIORITY_HIGH_ACCURACY, request.priority)
-        assertEquals(1, request.numUpdates)
-
-        job.cancel()
+        val actual = locationService.getLocation()
+        assertEquals(actual.latitude, 1.0, 0.0)
+        assertEquals(actual.longitude, 2.0, 0.0)
     }
 
-    @Test
-    fun whenGetLocationCancelled_removesLocationUpdates() = runBlockingTest {
-        val locationCallbackCaptor = argumentCaptor<LocationCallback>()
-        val job = launch {
-            locationService.getLocation()
-        }
+    @Test(expected = CancellationException::class)
+    fun whenGetLocationFails_throwsException() = runBlockingTest {
+        whenever(mockLocationTask.isComplete).thenReturn(true)
+        whenever(mockLocationTask.isCanceled).thenReturn(true)
 
-        verify(mockFusedLocationProviderClient).requestLocationUpdates(any(), locationCallbackCaptor.capture(), any())
-
-        job.cancel()
-
-        verify(mockFusedLocationProviderClient).removeLocationUpdates(locationCallbackCaptor.firstValue)
+        locationService.getLocation()
     }
 
-    @Test
-    fun whenLocationResultCallbackInvoked_returnsLocation() = runBlockingTest {
-        val locationCallbackCaptor = argumentCaptor<LocationCallback>()
-        val mockLocationResult = mock(LocationResult::class.java)
-        val mockLocation = mock(Location::class.java)
+    @Test(expected = TimeoutCancellationException::class)
+    fun whenGetLocationTimesOut_throwsException() = runBlockingTest {
+        whenever(mockLocationTask.isComplete).thenReturn(false)
 
-        whenever(mockLocationResult.lastLocation).thenReturn(mockLocation)
-        whenever(mockLocation.latitude).thenReturn(1.1)
-        whenever(mockLocation.longitude).thenReturn(2.2)
-
-        launch {
-            val actual = locationService.getLocation()
-            assertEquals(1.1, actual.latitude, 0.0)
-            assertEquals(2.2, actual.longitude, 0.0)
-        }
-
-        verify(mockFusedLocationProviderClient).requestLocationUpdates(any(), locationCallbackCaptor.capture(), any())
-        val callback = locationCallbackCaptor.firstValue
-        callback.onLocationResult(mockLocationResult)
-
-        verify(mockFusedLocationProviderClient).removeLocationUpdates(callback)
+        locationService.getLocation()
     }
 
 }
