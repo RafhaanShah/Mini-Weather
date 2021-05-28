@@ -1,6 +1,5 @@
 package com.miniweather.ui
 
-import com.miniweather.model.DataResult
 import com.miniweather.service.location.LocationService
 import com.miniweather.service.util.StringResourceService
 import com.miniweather.service.util.TimeService
@@ -62,7 +61,7 @@ class WeatherPresenterTest : BaseTest() {
     fun whenViewAttachedWithPermissions_fetchesDataAndUpdatesView() = runBlockingTest {
         whenever(mockView.requestLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
-        whenever(mockWeatherService.getWeather(any())).thenReturn(DataResult.Success(fakeWeather))
+        whenever(mockWeatherService.getWeather(any())).thenReturn(Result.success(fakeWeather))
         whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
 
         presenter.onAttachView(mockView)
@@ -108,7 +107,7 @@ class WeatherPresenterTest : BaseTest() {
 
         whenever(mockView.requestLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
-        whenever(mockWeatherService.getWeather(any())).thenReturn(DataResult.Success(fakeWeather))
+        whenever(mockWeatherService.getWeather(any())).thenReturn(Result.success(fakeWeather))
         whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
         whenever(mockTimeService.getRelativeTimeString(any())).thenReturn(fakeTime)
 
@@ -124,7 +123,7 @@ class WeatherPresenterTest : BaseTest() {
         whenever(mockStringResourceService.getString(any())).thenReturn(fakeError)
         whenever(mockView.requestLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
-        whenever(mockWeatherService.getWeather(any())).thenReturn(DataResult.Failure(Exception(fakeError)))
+        whenever(mockWeatherService.getWeather(any())).thenReturn(Result.failure(Exception(fakeError)))
 
         presenter.onAttachView(mockView)
 

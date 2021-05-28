@@ -1,6 +1,5 @@
 package com.miniweather.service.network
 
-import com.miniweather.model.DataResult
 import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.fakeError
 import com.miniweather.testutil.fakeLocation
@@ -45,7 +44,7 @@ class NetworkServiceTest : BaseTest() {
         val actual = networkService.getWeather(fakeLocation)
 
         verify(mockApiService).getWeather(fakeLocation.latitude, fakeLocation.longitude)
-        assertEquals(fakeWeatherResponse, (actual as DataResult.Success).data)
+        assertEquals(fakeWeatherResponse, (actual.getOrThrow()))
     }
 
     @Test
@@ -55,7 +54,7 @@ class NetworkServiceTest : BaseTest() {
         val actual = networkService.getWeather(fakeLocation)
 
         verify(mockApiService).getWeather(fakeLocation.latitude, fakeLocation.longitude)
-        assertTrue(actual is DataResult.Failure)
+        assertTrue(actual.isFailure)
     }
 
 }

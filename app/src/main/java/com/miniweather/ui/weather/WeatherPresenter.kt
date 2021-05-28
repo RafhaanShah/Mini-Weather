@@ -1,7 +1,6 @@
 package com.miniweather.ui.weather
 
 import com.miniweather.R
-import com.miniweather.model.DataResult
 import com.miniweather.model.Weather
 import com.miniweather.service.location.LocationService
 import com.miniweather.service.util.StringResourceService
@@ -9,6 +8,7 @@ import com.miniweather.service.util.TimeService
 import com.miniweather.service.weather.WeatherService
 import com.miniweather.ui.base.BasePresenter
 import kotlinx.coroutines.*
+import retrofit2.HttpException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
@@ -53,12 +53,15 @@ class WeatherPresenter @Inject constructor(
     private suspend fun getWeather() {
         view?.showLoading()
         try {
-            when (val weatherResult = weatherService.getWeather(locationService.getLocation())) {
-                is DataResult.Success -> showWeather(weatherResult.data)
-                is DataResult.Failure -> view?.showError(
-                    stringResourceService.getString(R.string.error_network_request)
-                )
-            }
+            weatherService.getWeather(locationService.getLocation())
+                .onSuccess { showWeather(it) }
+                .onFailure {
+                    val errorMessage = when (it) {
+                        is HttpException -> stringResourceService.getString(R.string.error_network_response)
+                        else -> stringResourceService.getString(R.string.error_network_request)
+                    }
+                    view?.showError(errorMessage)
+                }
         } catch (e: TimeoutCancellationException) {
             view?.showError(stringResourceService.getString(R.string.error_location_timeout))
         }

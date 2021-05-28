@@ -2,7 +2,6 @@ package com.miniweather.service.weather
 
 import com.miniweather.BuildConfig
 import com.miniweather.R
-import com.miniweather.model.DataResult
 import com.miniweather.model.Location
 import com.miniweather.model.Weather
 import com.miniweather.model.WeatherResponse
@@ -14,7 +13,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.math.floor
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -29,45 +27,55 @@ class WeatherService @Inject constructor(
         val CACHE_MAX_AGE = TimeUnit.DAYS.toMillis(1)
     }
 
-    suspend fun getWeather(location: Location): DataResult<Weather> {
-        val roundedLocation = Location(roundCoordinate(location.latitude), roundCoordinate(location.longitude))
-        return when (val networkResponse = networkService.getWeather(location)) {
-            is DataResult.Success -> weatherSuccess(roundedLocation, networkResponse)
-            is DataResult.Failure -> weatherFailure(roundedLocation, networkResponse)
-        }
+    suspend fun getWeather(location: Location): Result<Weather> {
+        val roundedLocation =
+            Location(roundCoordinate(location.latitude), roundCoordinate(location.longitude))
+
+        return networkService.getWeather(location).fold(
+            {
+                weatherSuccess(roundedLocation, it)
+            }, {
+                weatherFailure(roundedLocation, it)
+            }
+        )
     }
 
     private suspend fun weatherSuccess(
         location: Location,
-        networkResponse: DataResult.Success<WeatherResponse>
-    ): DataResult.Success<Weather> = coroutineScope {
-        val weather = createWeatherData(networkResponse.data, location.latitude, location.longitude)
+        networkResponse: WeatherResponse
+    ): Result<Weather> = coroutineScope {
+        val weather = createWeatherData(networkResponse, location.latitude, location.longitude)
         launch {
             databaseService.deleteInvalidCaches(timeService.getCurrentTime() - CACHE_MAX_AGE)
             databaseService.insertIntoCache(weather)
         }
-        DataResult.Success(weather)
+        Result.success(weather)
     }
 
 
     private suspend fun weatherFailure(
         roundedLocation: Location,
-        networkResponse: DataResult.Failure
-    ): DataResult<Weather> {
+        exception: Throwable
+    ): Result<Weather> {
         val cache = databaseService.getCachedData(
             roundedLocation,
             timeService.getCurrentTime() - CACHE_MAX_AGE
         )
         return if (cache.isNotEmpty()) {
-            DataResult.Success(cache.first())
+            Result.success(cache.first())
         } else {
-            DataResult.Failure(networkResponse.exception)
+            Result.failure(exception)
         }
     }
 
-    private fun createWeatherData(weatherResponse: WeatherResponse, lat: Double, lon: Double): Weather {
+    private fun createWeatherData(
+        weatherResponse: WeatherResponse,
+        lat: Double,
+        lon: Double
+    ): Weather {
         return Weather(
-            weatherResponse.weatherList.firstOrNull()?.condition ?: stringResourceService.getString(R.string.unknown),
+            weatherResponse.weatherList.firstOrNull()?.condition
+                ?: stringResourceService.getString(R.string.unknown),
             weatherResponse.temp.value.roundToInt(),
             weatherResponse.wind.speed.roundToInt(),
             formatBearing(weatherResponse.wind.direction),

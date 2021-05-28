@@ -7,12 +7,10 @@ import retrofit2.http.Query
 
 interface WeatherApi {
 
-    @GET(weatherPath + BuildConfig.API_KEY)
+    @GET("data/2.5/weather?units=metric&appid=" + BuildConfig.API_KEY)
     suspend fun getWeather(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double
     ): WeatherResponse
 
 }
-
-const val weatherPath = "data/2.5/weather?units=metric&appid="
