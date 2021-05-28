@@ -12,11 +12,12 @@ import org.hamcrest.Matcher
 import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.not
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
-abstract class BasePage {
+abstract class BasePage(@IdRes layout: Int) {
 
-    abstract fun shouldBeDisplayed()
+    init {
+        shouldBeVisible(layout)
+    }
 
     protected fun shouldHaveText(@IdRes view: Int, text: String) {
         onView(withId(view))
@@ -42,19 +43,20 @@ abstract class BasePage {
 
 fun <T : BasePage> onPage(page: T, func: T.() -> Unit): T = page.apply(func)
 
-// https://stackoverflow.com/a/56385404/12519442
-fun ViewInteraction.waitUntil(matcher: Matcher<View>, timeout: Long = TimeUnit.SECONDS.toMillis(10)): ViewInteraction {
-    val startTime = System.currentTimeMillis()
-    val endTime = startTime + timeout
+private const val waitTimeMillis = 100L
+private const val maxRetries = 100
 
-    do {
+// https://stackoverflow.com/a/56385404/12519442
+fun ViewInteraction.waitUntil(matcher: Matcher<View>): ViewInteraction {
+    for (i in 1..maxRetries) {
         try {
             check(matches(matcher))
             return this
         } catch (e: AssertionFailedError) {
-            Thread.sleep(100)
+            TimeUnit.MILLISECONDS.sleep(waitTimeMillis)
         }
-    } while (System.currentTimeMillis() < endTime)
+    }
 
-    throw TimeoutException("Timed out waiting for view to be visible")
+    check(matches(matcher))
+    return this
 }

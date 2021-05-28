@@ -4,15 +4,7 @@ import com.miniweather.R.id.*
 import com.miniweather.model.Weather
 import com.miniweather.testutil.BasePage
 
-class WeatherPage : BasePage() {
-
-    init {
-        shouldBeDisplayed()
-    }
-
-    override fun shouldBeDisplayed() {
-        shouldBeVisible(weather_activity_layout)
-    }
+class WeatherPage : BasePage(weather_activity_layout) {
 
     fun shouldShowWeather(fakeWeather: Weather) {
         shouldBeVisible(weather_card)
