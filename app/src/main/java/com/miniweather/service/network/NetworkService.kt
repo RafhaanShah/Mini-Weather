@@ -1,5 +1,7 @@
 package com.miniweather.service.network
 
+import com.miniweather.BuildConfig
+import com.miniweather.app.BaseUrlProvider
 import com.miniweather.model.Location
 import com.miniweather.model.WeatherResponse
 import kotlinx.coroutines.CoroutineDispatcher
@@ -8,12 +10,17 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class NetworkService @Inject constructor(
-    private val apiService: WeatherApi,
+    private val baseUrlProvider: BaseUrlProvider,
+    private val weatherApi: WeatherApi,
     @Named("IO") private val dispatcher: CoroutineDispatcher
 ) {
 
     suspend fun getWeather(location: Location): Result<WeatherResponse> = makeRequest {
-        apiService.getWeather(location.latitude, location.longitude)
+        weatherApi.getWeather(
+            baseUrlProvider.getBaseWeatherUrl() + weatherPath,
+            location.latitude,
+            location.longitude
+        )
     }
 
     private suspend fun <T> makeRequest(request: suspend () -> T): Result<T> =
@@ -26,3 +33,5 @@ class NetworkService @Inject constructor(
         }
 
 }
+
+const val weatherPath = "data/2.5/weather?units=metric&appid=" + BuildConfig.API_KEY

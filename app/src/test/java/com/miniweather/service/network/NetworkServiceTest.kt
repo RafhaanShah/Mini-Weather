@@ -1,5 +1,6 @@
 package com.miniweather.service.network
 
+import com.miniweather.app.BaseUrlProvider
 import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.fakeError
 import com.miniweather.testutil.fakeLocation
@@ -21,7 +22,10 @@ import org.mockito.Mock
 class NetworkServiceTest : BaseTest() {
 
     @Mock
-    private lateinit var mockApiService: WeatherApi
+    private lateinit var mockWeatherApi: WeatherApi
+
+    @Mock
+    private lateinit var mockBaseUrlProvider: BaseUrlProvider
 
     private lateinit var networkService: NetworkService
 
@@ -29,7 +33,8 @@ class NetworkServiceTest : BaseTest() {
 
     @Before
     fun setup() {
-        networkService = NetworkService(mockApiService, testDispatcher)
+        whenever(mockBaseUrlProvider.getBaseWeatherUrl()).thenReturn("")
+        networkService = NetworkService(mockBaseUrlProvider, mockWeatherApi, testDispatcher)
     }
 
     @After
@@ -39,21 +44,33 @@ class NetworkServiceTest : BaseTest() {
 
     @Test
     fun whenMakeWeatherRequest_andSuccessfulResponse_returnsTheResponse() = runBlockingTest {
-        whenever(mockApiService.getWeather(any(), any())).thenReturn(fakeWeatherResponse)
+        whenever(mockWeatherApi.getWeather(any(), any(), any())).thenReturn(fakeWeatherResponse)
 
         val actual = networkService.getWeather(fakeLocation)
 
-        verify(mockApiService).getWeather(fakeLocation.latitude, fakeLocation.longitude)
+        verify(mockWeatherApi).getWeather(
+            weatherPath,
+            fakeLocation.latitude,
+            fakeLocation.longitude
+        )
         assertEquals(fakeWeatherResponse, (actual.getOrThrow()))
     }
 
     @Test
     fun whenMakeWeatherRequest_andFailureResponse_returnsFailure() = runBlockingTest {
-        whenever(mockApiService.getWeather(any(), any())).thenThrow(RuntimeException(fakeError))
+        whenever(mockWeatherApi.getWeather(any(), any(), any())).thenThrow(
+            RuntimeException(
+                fakeError
+            )
+        )
 
         val actual = networkService.getWeather(fakeLocation)
 
-        verify(mockApiService).getWeather(fakeLocation.latitude, fakeLocation.longitude)
+        verify(mockWeatherApi).getWeather(
+            weatherPath,
+            fakeLocation.latitude,
+            fakeLocation.longitude
+        )
         assertTrue(actual.isFailure)
     }
 

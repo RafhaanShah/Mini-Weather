@@ -1,7 +1,7 @@
 package com.miniweather.service.weather
 
-import com.miniweather.BuildConfig
 import com.miniweather.R
+import com.miniweather.app.BaseUrlProvider
 import com.miniweather.model.Location
 import com.miniweather.model.Weather
 import com.miniweather.model.WeatherResponse
@@ -18,6 +18,7 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 
 class WeatherService @Inject constructor(
+    private val baseUrlProvider: BaseUrlProvider,
     private val networkService: NetworkService,
     private val timeService: TimeService,
     private val databaseService: DatabaseService,
@@ -80,7 +81,7 @@ class WeatherService @Inject constructor(
             weatherResponse.wind.speed.roundToInt(),
             formatBearing(weatherResponse.wind.direction),
             weatherResponse.location,
-            BuildConfig.IMAGE_BASE_URL + (weatherResponse.weatherList.firstOrNull()?.icon) + ".png",
+            baseUrlProvider.getBaseImageUrl() + (weatherResponse.weatherList.firstOrNull()?.icon) + ".png",
             timeService.getCurrentTime(),
             lat,
             lon

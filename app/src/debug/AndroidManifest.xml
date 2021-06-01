@@ -5,6 +5,7 @@
 
     <application
         android:label="Mini Weather Debug"
+        android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup"
         tools:replace="android:label" />
 

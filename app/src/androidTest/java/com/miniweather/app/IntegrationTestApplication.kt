@@ -1,15 +1,16 @@
 package com.miniweather.app
 
 import com.miniweather.di.AppComponent
-import com.miniweather.di.DaggerTestAppComponent
+import com.miniweather.di.DaggerAppComponent
+import com.miniweather.testutil.WebServer
 
-class TestApplication : BaseApplication() {
+class IntegrationTestApplication : BaseApplication() {
 
     private lateinit var appComponent: AppComponent
 
     override fun onCreate() {
         super.onCreate()
-        appComponent = DaggerTestAppComponent
+        appComponent = DaggerAppComponent
             .factory()
             .create(this)
     }
@@ -22,11 +23,11 @@ class TestApplication : BaseApplication() {
         return object : BaseUrlProvider {
 
             override fun getBaseWeatherUrl(): String {
-                return "http://localhost/"
+                return "http://localhost:${WebServer.getPort()}/"
             }
 
             override fun getBaseImageUrl(): String {
-                return "http://localhost/"
+                return "file:///android_asset/images/"
             }
         }
     }

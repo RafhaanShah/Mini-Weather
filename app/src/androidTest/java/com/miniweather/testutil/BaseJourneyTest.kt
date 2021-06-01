@@ -15,26 +15,32 @@ abstract class BaseJourneyTest<T : AppCompatActivity>(private val clazz: Class<T
 
     private lateinit var scenario: ActivityScenario<T>
 
-    protected val context: Context = ApplicationProvider.getApplicationContext()
-
-    protected lateinit var server: FakeWebServer
+    private val context: Context = ApplicationProvider.getApplicationContext()
 
     @CallSuper
     @Before
-    open fun setup(){
-        server = FakeWebServer()
-        server.start()
+    open fun setup() {
+        WebServer.start(context.assets)
     }
 
     @CallSuper
     @After
-    open fun tearDown(){
-        server.shutdown()
-        server.verifyRequests()
+    open fun tearDown() {
+        WebServer.shutdown()
+        WebServer.verifyRequests()
     }
 
-    protected fun launchApp() {
+    protected fun launch() {
         scenario = ActivityScenario.launch(clazz)
     }
+
+    protected fun expectHttpRequest(
+        path: String = "",
+        method: String = "GET",
+        code: Int = 200,
+        fileName: String? = null
+    ) = WebServer.expectRequest(
+        path, method, code, fileName
+    )
 
 }

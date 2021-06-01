@@ -1,5 +1,6 @@
 package com.miniweather.service.weather
 
+import com.miniweather.app.BaseUrlProvider
 import com.miniweather.service.database.DatabaseService
 import com.miniweather.service.network.NetworkService
 import com.miniweather.service.util.StringResourceService
@@ -32,23 +33,39 @@ class WeatherServiceTest : BaseTest() {
     @Mock
     private lateinit var mockStringResourceService: StringResourceService
 
+    @Mock
+    private lateinit var mockBaseUrlProvider: BaseUrlProvider
+
     private lateinit var weatherService: WeatherService
 
     private val fakeLocationWithDecimals =
-        fakeLocation.copy(latitude = fakeLocation.latitude + 0.1111, longitude = fakeLocation.longitude + 0.99999)
+        fakeLocation.copy(
+            latitude = fakeLocation.latitude + 0.1111,
+            longitude = fakeLocation.longitude + 0.99999
+        )
     private val fakeLocationRounded =
-        fakeLocation.copy(latitude = fakeLocation.latitude + 0.11, longitude = fakeLocation.longitude + 1.00)
+        fakeLocation.copy(
+            latitude = fakeLocation.latitude + 0.11,
+            longitude = fakeLocation.longitude + 1.00
+        )
 
     @Before
     fun setup() {
-        weatherService =
-            WeatherService(mockNetworkService, mockTimeService, mockDatabaseService, mockStringResourceService)
-
         whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
+
+        weatherService =
+            WeatherService(
+                mockBaseUrlProvider,
+                mockNetworkService,
+                mockTimeService,
+                mockDatabaseService,
+                mockStringResourceService
+            )
     }
 
     @Test
     fun whenGetWeather_andNetworkServiceSucceeds_returnsWeather_andCaches() = runBlockingTest {
+        whenever(mockBaseUrlProvider.getBaseImageUrl()).thenReturn("")
         whenever(mockStringResourceService.getStringArray(any())).thenReturn(fakeCardinalDirections)
         whenever(mockNetworkService.getWeather(any())).thenReturn(Result.success(fakeWeatherResponse))
 
@@ -71,32 +88,33 @@ class WeatherServiceTest : BaseTest() {
     }
 
     @Test
-    fun whenGetWeather_andNetworkServiceFails_andValidCacheExists_returnsWeather() = runBlockingTest {
-        whenever(mockNetworkService.getWeather(any()))
-            .thenReturn(Result.failure(Exception(fakeError)))
-        whenever(mockDatabaseService.getCachedData(any(), any()))
-            .thenReturn(listOf(fakeWeather))
+    fun whenGetWeather_andNetworkServiceFails_andValidCacheExists_returnsWeather() =
+        runBlockingTest {
+            whenever(mockNetworkService.getWeather(any()))
+                .thenReturn(Result.failure(Exception(fakeError)))
+            whenever(mockDatabaseService.getCachedData(any(), any()))
+                .thenReturn(listOf(fakeWeather))
 
-        val actual = weatherService.getWeather(fakeLocationWithDecimals)
+            val actual = weatherService.getWeather(fakeLocationWithDecimals)
 
-        verify(mockNetworkService).getWeather(fakeLocationWithDecimals)
-        verify(mockDatabaseService).getCachedData(
-            fakeLocationRounded,
-            fakeTimestamp - WeatherService.CACHE_MAX_AGE
-        )
+            verify(mockNetworkService).getWeather(fakeLocationWithDecimals)
+            verify(mockDatabaseService).getCachedData(
+                fakeLocationRounded,
+                fakeTimestamp - WeatherService.CACHE_MAX_AGE
+            )
 
-        val weather = actual.getOrThrow()
-        assertTrue(weather.iconUrl.contains(fakeWeatherResponse.weatherList.first().icon))
-        assertEquals(fakeWeatherResponse.weatherList.first().condition, weather.condition)
-        assertEquals(fakeWeatherResponse.temp.value.toInt(), weather.temperature)
-        assertEquals(fakeWeatherResponse.wind.speed.toInt(), weather.windSpeed)
-        assertEquals(fakeCardinalDirections[2], weather.windDirection)
-        assertEquals(fakeWeatherResponse.location, weather.location)
-        assertEquals(fakeWeather.latitude, weather.latitude, 0.0)
-        assertEquals(fakeWeather.longitude, weather.longitude, 0.0)
+            val weather = actual.getOrThrow()
+            assertTrue(weather.iconUrl.contains(fakeWeatherResponse.weatherList.first().icon))
+            assertEquals(fakeWeatherResponse.weatherList.first().condition, weather.condition)
+            assertEquals(fakeWeatherResponse.temp.value.toInt(), weather.temperature)
+            assertEquals(fakeWeatherResponse.wind.speed.toInt(), weather.windSpeed)
+            assertEquals(fakeCardinalDirections[2], weather.windDirection)
+            assertEquals(fakeWeatherResponse.location, weather.location)
+            assertEquals(fakeWeather.latitude, weather.latitude, 0.0)
+            assertEquals(fakeWeather.longitude, weather.longitude, 0.0)
 
-        verifyNoMoreInteractions(mockDatabaseService)
-    }
+            verifyNoMoreInteractions(mockDatabaseService)
+        }
 
     @Test
     fun whenGetWeather_andNetworkServiceFails_andNoValidCache_returnsFailure() = runBlockingTest {

@@ -8,4 +8,15 @@ abstract class BaseApplication : Application() {
 
     abstract fun getAppComponent(): AppComponent
 
+    abstract fun getBaseUrlProvider(): BaseUrlProvider
+
+}
+
+// Base URL provider so that it can be swapped out in integration tests with localhost
+interface BaseUrlProvider {
+
+    fun getBaseWeatherUrl(): String
+
+    fun getBaseImageUrl(): String
+
 }

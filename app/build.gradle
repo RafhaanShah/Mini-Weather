@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.adarshr.test-logger'
@@ -20,12 +19,9 @@ android {
         versionName "1.0"
 
         buildConfigField("String", "API_KEY", secretProperties.getProperty("API_KEY"))
-        buildConfigField "String", "API_BASE_URL", '"https://api.openweathermap.org/"'
-        buildConfigField "String", "IMAGE_BASE_URL", '"https://openweathermap.org/img/wn/"'
 
         // https://developer.android.com/training/testing/junit-runner
-        testBuildType "local"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.miniweather.testutil.IntegrationTestRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
 
@@ -34,17 +30,6 @@ android {
             applicationIdSuffix ".debug"
             debuggable true
             minifyEnabled false
-        }
-
-        local {
-            applicationIdSuffix ".local"
-            debuggable true
-            minifyEnabled false
-            signingConfig signingConfigs.debug
-
-            buildConfigField "String", "API_BASE_URL", '"http://localhost:9999/"'
-            buildConfigField "String", "IMAGE_BASE_URL", '"http://invalidhost:9999/"'
-            buildConfigField "String", "API_KEY", '"xxxxxxxxxxxxxxxxxxxxx"'
         }
 
         release {

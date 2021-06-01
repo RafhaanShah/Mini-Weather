@@ -1,0 +1,16 @@
+{
+  "weather": [
+    {
+      "main": "Sunny",
+      "icon": "01d"
+    }
+  ],
+  "main": {
+    "temp": 25.0
+  },
+  "wind": {
+    "speed": 10.0,
+    "deg": 75.0
+  },
+  "name": "London, UK"
+}

@@ -1,7 +1,8 @@
 package com.miniweather.di
 
+import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.miniweather.BuildConfig
+import com.miniweather.app.BaseApplication
 import com.miniweather.service.network.WeatherApi
 import dagger.Module
 import dagger.Provides
@@ -21,15 +22,21 @@ interface NetworkModule {
         @Singleton
         @Provides
         fun provideRetrofit(): Retrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.API_BASE_URL)
-            .addConverterFactory(Json { ignoreUnknownKeys = true }.asConverterFactory("application/json".toMediaType()))
+            .baseUrl("http://localhost/")
+            .addConverterFactory(Json {
+                ignoreUnknownKeys = true
+            }.asConverterFactory("application/json".toMediaType()))
             .client(OkHttpClient.Builder().build())
             .build()
 
         @Singleton
         @Provides
-        fun provideWeatherApi(retrofit: Retrofit): WeatherApi = retrofit.create(WeatherApi::class.java)
+        fun provideWeatherApi(retrofit: Retrofit): WeatherApi =
+            retrofit.create(WeatherApi::class.java)
 
+        @Provides
+        fun provideBaseUrlProvider(applicationContext: Context) =
+            (applicationContext as BaseApplication).getBaseUrlProvider()
     }
 
 }
