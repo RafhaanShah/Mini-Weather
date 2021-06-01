@@ -11,7 +11,8 @@ import com.miniweather.ui.base.BaseActivity
 import com.miniweather.ui.base.injector
 import javax.inject.Inject
 
-class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Presenter>(), WeatherContract.View {
+class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Presenter>(),
+    WeatherContract.View {
 
     @Inject
     lateinit var imageService: ImageService
@@ -47,7 +48,13 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
     }
 
     override fun showLastUpdatedInfo(location: String, time: String) {
-        binding.weatherCard.showLastUpdatedInfo(getString(R.string.weather_last_updated, time, location))
+        binding.weatherCard.showLastUpdatedInfo(
+            getString(
+                R.string.weather_last_updated,
+                time,
+                location
+            )
+        )
     }
 
     override suspend fun requestLocationPermission(): Boolean {

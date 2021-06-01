@@ -17,7 +17,8 @@ class DatabaseService @Inject constructor(
 
     suspend fun insertIntoCache(weather: Weather) = execute { weatherDao.insertIntoCache(weather) }
 
-    suspend fun deleteInvalidCaches(maxAge: Long) = execute { weatherDao.deleteInvalidCaches(maxAge) }
+    suspend fun deleteInvalidCaches(maxAge: Long) =
+        execute { weatherDao.deleteInvalidCaches(maxAge) }
 
     private suspend fun <T> execute(query: suspend () -> T): T = withContext(dispatcher) { query() }
 

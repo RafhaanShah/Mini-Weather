@@ -4,7 +4,6 @@ import android.content.res.Resources
 import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class StringResourceService @Inject constructor(private val resources: Resources) {
 

@@ -1,9 +1,6 @@
 package com.miniweather.testutil
 
-import com.miniweather.BuildConfig
 import com.miniweather.model.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 const val fakeTimestamp: Long = 1587362940000L
 
@@ -36,10 +33,8 @@ val fakeWeather = Weather(
     fakeWeatherResponse.wind.speed.toInt(),
     fakeCardinalDirections[2],
     fakeWeatherResponse.location,
-    BuildConfig.IMAGE_BASE_URL + fakeWeatherResponse.weatherList.first().icon + ".png",
+    "http://localhost/" + fakeWeatherResponse.weatherList.first().icon + ".png",
     fakeTimestamp,
     fakeLocation.latitude,
     fakeLocation.longitude,
 )
-
-val fakeWeatherResponseJson by lazy { Json.encodeToString(fakeWeatherResponse) }

@@ -38,7 +38,7 @@ data class Wind(
     val direction: Double
 )
 
-@Entity(primaryKeys= [ "latitude", "longitude" ])
+@Entity(primaryKeys = ["latitude", "longitude"])
 data class Weather(
     val condition: String,
     val temperature: Int,

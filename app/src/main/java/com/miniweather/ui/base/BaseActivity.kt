@@ -10,8 +10,9 @@ import com.miniweather.app.BaseApplication
 import com.miniweather.service.permissions.PermissionService
 import javax.inject.Inject
 
-abstract class BaseActivity<V : BaseContract.View, P : BaseContract.Presenter<V>> : AppCompatActivity(),
-                                                                                    BaseContract.View {
+abstract class BaseActivity<V : BaseContract.View, P : BaseContract.Presenter<V>> :
+    AppCompatActivity(),
+    BaseContract.View {
 
     @Inject
     lateinit var permissionService: PermissionService
@@ -47,7 +48,10 @@ abstract class BaseActivity<V : BaseContract.View, P : BaseContract.Presenter<V>
     }
 
     private fun hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private suspend fun requestPermission(permission: String): Boolean {

@@ -11,7 +11,8 @@ interface TestPresenterModule {
     companion object {
 
         @Provides
-        fun provideWeatherPresenter(): WeatherContract.Presenter = Mockito.mock(WeatherContract.Presenter::class.java)
+        fun provideWeatherPresenter(): WeatherContract.Presenter =
+            Mockito.mock(WeatherContract.Presenter::class.java)
 
     }
 

@@ -24,7 +24,7 @@ class PermissionService @Inject constructor() {
         permissionRequest?.unregister()
     }
 
-    private fun getRequest(registry: ActivityResultRegistry) :  ActivityResultLauncher<String>{
+    private fun getRequest(registry: ActivityResultRegistry): ActivityResultLauncher<String> {
         unregister()
         return registry.register(
             "permission_request#" + nextRequestCode.getAndIncrement(),

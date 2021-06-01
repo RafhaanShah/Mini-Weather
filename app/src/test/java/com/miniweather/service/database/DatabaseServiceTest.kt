@@ -42,7 +42,11 @@ class DatabaseServiceTest : BaseTest() {
 
         val actual = databaseService.getCachedData(fakeLocation, fakeTimestamp)
 
-        verify(mockWeatherDao).getCachedData(fakeLocation.latitude, fakeLocation.longitude, fakeTimestamp)
+        verify(mockWeatherDao).getCachedData(
+            fakeLocation.latitude,
+            fakeLocation.longitude,
+            fakeTimestamp
+        )
         assertEquals(listOf(fakeWeather), actual)
     }
 

@@ -78,6 +78,9 @@ class WeatherPresenterTest : BaseTest() {
         setupWithLocationDenied()
 
         whenever(mockView.requestLocationPermission()).thenReturn(true)
+        whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
+        whenever(mockWeatherService.getWeather(any())).thenReturn(Result.success(fakeWeather))
+        whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
 
         presenter.onRefreshButtonClicked()
 
@@ -102,7 +105,8 @@ class WeatherPresenterTest : BaseTest() {
 
     @Test
     fun whenWeatherServiceReturnsCachedData_updatesView() = runBlockingTest {
-        val fakeWeather = fakeWeather.copy(timestamp = fakeTimestamp - TimeUnit.MINUTES.toMillis(10))
+        val fakeWeather =
+            fakeWeather.copy(timestamp = fakeTimestamp - TimeUnit.MINUTES.toMillis(10))
         val fakeTime = "12 hours ago"
 
         whenever(mockView.requestLocationPermission()).thenReturn(true)
