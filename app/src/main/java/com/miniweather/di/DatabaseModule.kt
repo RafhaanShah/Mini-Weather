@@ -2,8 +2,9 @@ package com.miniweather.di
 
 import android.content.Context
 import androidx.room.Room
-import com.miniweather.service.database.AppDatabase
 import com.miniweather.service.database.WeatherDao
+import com.miniweather.service.database.WeatherDatabase
+import com.miniweather.service.database.databaseName
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -15,14 +16,14 @@ interface DatabaseModule {
 
         @Singleton
         @Provides
-        fun provideAppDatabase(context: Context): AppDatabase = Room.databaseBuilder(
+        fun provideAppDatabase(context: Context): WeatherDatabase = Room.databaseBuilder(
             context,
-            AppDatabase::class.java, "database"
+            WeatherDatabase::class.java, databaseName
         ).build()
 
         @Singleton
         @Provides
-        fun provideWeatherDao(appDatabase: AppDatabase): WeatherDao = appDatabase.weatherDao()
+        fun provideWeatherDao(weatherDatabase: WeatherDatabase): WeatherDao = weatherDatabase.weatherDao()
 
     }
 

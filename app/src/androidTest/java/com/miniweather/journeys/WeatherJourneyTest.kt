@@ -26,4 +26,18 @@ class WeatherJourneyTest : BaseJourneyTest<WeatherActivity>(WeatherActivity::cla
         }
     }
 
+    @Test
+    fun testOfflineWeatherJourney() {
+        expectHttpRequest(path = weatherPath, code = 500)
+        executeDbOperation {
+            db.weatherDao()
+                .insertIntoCache(fakeWeather.copy(timestamp = System.currentTimeMillis()))
+        }
+        launch()
+
+        onPage(WeatherPage()) {
+            shouldShowWeather(fakeWeather)
+        }
+    }
+
 }

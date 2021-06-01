@@ -19,13 +19,13 @@ class WeatherDaoTest : BaseInstrumentedTest() {
 
     private lateinit var weatherDao: WeatherDao
 
-    private lateinit var database: AppDatabase
+    private lateinit var database: WeatherDatabase
 
     private val testDispatcher = TestCoroutineDispatcher()
 
     @Before
     fun setup() {
-        database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+        database = Room.inMemoryDatabaseBuilder(context, WeatherDatabase::class.java)
             .setTransactionExecutor(testDispatcher.asExecutor())
             .setQueryExecutor(testDispatcher.asExecutor())
             .allowMainThreadQueries()

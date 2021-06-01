@@ -33,7 +33,7 @@ val fakeWeather = Weather(
     fakeWeatherResponse.wind.speed.toInt(),
     fakeCardinalDirections[2],
     fakeWeatherResponse.location,
-    "http://localhost/" + fakeWeatherResponse.weatherList.first().icon + ".png",
+    "file:///android_asset/images/" + fakeWeatherResponse.weatherList.first().icon + ".png",
     fakeTimestamp,
     fakeLocation.latitude,
     fakeLocation.longitude,
