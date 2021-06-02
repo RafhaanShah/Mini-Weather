@@ -41,7 +41,7 @@ class WeatherPresenter @Inject constructor(
     private fun checkLocationPermission() {
         scope.launch {
             view?.let { view ->
-                if (view.requestLocationPermission()) {
+                if (view.getLocationPermission()) {
                     getWeather()
                 } else {
                     view.showError(stringResourceService.getString(R.string.error_permission_location))

@@ -1,12 +1,14 @@
 package com.miniweather.testutil
 
 import android.content.Context
+import android.os.Bundle
 import androidx.annotation.CallSuper
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.room.Room
-import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.miniweather.R
 import com.miniweather.service.database.WeatherDatabase
 import com.miniweather.service.database.databaseName
 import kotlinx.coroutines.runBlocking
@@ -15,9 +17,9 @@ import org.junit.Before
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-abstract class BaseJourneyTest<T : AppCompatActivity>(private val clazz: Class<T>) {
+abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
 
-    private lateinit var scenario: ActivityScenario<T>
+    private lateinit var scenario: FragmentScenario<T>
     private lateinit var context: Context
 
     protected lateinit var db: WeatherDatabase
@@ -41,8 +43,12 @@ abstract class BaseJourneyTest<T : AppCompatActivity>(private val clazz: Class<T
         WebServer.verifyRequests()
     }
 
-    protected fun launch() {
-        scenario = ActivityScenario.launch(clazz)
+    protected fun launchFragment(fragmentArgs: Bundle? = null) {
+        scenario = FragmentScenario.launchInContainer(
+            fragmentClass = clazz,
+            fragmentArgs = fragmentArgs,
+            themeResId = R.style.AppTheme
+        )
     }
 
     protected fun <S> executeDbOperation(query: suspend () -> S): S = runBlocking { query() }

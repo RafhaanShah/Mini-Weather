@@ -2,7 +2,7 @@ package com.miniweather.di
 
 import android.content.Context
 import com.miniweather.app.BaseApplication
-import com.miniweather.ui.weather.WeatherActivity
+import com.miniweather.ui.weather.WeatherFragment
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -26,6 +26,6 @@ interface AppComponent {
 
     fun inject(application: BaseApplication)
 
-    fun inject(activity: WeatherActivity)
+    fun inject(fragment: WeatherFragment)
 
 }

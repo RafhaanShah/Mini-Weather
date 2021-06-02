@@ -6,7 +6,7 @@ import com.miniweather.ui.base.BaseContract
 interface WeatherContract : BaseContract {
 
     interface View : BaseContract.View {
-        suspend fun requestLocationPermission(): Boolean
+        suspend fun getLocationPermission(): Boolean
         fun showLoading()
         fun showWeather(weather: Weather)
         fun showLastUpdatedInfo(location: String, time: String)

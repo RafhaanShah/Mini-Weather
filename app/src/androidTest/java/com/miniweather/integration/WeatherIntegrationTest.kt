@@ -1,16 +1,16 @@
-package com.miniweather.journeys
+package com.miniweather.integration
 
 import androidx.test.rule.GrantPermissionRule
 import com.miniweather.pages.WeatherPage
 import com.miniweather.service.network.weatherPath
-import com.miniweather.testutil.BaseJourneyTest
+import com.miniweather.testutil.BaseIntegrationTest
 import com.miniweather.testutil.fakeWeather
 import com.miniweather.testutil.onPage
-import com.miniweather.ui.weather.WeatherActivity
+import com.miniweather.ui.weather.WeatherFragment
 import org.junit.Rule
 import org.junit.Test
 
-class WeatherJourneyTest : BaseJourneyTest<WeatherActivity>(WeatherActivity::class.java) {
+class WeatherIntegrationTest : BaseIntegrationTest<WeatherFragment>(WeatherFragment::class.java) {
 
     @get:Rule
     val grantPermissionRule: GrantPermissionRule =
@@ -19,7 +19,7 @@ class WeatherJourneyTest : BaseJourneyTest<WeatherActivity>(WeatherActivity::cla
     @Test
     fun testWeatherJourney() {
         expectHttpRequest(path = weatherPath, fileName = "weather.json")
-        launch()
+        launchFragment()
 
         onPage(WeatherPage()) {
             shouldShowWeather(fakeWeather)
@@ -33,7 +33,7 @@ class WeatherJourneyTest : BaseJourneyTest<WeatherActivity>(WeatherActivity::cla
             db.weatherDao()
                 .insertIntoCache(fakeWeather.copy(timestamp = System.currentTimeMillis()))
         }
-        launch()
+        launchFragment()
 
         onPage(WeatherPage()) {
             shouldShowWeather(fakeWeather)

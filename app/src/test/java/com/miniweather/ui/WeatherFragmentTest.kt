@@ -4,12 +4,12 @@ import android.Manifest
 import com.miniweather.pages.WeatherPage
 import com.miniweather.service.network.ImageService
 import com.miniweather.service.permissions.PermissionService
-import com.miniweather.testutil.BaseActivityTest
+import com.miniweather.testutil.BaseFragmentTest
 import com.miniweather.testutil.fakeError
 import com.miniweather.testutil.fakeWeather
 import com.miniweather.testutil.onPage
-import com.miniweather.ui.weather.WeatherActivity
 import com.miniweather.ui.weather.WeatherContract
+import com.miniweather.ui.weather.WeatherFragment
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.verify
@@ -17,16 +17,13 @@ import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 
 @ExperimentalCoroutinesApi
-class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::class.java) {
-
-    @Mock
-    private lateinit var mockPresenter: WeatherContract.Presenter
+class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::class.java) {
 
     @Mock
     private lateinit var mockImageService: ImageService
@@ -34,20 +31,22 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
     @Mock
     private lateinit var mockPermissionsService: PermissionService
 
+    @Mock
+    private lateinit var mockPresenter: WeatherContract.Presenter
+
     @Before
-    override fun setup() {
-        super.setup()
-        scenario.onActivity { activity ->
-            activity.presenter = mockPresenter
-            activity.imageService = mockImageService
-            activity.permissionService = mockPermissionsService
-        }
+    fun setup() {
+        launchFragment(WeatherFragment().apply {
+            this.imageService = mockImageService
+            this.permissionService = mockPermissionsService
+            this.presenter = mockPresenter
+        })
     }
 
     @Test
     fun whenShowWeather_updatesWeatherCard() {
-        scenario.onActivity { activity ->
-            activity.showWeather(fakeWeather)
+        scenario.onFragment { fragment ->
+            fragment.showWeather(fakeWeather)
         }
 
         onPage(WeatherPage()) {
@@ -59,8 +58,8 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
 
     @Test
     fun whenRefreshButtonClicked_callsPresenter() {
-        scenario.onActivity { activity ->
-            activity.showWeather(fakeWeather)
+        scenario.onFragment { fragment ->
+            fragment.showWeather(fakeWeather)
         }
 
         onPage(WeatherPage()) {
@@ -74,9 +73,9 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
     fun whenShowCachedDataInfo_showsLastUpdatedText() {
         val fakeTime = "12 hours ago"
 
-        scenario.onActivity { activity ->
-            activity.showWeather(fakeWeather)
-            activity.showLastUpdatedInfo(fakeWeather.location, fakeTime)
+        scenario.onFragment { fragment ->
+            fragment.showWeather(fakeWeather)
+            fragment.showLastUpdatedInfo(fakeWeather.location, fakeTime)
         }
 
         onPage(WeatherPage()) {
@@ -86,8 +85,8 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
 
     @Test
     fun whenShowLoading_showsSpinnerAndHidesOtherViews() {
-        scenario.onActivity { activity ->
-            activity.showLoading()
+        scenario.onFragment { fragment ->
+            fragment.showLoading()
         }
 
         onPage(WeatherPage()) {
@@ -97,8 +96,8 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
 
     @Test
     fun whenShowError_showsErrorMessage() {
-        scenario.onActivity { activity ->
-            activity.showError(fakeError)
+        scenario.onFragment { fragment ->
+            fragment.showError(fakeError)
         }
 
         onPage(WeatherPage()) {
@@ -108,16 +107,17 @@ class WeatherActivityTest : BaseActivityTest<WeatherActivity>(WeatherActivity::c
 
     @Test
     fun whenRequestLocationPermission_callsPermissionService() = runBlockingTest {
-        whenever(mockPermissionsService.requestPermission(any(), any())).thenReturn(true)
+        val expected = true
+        whenever(
+            mockPermissionsService
+                .requestPermission(any(), eq(Manifest.permission.ACCESS_FINE_LOCATION))
+        )
+            .thenReturn(expected)
 
-        scenario.onActivity { activity ->
+        scenario.onFragment { fragment ->
             launch {
-                val actual = activity.requestLocationPermission()
-                assertTrue(actual)
-                verify(mockPermissionsService).requestPermission(
-                    any(),
-                    eq(Manifest.permission.ACCESS_FINE_LOCATION)
-                )
+                val actual = fragment.getLocationPermission()
+                assertEquals(expected, actual)
             }
         }
     }

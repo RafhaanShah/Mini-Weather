@@ -2,28 +2,39 @@ package com.miniweather.ui.weather
 
 import android.Manifest.permission
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.miniweather.R
-import com.miniweather.databinding.ActivityWeatherBinding
+import com.miniweather.databinding.FragmentWeatherBinding
 import com.miniweather.model.Weather
 import com.miniweather.service.network.ImageService
-import com.miniweather.ui.base.BaseActivity
+import com.miniweather.service.permissions.PermissionService
+import com.miniweather.ui.base.BaseFragment
 import com.miniweather.ui.base.injector
 import javax.inject.Inject
 
-class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Presenter>(),
+class WeatherFragment : BaseFragment<WeatherContract.View, WeatherContract.Presenter>(),
     WeatherContract.View {
 
     @Inject
     lateinit var imageService: ImageService
 
     @Inject
+    lateinit var permissionService: PermissionService
+
+    @Inject
     override lateinit var presenter: WeatherContract.Presenter
 
-    override lateinit var binding: ActivityWeatherBinding
+    override lateinit var binding: FragmentWeatherBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        permissionService.registerForPermissions(this)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.weatherRefreshButton.setOnClickListener {
             presenter.onRefreshButtonClicked()
@@ -34,9 +45,11 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
         injector.inject(this)
     }
 
-    override fun bindView() {
-        binding = ActivityWeatherBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun bindView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+    ) {
+        binding = FragmentWeatherBinding.inflate(inflater, container, false)
     }
 
     override fun showWeather(weather: Weather) {
@@ -57,9 +70,8 @@ class WeatherActivity : BaseActivity<WeatherContract.View, WeatherContract.Prese
         )
     }
 
-    override suspend fun requestLocationPermission(): Boolean {
-        return checkAndRequestPermission(permission.ACCESS_FINE_LOCATION)
-    }
+    override suspend fun getLocationPermission() =
+        permissionService.requestPermission(requireContext(), permission.ACCESS_FINE_LOCATION)
 
     override fun showLoading() {
         binding.weatherProgress.visibility = View.VISIBLE

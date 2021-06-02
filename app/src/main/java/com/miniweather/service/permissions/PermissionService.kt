@@ -1,37 +1,39 @@
 package com.miniweather.service.permissions
 
+import android.content.Context
+import android.content.pm.PackageManager
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CompletableDeferred
-import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 class PermissionService @Inject constructor() {
 
-    private val nextRequestCode = AtomicInteger()
-    private var permissionRequest: ActivityResultLauncher<String>? = null
     private lateinit var permissionCompletable: CompletableDeferred<Boolean>
+    private lateinit var activityResultLauncher: ActivityResultLauncher<String>
 
-    suspend fun requestPermission(registry: ActivityResultRegistry, permission: String): Boolean {
-        permissionRequest = getRequest(registry)
+    fun registerForPermissions(fragment: Fragment) {
+        activityResultLauncher =
+            fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+                permissionCompletable.complete(it)
+            }
+    }
+
+    suspend fun requestPermission(context: Context, permission: String): Boolean {
+        if (hasPermission(context, permission))
+            return true
+
         permissionCompletable = CompletableDeferred()
-        permissionRequest?.launch(permission)
+        activityResultLauncher.launch(permission)
         return permissionCompletable.await()
     }
 
-    fun unregister() {
-        permissionRequest?.unregister()
-    }
-
-    private fun getRequest(registry: ActivityResultRegistry): ActivityResultLauncher<String> {
-        unregister()
-        return registry.register(
-            "permission_request#" + nextRequestCode.getAndIncrement(),
-            ActivityResultContracts.RequestPermission()
-        ) { granted ->
-            permissionCompletable.complete(granted)
-        }
-    }
+    private fun hasPermission(context: Context, permission: String) =
+        ContextCompat.checkSelfPermission(
+            context,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
 
 }

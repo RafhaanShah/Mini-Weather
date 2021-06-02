@@ -59,14 +59,14 @@ class WeatherPresenterTest : BaseTest() {
 
     @Test
     fun whenViewAttachedWithPermissions_fetchesDataAndUpdatesView() = runBlockingTest {
-        whenever(mockView.requestLocationPermission()).thenReturn(true)
+        whenever(mockView.getLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
         whenever(mockWeatherService.getWeather(any())).thenReturn(Result.success(fakeWeather))
         whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
 
         presenter.onAttachView(mockView)
 
-        verify(mockView).requestLocationPermission()
+        verify(mockView).getLocationPermission()
         verify(mockView).showLoading()
         verify(mockLocationService).getLocation()
         verify(mockWeatherService).getWeather(fakeLocation)
@@ -77,14 +77,14 @@ class WeatherPresenterTest : BaseTest() {
     fun whenRefreshButtonClicked_andPermissionGranted_andFetchesData() = runBlockingTest {
         setupWithLocationDenied()
 
-        whenever(mockView.requestLocationPermission()).thenReturn(true)
+        whenever(mockView.getLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
         whenever(mockWeatherService.getWeather(any())).thenReturn(Result.success(fakeWeather))
         whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
 
         presenter.onRefreshButtonClicked()
 
-        verify(mockView).requestLocationPermission()
+        verify(mockView).getLocationPermission()
         verify(mockView).showLoading()
         verify(mockLocationService).getLocation()
     }
@@ -94,11 +94,11 @@ class WeatherPresenterTest : BaseTest() {
         whenever(mockStringResourceService.getString(any())).thenReturn(fakeError)
         setupWithLocationDenied()
 
-        whenever(mockView.requestLocationPermission()).thenReturn(false)
+        whenever(mockView.getLocationPermission()).thenReturn(false)
 
         presenter.onRefreshButtonClicked()
 
-        verify(mockView).requestLocationPermission()
+        verify(mockView).getLocationPermission()
         verify(mockView).showError(fakeError)
         verifyZeroInteractions(mockLocationService)
     }
@@ -109,7 +109,7 @@ class WeatherPresenterTest : BaseTest() {
             fakeWeather.copy(timestamp = fakeTimestamp - TimeUnit.MINUTES.toMillis(10))
         val fakeTime = "12 hours ago"
 
-        whenever(mockView.requestLocationPermission()).thenReturn(true)
+        whenever(mockView.getLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
         whenever(mockWeatherService.getWeather(any())).thenReturn(Result.success(fakeWeather))
         whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
@@ -125,7 +125,7 @@ class WeatherPresenterTest : BaseTest() {
     @Test
     fun whenWeatherServiceFails_updatesView() = runBlockingTest {
         whenever(mockStringResourceService.getString(any())).thenReturn(fakeError)
-        whenever(mockView.requestLocationPermission()).thenReturn(true)
+        whenever(mockView.getLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
         whenever(mockWeatherService.getWeather(any())).thenReturn(Result.failure(Exception(fakeError)))
 
@@ -137,7 +137,7 @@ class WeatherPresenterTest : BaseTest() {
     @Test
     fun whenLocationServiceTimesOut_updatesView() = runBlockingTest {
         whenever(mockStringResourceService.getString(any())).thenReturn(fakeError)
-        whenever(mockView.requestLocationPermission()).thenReturn(true)
+        whenever(mockView.getLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).doThrow(mock<TimeoutCancellationException>())
 
         presenter.onAttachView(mockView)
@@ -146,7 +146,7 @@ class WeatherPresenterTest : BaseTest() {
     }
 
     private suspend fun setupWithLocationDenied() {
-        whenever(mockView.requestLocationPermission()).thenReturn(false)
+        whenever(mockView.getLocationPermission()).thenReturn(false)
         presenter.onAttachView(mockView)
         clearInvocations(mockView)
     }

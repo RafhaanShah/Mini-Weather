@@ -25,7 +25,7 @@ class WeatherDaoTest : BaseInstrumentedTest() {
 
     @Before
     fun setup() {
-        database = Room.inMemoryDatabaseBuilder(context, WeatherDatabase::class.java)
+        database = Room.inMemoryDatabaseBuilder(application, WeatherDatabase::class.java)
             .setTransactionExecutor(testDispatcher.asExecutor())
             .setQueryExecutor(testDispatcher.asExecutor())
             .allowMainThreadQueries()
