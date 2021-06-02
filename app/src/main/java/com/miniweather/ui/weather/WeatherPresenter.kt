@@ -40,7 +40,7 @@ class WeatherPresenter @Inject constructor(
 
     private fun checkLocationPermission() {
         scope.launch {
-            view?.let { view ->
+            view.let { view ->
                 if (view.getLocationPermission()) {
                     getWeather()
                 } else {
@@ -51,7 +51,7 @@ class WeatherPresenter @Inject constructor(
     }
 
     private suspend fun getWeather() {
-        view?.showLoading()
+        view.showLoading()
         try {
             weatherService.getWeather(locationService.getLocation())
                 .onSuccess { showWeather(it) }
@@ -60,17 +60,17 @@ class WeatherPresenter @Inject constructor(
                         is HttpException -> stringResourceService.getString(R.string.error_network_response)
                         else -> stringResourceService.getString(R.string.error_network_request)
                     }
-                    view?.showError(errorMessage)
+                    view.showError(errorMessage)
                 }
         } catch (e: TimeoutCancellationException) {
-            view?.showError(stringResourceService.getString(R.string.error_location_timeout))
+            view.showError(stringResourceService.getString(R.string.error_location_timeout))
         }
     }
 
     private fun showWeather(weather: Weather) {
-        view?.showWeather(weather)
+        view.showWeather(weather)
         if (weather.timestamp < (timeService.getCurrentTime() - TimeUnit.MINUTES.toMillis(5))) {
-            view?.showLastUpdatedInfo(
+            view.showLastUpdatedInfo(
                 weather.location,
                 timeService.getRelativeTimeString(weather.timestamp)
             )

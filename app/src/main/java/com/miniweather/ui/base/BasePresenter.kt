@@ -4,16 +4,20 @@ import androidx.annotation.CallSuper
 
 abstract class BasePresenter<V : BaseContract.View> : BaseContract.Presenter<V> {
 
-    protected var view: V? = null
+    private var _view: V? = null
+    protected val view: V
+        get() = _view ?: throw IllegalStateException("Cannot access view while detached")
 
     @CallSuper
     override fun onAttachView(view: V) {
-        this.view = view
+        check(_view == null) { "View is already attached to Presenter" }
+        _view = view
     }
 
     @CallSuper
     override fun onDetachView() {
-        view = null
+        check(_view != null) { "View is already detached from Presenter" }
+        _view = null
     }
 
 }

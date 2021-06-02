@@ -1,4 +1,4 @@
-package com.miniweather.ui
+package com.miniweather.ui.weather
 
 import android.Manifest
 import com.miniweather.pages.WeatherPage
@@ -8,8 +8,6 @@ import com.miniweather.testutil.BaseFragmentTest
 import com.miniweather.testutil.fakeError
 import com.miniweather.testutil.fakeWeather
 import com.miniweather.testutil.onPage
-import com.miniweather.ui.weather.WeatherContract
-import com.miniweather.ui.weather.WeatherFragment
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.verify

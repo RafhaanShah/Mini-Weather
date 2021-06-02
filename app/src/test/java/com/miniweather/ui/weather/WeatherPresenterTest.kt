@@ -1,12 +1,10 @@
-package com.miniweather.ui
+package com.miniweather.ui.weather
 
 import com.miniweather.service.location.LocationService
 import com.miniweather.service.util.StringResourceService
 import com.miniweather.service.util.TimeService
 import com.miniweather.service.weather.WeatherService
 import com.miniweather.testutil.*
-import com.miniweather.ui.weather.WeatherContract
-import com.miniweather.ui.weather.WeatherPresenter
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
