@@ -31,7 +31,7 @@ jobs:
       run: cp secret.properties.example secret.properties
     
     - name: Run Unit Tests
-      run: ./gradlew testLocalUnitTest
+      run: ./gradlew testDebugUnitTest
 
     - name: Upload Test Reports
       if: ${{ failure() }}
@@ -66,7 +66,7 @@ jobs:
         with:
           api-level: 29
           target: google_apis
-          script: ./gradlew connectedLocalAndroidTest
+          script: ./gradlew connectedDebugAndroidTest
 
       - name: Upload Test Reports
         if: ${{ failure() }}
