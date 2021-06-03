@@ -16,7 +16,8 @@ import org.junit.Test
 import org.mockito.Mock
 
 @ExperimentalCoroutinesApi
-class BaseTestFragmentTest : BaseFragmentTest<TestFragment>(TestFragment::class.java) {
+class BaseTestFragmentTest :
+    BaseFragmentTest<TestFragment>(TestFragment::class.java) {
 
     @Mock
     private lateinit var mockPresenter: FakeContract.Presenter
@@ -36,11 +37,7 @@ class BaseTestFragmentTest : BaseFragmentTest<TestFragment>(TestFragment::class.
     }
 
     @Test
-    fun whenCreateView_inflatesLayout() {
-        scenario.onFragment { fragment ->
-            assertTrue(fragment.viewBound)
-        }
-
+    fun whenCreateView_bindsView() {
         onPage(TestPage()) { }
     }
 
@@ -48,6 +45,14 @@ class BaseTestFragmentTest : BaseFragmentTest<TestFragment>(TestFragment::class.
     fun whenViewCreated_attachesToPresenter() {
         scenario.onFragment { fragment ->
             verify(mockPresenter).onAttachView(fragment)
+        }
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun whenViewDestroyed_removesViewBinding() {
+        scenario.onFragment { fragment ->
+            fragment.onDestroyView()
+            fragment.getViewBinding()
         }
     }
 
@@ -59,24 +64,22 @@ class BaseTestFragmentTest : BaseFragmentTest<TestFragment>(TestFragment::class.
 
 }
 
-class TestFragment : BaseFragment<FakeContract.View, FakeContract.Presenter>(),
+class TestFragment :
+    BaseFragment<FakeContract.View, FakeContract.Presenter, FragmentTestBinding>(),
     FakeContract.View {
 
     var dependenciesInjected = false
-    var viewBound = false
 
     override lateinit var presenter: FakeContract.Presenter
-
-    override lateinit var binding: FragmentTestBinding
 
     override fun injectDependencies() {
         dependenciesInjected = true
     }
 
-    override fun bindView(inflater: LayoutInflater, container: ViewGroup?) {
-        viewBound = true
-        binding = FragmentTestBinding.inflate(inflater, container, false)
-    }
+    override fun bindView(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentTestBinding.inflate(inflater, container, false)
+
+    fun getViewBinding() = binding
 
 }
 

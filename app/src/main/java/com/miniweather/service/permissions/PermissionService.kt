@@ -25,6 +25,9 @@ class PermissionService @Inject constructor() {
         if (hasPermission(context, permission))
             return true
 
+        check(::activityResultLauncher.isInitialized) {
+            "registerForPermissions must be called in Fragment's onCreate"
+        }
         permissionCompletable = CompletableDeferred()
         activityResultLauncher.launch(permission)
         return permissionCompletable.await()

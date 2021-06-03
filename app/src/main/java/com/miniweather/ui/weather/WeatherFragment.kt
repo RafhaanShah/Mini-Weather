@@ -14,7 +14,8 @@ import com.miniweather.ui.base.BaseFragment
 import com.miniweather.ui.base.injector
 import javax.inject.Inject
 
-class WeatherFragment : BaseFragment<WeatherContract.View, WeatherContract.Presenter>(),
+class WeatherFragment :
+    BaseFragment<WeatherContract.View, WeatherContract.Presenter, FragmentWeatherBinding>(),
     WeatherContract.View {
 
     @Inject
@@ -25,8 +26,6 @@ class WeatherFragment : BaseFragment<WeatherContract.View, WeatherContract.Prese
 
     @Inject
     override lateinit var presenter: WeatherContract.Presenter
-
-    override lateinit var binding: FragmentWeatherBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,9 +47,8 @@ class WeatherFragment : BaseFragment<WeatherContract.View, WeatherContract.Prese
     override fun bindView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-    ) {
-        binding = FragmentWeatherBinding.inflate(inflater, container, false)
-    }
+    ) = FragmentWeatherBinding.inflate(inflater, container, false)
+
 
     override fun showWeather(weather: Weather) {
         hideLoading()

@@ -9,13 +9,15 @@ import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.miniweather.app.BaseApplication
 
-abstract class BaseFragment<V : BaseContract.View, P : BaseContract.Presenter<V>> :
+abstract class BaseFragment<V : BaseContract.View, P : BaseContract.Presenter<V>, B : ViewBinding> :
     Fragment(),
     BaseContract.View {
 
     abstract val presenter: P
 
-    protected abstract val binding: ViewBinding
+    private var _binding: B? = null
+    protected val binding: B
+        get() = _binding ?: throw IllegalStateException("Cannot reference view after onDestroyView")
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -27,7 +29,7 @@ abstract class BaseFragment<V : BaseContract.View, P : BaseContract.Presenter<V>
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        bindView(inflater, container)
+        _binding = bindView(inflater, container)
         return binding.root
     }
 
@@ -39,6 +41,7 @@ abstract class BaseFragment<V : BaseContract.View, P : BaseContract.Presenter<V>
 
     override fun onDestroyView() {
         presenter.onDetachView()
+        _binding = null
         super.onDestroyView()
     }
 
@@ -47,9 +50,9 @@ abstract class BaseFragment<V : BaseContract.View, P : BaseContract.Presenter<V>
     abstract fun bindView(
         inflater: LayoutInflater,
         container: ViewGroup?
-    )
+    ): B
 
 }
 
-val BaseFragment<*, *>.injector
+val BaseFragment<*, *, *>.injector
     get() = (requireActivity().application as BaseApplication).getAppComponent()

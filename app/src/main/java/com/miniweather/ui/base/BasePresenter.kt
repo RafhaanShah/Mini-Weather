@@ -16,7 +16,7 @@ abstract class BasePresenter<V : BaseContract.View> : BaseContract.Presenter<V> 
 
     @CallSuper
     override fun onDetachView() {
-        check(_view != null) { "View is already detached from Presenter" }
+        checkNotNull(_view) { "View is already detached from Presenter" }
         _view = null
     }
 
