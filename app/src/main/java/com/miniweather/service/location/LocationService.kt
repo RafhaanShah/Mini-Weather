@@ -11,13 +11,16 @@ import kotlinx.coroutines.withTimeout
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+
 class LocationService @Inject constructor(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
 ) {
 
+    private val timeout = TimeUnit.SECONDS.toMillis(30)
+
     @SuppressLint("MissingPermission")
     @Throws(TimeoutCancellationException::class)
-    suspend fun getLocation(): Location = withTimeout(TimeUnit.SECONDS.toMillis(30)) {
+    suspend fun getLocation(): Location = withTimeout(timeout) {
         val location = fusedLocationProviderClient.getCurrentLocation(
             LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
             CancellationTokenSource().token

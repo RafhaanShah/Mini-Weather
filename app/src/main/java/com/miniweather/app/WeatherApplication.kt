@@ -11,23 +11,11 @@ class WeatherApplication : BaseApplication() {
         super.onCreate()
         appComponent = DaggerAppComponent
             .factory()
-            .create(this)
+            .create(applicationContext)
     }
 
     override fun getAppComponent(): AppComponent {
         return appComponent
-    }
-
-    override fun getBaseUrlProvider(): BaseUrlProvider {
-        return object : BaseUrlProvider {
-            override fun getBaseWeatherUrl(): String {
-                return "https://api.openweathermap.org/"
-            }
-
-            override fun getBaseImageUrl(): String {
-                return "https://openweathermap.org/img/wn/"
-            }
-        }
     }
 
 }

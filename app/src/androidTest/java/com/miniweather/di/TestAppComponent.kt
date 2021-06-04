@@ -1,8 +1,7 @@
 package com.miniweather.di
 
 import android.content.Context
-import com.miniweather.app.BaseApplication
-import com.miniweather.ui.weather.WeatherFragment
+import com.miniweather.testutil.TestMocksHandler
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -12,21 +11,20 @@ import javax.inject.Singleton
     modules = [
         AppModule::class,
         CoroutineModule::class,
-        DatabaseModule::class,
+        TestDatabaseModule::class,
         NetworkModule::class,
-        LocationModule::class,
-        PresenterModule::class
+        TestLocationModule::class,
+        PresenterModule::class,
+        TestMocksModule::class
     ]
 )
-interface AppComponent {
+interface TestAppComponent : AppComponent {
 
     @Component.Factory
     interface Factory {
         fun create(@BindsInstance applicationContext: Context): AppComponent
     }
 
-    fun inject(application: BaseApplication)
-
-    fun inject(fragment: WeatherFragment)
+    fun inject(testMocksHandler: TestMocksHandler)
 
 }

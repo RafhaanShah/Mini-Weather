@@ -9,7 +9,7 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
-@Module
+@Module(includes = [DaoModule::class])
 interface DatabaseModule {
 
     companion object {
@@ -21,9 +21,19 @@ interface DatabaseModule {
             WeatherDatabase::class.java, databaseName
         ).build()
 
+    }
+
+}
+
+@Module
+interface DaoModule {
+
+    companion object {
+
         @Singleton
         @Provides
-        fun provideWeatherDao(weatherDatabase: WeatherDatabase): WeatherDao = weatherDatabase.weatherDao()
+        fun provideWeatherDao(weatherDatabase: WeatherDatabase): WeatherDao =
+            weatherDatabase.weatherDao()
 
     }
 

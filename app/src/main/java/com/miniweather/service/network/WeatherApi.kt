@@ -1,19 +1,19 @@
 package com.miniweather.service.network
 
+import com.miniweather.BuildConfig
 import com.miniweather.model.WeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
-import retrofit2.http.Url
 
 interface WeatherApi {
 
-    @GET
+    @GET(weatherPath)
     suspend fun getWeather(
-        @Url url: String,
         @Query("lat") lat: Double,
         @Query("lon") lon: Double
     ): WeatherResponse
 
+
 }
 
-
+const val weatherPath = "data/2.5/weather?units=metric&appid=" + BuildConfig.API_KEY

@@ -1,14 +1,16 @@
 package com.miniweather.service.weather
 
 import com.miniweather.R
-import com.miniweather.app.BaseUrlProvider
 import com.miniweather.model.Location
 import com.miniweather.model.Weather
 import com.miniweather.model.WeatherResponse
+import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.service.database.DatabaseService
 import com.miniweather.service.network.NetworkService
+import com.miniweather.service.network.PNG
 import com.miniweather.service.util.StringResourceService
 import com.miniweather.service.util.TimeService
+import com.miniweather.util.Empty
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -42,10 +44,11 @@ class WeatherService @Inject constructor(
     }
 
     private suspend fun weatherSuccess(
-        location: Location,
+        roundedLocation: Location,
         networkResponse: WeatherResponse
     ): Result<Weather> = coroutineScope {
-        val weather = createWeatherData(networkResponse, location.latitude, location.longitude)
+        val weather =
+            createWeatherData(networkResponse, roundedLocation.latitude, roundedLocation.longitude)
         launch {
             databaseService.deleteInvalidCaches(timeService.getCurrentTime() - CACHE_MAX_AGE)
             databaseService.insertIntoCache(weather)
@@ -74,14 +77,18 @@ class WeatherService @Inject constructor(
         lat: Double,
         lon: Double
     ): Weather {
+        val current = weatherResponse.weatherList.firstOrNull()
         return Weather(
-            weatherResponse.weatherList.firstOrNull()?.condition
+            current?.condition
                 ?: stringResourceService.getString(R.string.unknown),
             weatherResponse.temp.value.roundToInt(),
             weatherResponse.wind.speed.roundToInt(),
             formatBearing(weatherResponse.wind.direction),
             weatherResponse.location,
-            baseUrlProvider.getBaseImageUrl() + (weatherResponse.weatherList.firstOrNull()?.icon) + ".png",
+            current?.let {
+                baseUrlProvider.getBaseImageUrl() +
+                        (weatherResponse.weatherList.firstOrNull()?.icon) + PNG
+            } ?: String.Empty,
             timeService.getCurrentTime(),
             lat,
             lon

@@ -5,49 +5,56 @@ import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.testing.FragmentScenario
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.miniweather.R
+import com.miniweather.app.IntegrationTestApplication
+import com.miniweather.di.TestAppComponent
 import com.miniweather.service.database.WeatherDatabase
-import com.miniweather.service.database.databaseName
+import com.miniweather.util.Empty
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
+import org.junit.rules.Timeout
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
 
     @get:Rule
-    val storagePermissionRule: GrantPermissionRule =
-        GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    val globalTimeout: Timeout = Timeout.seconds(15)
 
     @get:Rule
     val testFailureScreenshotRule = TestFailureScreenshotRule()
 
-    private lateinit var scenario: FragmentScenario<T>
-    private lateinit var context: Context
+    @get:Rule
+    val storagePermissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
-    protected lateinit var db: WeatherDatabase
+    private lateinit var scenario: FragmentScenario<T>
+    private lateinit var appContext: Context
+    private lateinit var instrumentationContext: Context
+
+    protected val mocksHandler = TestMocksHandler()
 
     @CallSuper
     @Before
     open fun setup() {
-        context = ApplicationProvider.getApplicationContext()
-        db = Room.databaseBuilder(
-            context,
-            WeatherDatabase::class.java, databaseName
-        ).build()
-        WebServer.start(context.assets)
+        appContext = ApplicationProvider.getApplicationContext()
+        instrumentationContext = InstrumentationRegistry.getInstrumentation().context
+        WebServer.start(instrumentationContext.assets)
+        mocksHandler.initMocks(
+            (appContext as IntegrationTestApplication)
+                .getAppComponent() as TestAppComponent
+        )
     }
 
     @CallSuper
     @After
     open fun tearDown() {
-        db.close()
         WebServer.shutdown()
         WebServer.verifyRequests()
     }
@@ -60,15 +67,19 @@ abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
         )
     }
 
-    protected fun <S> executeDbOperation(query: suspend () -> S): S = runBlocking { query() }
-
     protected fun expectHttpRequest(
-        path: String = "",
+        path: String = String.Empty,
         method: String = "GET",
         code: Int = 200,
         fileName: String? = null
     ) = WebServer.expectRequest(
         path, method, code, fileName
     )
+
+    protected fun <R> executeDbOperation(func: suspend WeatherDatabase.() -> R): R {
+        return runBlocking {
+            func.invoke(mocksHandler.mockDb)
+        }
+    }
 
 }

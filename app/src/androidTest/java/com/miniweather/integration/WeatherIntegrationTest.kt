@@ -4,11 +4,13 @@ import androidx.test.rule.GrantPermissionRule
 import com.miniweather.pages.WeatherPage
 import com.miniweather.service.network.weatherPath
 import com.miniweather.testutil.BaseIntegrationTest
+import com.miniweather.testutil.fakeTimestamp
 import com.miniweather.testutil.fakeWeather
 import com.miniweather.testutil.onPage
 import com.miniweather.ui.weather.WeatherFragment
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.TimeUnit
 
 class WeatherIntegrationTest : BaseIntegrationTest<WeatherFragment>(WeatherFragment::class.java) {
 
@@ -30,13 +32,16 @@ class WeatherIntegrationTest : BaseIntegrationTest<WeatherFragment>(WeatherFragm
     fun testOfflineWeatherJourney() {
         expectHttpRequest(path = weatherPath, code = 500)
         executeDbOperation {
-            db.weatherDao()
-                .insertIntoCache(fakeWeather.copy(timestamp = System.currentTimeMillis()))
+            weatherDao().insertIntoCache(
+                fakeWeather.copy(timestamp = fakeTimestamp - TimeUnit.MINUTES.toMillis(10))
+            )
         }
+
         launchFragment()
 
         onPage(WeatherPage()) {
-            shouldShowWeather(fakeWeather)
+            shouldShowWeather(fakeWeather, cached = true)
+            shouldShowLastUpdated("10 minutes ago", fakeWeather.location)
         }
     }
 

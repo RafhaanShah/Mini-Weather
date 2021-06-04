@@ -27,3 +27,5 @@ class ImageService @Inject constructor() {
     }
 
 }
+
+const val PNG = ".png"

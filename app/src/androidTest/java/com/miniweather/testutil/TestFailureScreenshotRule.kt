@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.test.runner.screenshot.Screenshot
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
-import java.io.IOException
 
 class TestFailureScreenshotRule : TestWatcher() {
 
@@ -20,7 +19,7 @@ class TestFailureScreenshotRule : TestWatcher() {
             Screenshot.capture()
                 .setName(fileName)
                 .process(setOf(ScreenCaptureProcessor(parentFolder)))
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             Log.e("TestFailureScreenshotRule", "Error taking screenshot: ", e)
         }
     }

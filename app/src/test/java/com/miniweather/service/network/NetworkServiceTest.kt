@@ -1,6 +1,5 @@
 package com.miniweather.service.network
 
-import com.miniweather.app.BaseUrlProvider
 import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.fakeError
 import com.miniweather.testutil.fakeLocation
@@ -24,17 +23,13 @@ class NetworkServiceTest : BaseTest() {
     @Mock
     private lateinit var mockWeatherApi: WeatherApi
 
-    @Mock
-    private lateinit var mockBaseUrlProvider: BaseUrlProvider
-
     private lateinit var networkService: NetworkService
 
     private val testDispatcher = TestCoroutineDispatcher()
 
     @Before
     fun setup() {
-        whenever(mockBaseUrlProvider.getBaseWeatherUrl()).thenReturn("")
-        networkService = NetworkService(mockBaseUrlProvider, mockWeatherApi, testDispatcher)
+        networkService = NetworkService(mockWeatherApi, testDispatcher)
     }
 
     @After
@@ -44,12 +39,11 @@ class NetworkServiceTest : BaseTest() {
 
     @Test
     fun whenMakeWeatherRequest_andSuccessfulResponse_returnsTheResponse() = runBlockingTest {
-        whenever(mockWeatherApi.getWeather(any(), any(), any())).thenReturn(fakeWeatherResponse)
+        whenever(mockWeatherApi.getWeather(any(), any())).thenReturn(fakeWeatherResponse)
 
         val actual = networkService.getWeather(fakeLocation)
 
         verify(mockWeatherApi).getWeather(
-            weatherPath,
             fakeLocation.latitude,
             fakeLocation.longitude
         )
@@ -58,7 +52,7 @@ class NetworkServiceTest : BaseTest() {
 
     @Test
     fun whenMakeWeatherRequest_andFailureResponse_returnsFailure() = runBlockingTest {
-        whenever(mockWeatherApi.getWeather(any(), any(), any())).thenThrow(
+        whenever(mockWeatherApi.getWeather(any(), any())).thenThrow(
             RuntimeException(
                 fakeError
             )
@@ -67,7 +61,6 @@ class NetworkServiceTest : BaseTest() {
         val actual = networkService.getWeather(fakeLocation)
 
         verify(mockWeatherApi).getWeather(
-            weatherPath,
             fakeLocation.latitude,
             fakeLocation.longitude
         )

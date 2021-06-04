@@ -6,7 +6,7 @@ import com.miniweather.testutil.BasePage
 
 class WeatherPage : BasePage(weather_activity_layout) {
 
-    fun shouldShowWeather(fakeWeather: Weather) {
+    fun shouldShowWeather(fakeWeather: Weather, cached: Boolean = false) {
         shouldBeVisible(weather_card)
 
         shouldHaveText(weather_condition_text, fakeWeather.condition)
@@ -14,8 +14,10 @@ class WeatherPage : BasePage(weather_activity_layout) {
         shouldHaveText(weather_wind_speed_text, fakeWeather.windSpeed.toString())
         shouldHaveText(weather_wind_direction_text, fakeWeather.windDirection)
 
+        if (!cached)
+            shouldNotBeVisible(weather_last_updated_text)
+
         shouldNotBeVisible(weather_progress)
-        shouldNotBeVisible(weather_last_updated_text)
         shouldNotBeVisible(weather_error_message_card)
     }
 

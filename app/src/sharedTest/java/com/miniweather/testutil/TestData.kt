@@ -1,12 +1,15 @@
 package com.miniweather.testutil
 
 import com.miniweather.model.*
+import com.miniweather.service.network.PNG
 
-const val fakeTimestamp: Long = 1587362940000L
+const val fakeTimestamp: Long = 1623753000000L // 15-06-2021 10:30:00 AM GMT
 
 const val fakeError = "Something went wrong"
 
-val fakeLocation = Location(51.0, 0.0)
+const val imageAssets = "file:///android_asset/images/"
+
+val fakeLocation = Location(51.51, -0.13) // London, Leicester Square
 
 val fakeWeatherResponse = WeatherResponse(
     weatherList = listOf(Condition("Sunny", "01d")),
@@ -33,7 +36,7 @@ val fakeWeather = Weather(
     fakeWeatherResponse.wind.speed.toInt(),
     fakeCardinalDirections[2],
     fakeWeatherResponse.location,
-    "file:///android_asset/images/" + fakeWeatherResponse.weatherList.first().icon + ".png",
+     imageAssets + fakeWeatherResponse.weatherList.first().icon + PNG,
     fakeTimestamp,
     fakeLocation.latitude,
     fakeLocation.longitude,

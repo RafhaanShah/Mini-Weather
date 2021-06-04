@@ -32,10 +32,7 @@ class LocationServiceTest : BaseInstrumentedTest() {
     @Before
     fun setup() {
         locationService = LocationService(mockFusedLocationProviderClient)
-        whenever(
-            mockFusedLocationProviderClient
-                .getCurrentLocation(any(), any())
-        )
+        whenever(mockFusedLocationProviderClient.getCurrentLocation(any(), any()))
             .thenReturn(mockLocationTask)
     }
 

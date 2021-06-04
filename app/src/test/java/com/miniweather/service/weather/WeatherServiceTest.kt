@@ -1,6 +1,6 @@
 package com.miniweather.service.weather
 
-import com.miniweather.app.BaseUrlProvider
+import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.service.database.DatabaseService
 import com.miniweather.service.network.NetworkService
 import com.miniweather.service.util.StringResourceService
