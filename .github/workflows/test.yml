@@ -38,7 +38,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: reports
-        path: app/build/reports
+        path: app/build/reports/tests/testDebugUnitTest
 
   ui_test:
     name: Run UI Tests
@@ -66,11 +66,11 @@ jobs:
         with:
           api-level: 29
           target: google_apis
-          script: ./gradlew connectedDebugAndroidTest
+          script: ./gradlew connectedDebugAndroidTest -PwithScreenshots
 
       - name: Upload Test Reports
         if: ${{ failure() }}
         uses: actions/upload-artifact@v1
         with:
           name: reports
-          path: app/build/reports
+          path: app/build/reports/androidTests/connected

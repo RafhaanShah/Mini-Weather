@@ -176,3 +176,5 @@ dependencies {
 
     androidTestUtil 'androidx.test:orchestrator:1.3.0'
 }
+
+apply from: 'testScreenshots.gradle'

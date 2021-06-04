@@ -13,7 +13,7 @@ import org.junit.Test
 class WeatherIntegrationTest : BaseIntegrationTest<WeatherFragment>(WeatherFragment::class.java) {
 
     @get:Rule
-    val grantPermissionRule: GrantPermissionRule =
+    val locationPermissionRule: GrantPermissionRule =
         GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
     @Test

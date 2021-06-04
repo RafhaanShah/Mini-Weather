@@ -11,12 +11,14 @@ import java.util.concurrent.TimeUnit
 
 object WebServer {
 
-    private val server = MockWebServer()
-    private val requests: Queue<MockRequest> = ArrayDeque()
+    private lateinit var requests: Queue<MockRequest>
     private lateinit var assets: AssetManager
+    private lateinit var server: MockWebServer
 
     fun start(assetManager: AssetManager) {
         assets = assetManager
+        requests = ArrayDeque()
+        server = MockWebServer()
         server.start()
     }
 

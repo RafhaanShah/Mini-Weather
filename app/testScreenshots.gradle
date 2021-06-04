@@ -1,0 +1,70 @@
+// https://medium.com/stepstone-tech/how-to-capture-screenshots-for-failed-ui-tests-9927eea6e1e4
+
+def reportsDirectory = "${buildDir}/reports/androidTests/connected"
+def screenshotsDirectory = "${reportsDirectory}/screenshots"
+def deviceDirectory = "/sdcard/Pictures/${android.defaultConfig.applicationId}.${android.testBuildType}"
+
+def embedScreenshotsTask = task('embedScreenshots', group: 'reporting') {
+    doFirst {
+        def failureScreenshotsDirectory = new File(screenshotsDirectory)
+
+        if (!failureScreenshotsDirectory.exists()) {
+            println 'Could not find screenshot failures. Skipping...'
+            return
+        }
+
+        failureScreenshotsDirectory.eachFile { failedTestClassDirectory ->
+            def failedTestClassName = failedTestClassDirectory.name
+
+            failedTestClassDirectory.eachFile { failedTestFile ->
+                def failedTestName = failedTestFile.name
+                def failedTestNameWithoutExtension = failedTestName.take(failedTestName.lastIndexOf('.'))
+                def failedTestClassJunitReportFile = new File(reportsDirectory, "${failedTestClassName}.html")
+
+                if (!failedTestClassJunitReportFile.exists()) {
+                    println "Could not find JUnit report file for test class '${failedTestClassJunitReportFile}'"
+                    return
+                }
+
+                def failedTestJunitReportContent = failedTestClassJunitReportFile.text
+                def patternToFind = "<h3 class=\"failures\">${failedTestNameWithoutExtension}</h3>"
+                def patternToReplace = "${patternToFind} <img src=\"screenshots/${failedTestClassName}/${failedTestName}\" width =\"360\" />"
+
+                failedTestJunitReportContent = failedTestJunitReportContent.replaceAll(patternToFind, patternToReplace)
+                failedTestClassJunitReportFile.write(failedTestJunitReportContent)
+            }
+        }
+    }
+}
+
+def clearScreenshotsTask = task('clearScreenshots', type: Exec) {
+    ignoreExitValue true
+    executable "${android.getAdbExe().toString()}"
+    args 'shell', 'rm', '-r', deviceDirectory
+
+    finalizedBy {
+        embedScreenshotsTask
+    }
+}
+
+def fetchScreenshotsTask = task('fetchScreenshots', type: Exec, group: 'reporting') {
+    ignoreExitValue true
+    executable "${android.getAdbExe().toString()}"
+    args 'pull', "${deviceDirectory}/.", screenshotsDirectory
+
+    doFirst {
+        new File(reportsDirectory).mkdirs()
+    }
+
+    finalizedBy {
+        clearScreenshotsTask
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'connectedDebugAndroidTest') {
+        if (project.hasProperty("withScreenshots")) {
+            task.finalizedBy { fetchScreenshotsTask }
+        }
+    }
+}

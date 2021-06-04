@@ -8,16 +8,25 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.miniweather.R
 import com.miniweather.service.database.WeatherDatabase
 import com.miniweather.service.database.databaseName
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
+
+    @get:Rule
+    val storagePermissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+    @get:Rule
+    val testFailureScreenshotRule = TestFailureScreenshotRule()
 
     private lateinit var scenario: FragmentScenario<T>
     private lateinit var context: Context
