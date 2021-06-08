@@ -1,11 +1,12 @@
 package com.miniweather.testutil
 
+import android.content.ContentResolver
 import android.util.Log
 import androidx.test.runner.screenshot.Screenshot
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
-class TestFailureScreenshotRule : TestWatcher() {
+class TestFailureScreenshotRule(private val contentResolver: ContentResolver) : TestWatcher() {
 
     override fun failed(e: Throwable?, description: Description) {
         takeScreenshot(
@@ -18,7 +19,7 @@ class TestFailureScreenshotRule : TestWatcher() {
         try {
             Screenshot.capture()
                 .setName(fileName)
-                .process(setOf(ScreenCaptureProcessor(parentFolder)))
+                .process(setOf(TestFailureScreenCaptureProcessor(contentResolver, parentFolder)))
         } catch (e: Exception) {
             Log.e("TestFailureScreenshotRule", "Error taking screenshot: ", e)
         }

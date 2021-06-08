@@ -5,7 +5,9 @@
 
     <!-- testBuildType manifest is used in instrumentation tests   -->
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
     <application
         android:label="Mini Weather Debug"

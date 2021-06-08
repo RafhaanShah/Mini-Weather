@@ -5,9 +5,9 @@ import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.testing.FragmentScenario
-import androidx.test.core.app.ApplicationProvider
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.GrantPermissionRule
 import com.miniweather.R
 import com.miniweather.app.IntegrationTestApplication
@@ -24,27 +24,25 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
 
+    private val appContext: Context = getApplicationContext()
+    private val instrumentationContext: Context = getInstrumentation().context
+
     @get:Rule
     val globalTimeout: Timeout = Timeout.seconds(15)
 
     @get:Rule
-    val testFailureScreenshotRule = TestFailureScreenshotRule()
+    val testFailureScreenshotRule = TestFailureScreenshotRule(appContext.contentResolver)
 
     @get:Rule
     val storagePermissionRule: GrantPermissionRule =
         GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     private lateinit var scenario: FragmentScenario<T>
-    private lateinit var appContext: Context
-    private lateinit var instrumentationContext: Context
-
     protected val mocksHandler = TestMocksHandler()
 
     @CallSuper
     @Before
     open fun setup() {
-        appContext = ApplicationProvider.getApplicationContext()
-        instrumentationContext = InstrumentationRegistry.getInstrumentation().context
         WebServer.start(instrumentationContext.assets)
         mocksHandler.initMocks(
             (appContext as IntegrationTestApplication)
