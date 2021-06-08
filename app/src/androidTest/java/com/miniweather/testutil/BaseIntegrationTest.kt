@@ -28,7 +28,7 @@ abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
     private val instrumentationContext: Context = getInstrumentation().context
 
     @get:Rule
-    val globalTimeout: Timeout = Timeout.seconds(15)
+    val globalTimeout: Timeout = Timeout.seconds(30)
 
     @get:Rule
     val testFailureScreenshotRule = TestFailureScreenshotRule(appContext.contentResolver)

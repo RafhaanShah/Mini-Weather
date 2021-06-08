@@ -181,6 +181,11 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
     androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$espresso_version"
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
+
+    // Causes random integration test failures on API 28 if the test takes too long?
+    // May be fixed by x64 emulators or higher APIs
+    // https://github.com/mockk/mockk/issues/466
+    // https://github.com/mockk/mockk/blob/master/ANDROID.md
     androidTestImplementation "io.mockk:mockk-android:$mockk_version"
 
     debugImplementation "androidx.fragment:fragment-testing:1.3.4"
