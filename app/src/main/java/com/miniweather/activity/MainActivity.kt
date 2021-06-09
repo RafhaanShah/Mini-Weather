@@ -1,4 +1,4 @@
-package com.miniweather.app
+package com.miniweather.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

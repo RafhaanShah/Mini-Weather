@@ -2,7 +2,7 @@ package com.miniweather.integration
 
 import androidx.test.rule.GrantPermissionRule
 import com.miniweather.pages.WeatherPage
-import com.miniweather.service.network.weatherPath
+import com.miniweather.repository.api.weatherPath
 import com.miniweather.testutil.BaseIntegrationTest
 import com.miniweather.testutil.fakeTimestamp
 import com.miniweather.testutil.fakeWeather

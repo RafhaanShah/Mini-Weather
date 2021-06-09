@@ -1,4 +1,4 @@
-package com.miniweather.service.database
+package com.miniweather.repository.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -9,8 +9,8 @@ import com.miniweather.model.Weather
 @Dao
 interface WeatherDao {
 
-    @Query("SELECT * FROM weather WHERE weather.latitude = (:lat) AND weather.longitude = (:lon) AND weather.timestamp > (:maxAge) LIMIT 1")
-    suspend fun getCachedData(lat: Double, lon: Double, maxAge: Long): List<Weather>
+    @Query("SELECT * FROM weather WHERE weather.latitude = (:lat) AND weather.longitude = (:lon) AND weather.timestamp > (:maxAge)")
+    suspend fun getCachedData(lat: Double, lon: Double, maxAge: Long): Weather
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIntoCache(weather: Weather)

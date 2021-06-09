@@ -1,33 +1,37 @@
-package com.miniweather.service.database
+package com.miniweather.repository.dao
 
 import androidx.room.Room
+import com.miniweather.database.WeatherDatabase
 import com.miniweather.testutil.BaseInstrumentedTest
+import com.miniweather.testutil.CoroutineTestRule
 import com.miniweather.testutil.fakeTimestamp
 import com.miniweather.testutil.fakeWeather
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asExecutor
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 class WeatherDaoTest : BaseInstrumentedTest() {
 
+    @get:Rule
+    val coroutinesTestRule = CoroutineTestRule()
+
     private lateinit var weatherDao: WeatherDao
 
     private lateinit var database: WeatherDatabase
 
-    private val testDispatcher = TestCoroutineDispatcher()
-
     @Before
     fun setup() {
         database = Room.inMemoryDatabaseBuilder(application, WeatherDatabase::class.java)
-            .setTransactionExecutor(testDispatcher.asExecutor())
-            .setQueryExecutor(testDispatcher.asExecutor())
+            .setTransactionExecutor(coroutinesTestRule.testDispatcher.asExecutor())
+            .setQueryExecutor(coroutinesTestRule.testDispatcher.asExecutor())
             .allowMainThreadQueries()
             .build()
 
@@ -37,7 +41,6 @@ class WeatherDaoTest : BaseInstrumentedTest() {
     @After
     fun tearDown() {
         database.close()
-        testDispatcher.cleanupTestCoroutines()
     }
 
     @Test
@@ -52,8 +55,7 @@ class WeatherDaoTest : BaseInstrumentedTest() {
             fakeWeather.timestamp - TimeUnit.MINUTES.toMillis(10)
         )
 
-        assertEquals(1, actual.size)
-        assertEquals(fakeWeather, actual.first())
+        assertEquals(fakeWeather, actual)
     }
 
     @Test
@@ -66,7 +68,7 @@ class WeatherDaoTest : BaseInstrumentedTest() {
             fakeWeather.timestamp + TimeUnit.MINUTES.toMillis(10)
         )
 
-        assertEquals(0, actual.size)
+        assertNull(actual)
     }
 
     @Test
@@ -89,7 +91,7 @@ class WeatherDaoTest : BaseInstrumentedTest() {
             maxAge
         )
 
-        assertEquals(1, actual.size)
+        assertEquals(fakeWeather, actual)
 
         actual = weatherDao.getCachedData(
             oldWeather.latitude,
@@ -97,7 +99,7 @@ class WeatherDaoTest : BaseInstrumentedTest() {
             maxAge
         )
 
-        assertEquals(0, actual.size)
+        assertNull(actual)
     }
 
 }

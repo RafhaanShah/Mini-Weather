@@ -2,11 +2,11 @@ package com.miniweather.testutil
 
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.tasks.Task
+import com.miniweather.database.WeatherDatabase
 import com.miniweather.di.TestAppComponent
 import com.miniweather.model.Location
 import com.miniweather.provider.BaseUrlProvider
-import com.miniweather.service.database.WeatherDatabase
-import com.miniweather.service.util.TimeService
+import com.miniweather.provider.DateTimeProvider
 import io.mockk.every
 import io.mockk.mockk
 import javax.inject.Inject
@@ -17,7 +17,7 @@ class TestMocksHandler {
     lateinit var mockBaseUrlProvider: BaseUrlProvider
 
     @Inject
-    lateinit var mockTimeService: TimeService
+    lateinit var mockDateTimeProvider: DateTimeProvider
 
     @Inject
     lateinit var mockFusedLocationProviderClient: FusedLocationProviderClient
@@ -34,7 +34,7 @@ class TestMocksHandler {
     }
 
     fun setMockTime(timeInMillis: Long) {
-        every { mockTimeService.getCurrentTime() } returns timeInMillis
+        every { mockDateTimeProvider.getCurrentTime() } returns timeInMillis
     }
 
     fun setMockLocation(location: Location) {

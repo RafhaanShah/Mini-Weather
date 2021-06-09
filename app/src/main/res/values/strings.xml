@@ -10,14 +10,15 @@
     <string name="weather_temperature_text">%1$d°C</string>
     <string name="weather_wind_speed_text">%1$dm/s</string>
 
-    <string name="error_network_request">There was a network error, please ensure you are connected to the internet and try again</string>
-    <string name="error_network_response">There was an error from the server, please try again later</string>
-    <string name="error_permission_location">Location permissions are required to fetch accurate weather data</string>
+    <string name="error_generic">Something went wrong, please try again</string>
+    <string name="error_network_io">There was a network error, please ensure you are connected to the internet and try again</string>
+    <string name="error_network_server">There was an error from the server, please try again</string>
+    <string name="error_location_permission">Location permissions are required to fetch accurate weather data</string>
     <string name="error_location_timeout">There was a problem determining your location, please try again</string>
 
-    <string name="unknown">Unknown</string>
-
     <string name="description_refresh_button">refresh button</string>
+
+    <string name="unknown">Unknown</string>
 
     <string-array name="directions">
         <item>North</item>

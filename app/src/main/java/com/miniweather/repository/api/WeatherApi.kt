@@ -1,4 +1,4 @@
-package com.miniweather.service.network
+package com.miniweather.repository.api
 
 import com.miniweather.BuildConfig
 import com.miniweather.model.WeatherResponse
@@ -13,7 +13,6 @@ interface WeatherApi {
         @Query("lon") lon: Double
     ): WeatherResponse
 
-
 }
 
-const val weatherPath = "data/2.5/weather?units=metric&appid=" + BuildConfig.API_KEY
+internal const val weatherPath = "data/2.5/weather?units=metric&appid=" + BuildConfig.API_KEY

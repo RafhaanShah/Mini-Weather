@@ -1,11 +1,21 @@
 package com.miniweather.ui.base
 
 import com.miniweather.testutil.BaseTest
+import com.miniweather.testutil.CoroutineTestRule
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.isActive
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class BaseTestPresenterTest : BaseTest() {
+
+    @get:Rule
+    val coroutinesTestRule = CoroutineTestRule()
 
     private val fakeView = FakeView()
 
@@ -13,7 +23,7 @@ class BaseTestPresenterTest : BaseTest() {
 
     @Before
     fun setup() {
-        testPresenter = TestPresenter()
+        testPresenter = TestPresenter(coroutinesTestRule.testDispatcher)
     }
 
     @Test
@@ -48,12 +58,22 @@ class BaseTestPresenterTest : BaseTest() {
         testPresenter.onDetachView()
     }
 
+    @Test
+    fun whenDetached_cancelsCoroutines() {
+        testPresenter.onAttachView(fakeView)
+        val scope = testPresenter.coroutineContext
+
+        testPresenter.onDetachView()
+
+        assertFalse(scope.isActive)
+    }
+
 }
 
-class TestPresenter: BasePresenter<FakeView>() {
+class TestPresenter(override val dispatcher: CoroutineDispatcher) : BasePresenter<FakeView>() {
 
     fun getView() = view
 
 }
 
-class FakeView: BaseContract.View
+class FakeView : BaseContract.View

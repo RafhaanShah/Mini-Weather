@@ -11,8 +11,8 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.GrantPermissionRule
 import com.miniweather.R
 import com.miniweather.app.IntegrationTestApplication
+import com.miniweather.database.WeatherDatabase
 import com.miniweather.di.TestAppComponent
-import com.miniweather.service.database.WeatherDatabase
 import com.miniweather.util.Empty
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -76,7 +76,7 @@ abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
 
     protected fun <R> executeDbOperation(func: suspend WeatherDatabase.() -> R): R {
         return runBlocking {
-            func.invoke(mocksHandler.mockDb)
+            func(mocksHandler.mockDb)
         }
     }
 

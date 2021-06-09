@@ -1,25 +1,15 @@
 package com.miniweather.service.database
 
-import com.miniweather.model.Location
-import com.miniweather.model.Weather
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
+import com.miniweather.repository.dao.WeatherDao
 import javax.inject.Inject
-import javax.inject.Named
 
+// IO dispatcher is not needed for Room
+// https://www.lukaslechner.com/do-i-need-to-call-suspend-functions-of-retrofit-and-room-on-a-background-thread/
 class DatabaseService @Inject constructor(
-    private val weatherDao: WeatherDao,
-    @Named("IO") private val dispatcher: CoroutineDispatcher
+    private val weatherDao: WeatherDao
 ) {
 
-    suspend fun getCachedData(location: Location, maxAge: Long): List<Weather> =
-        execute { weatherDao.getCachedData(location.latitude, location.longitude, maxAge) }
-
-    suspend fun insertIntoCache(weather: Weather) = execute { weatherDao.insertIntoCache(weather) }
-
-    suspend fun deleteInvalidCaches(maxAge: Long) =
-        execute { weatherDao.deleteInvalidCaches(maxAge) }
-
-    private suspend fun <T> execute(query: suspend () -> T): T = withContext(dispatcher) { query() }
+    suspend fun <T> execute(query: suspend WeatherDao.() -> T): Result<T> =
+        runCatching { checkNotNull(query(weatherDao)) }
 
 }

@@ -1,17 +1,16 @@
 package com.miniweather.ui.weather
 
+import com.miniweather.provider.DateTimeProvider
+import com.miniweather.provider.ResourceProvider
+import com.miniweather.repository.WeatherRepository
 import com.miniweather.service.location.LocationService
-import com.miniweather.service.util.StringResourceService
-import com.miniweather.service.util.TimeService
-import com.miniweather.service.weather.WeatherService
 import com.miniweather.testutil.*
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import java.util.concurrent.TimeUnit
@@ -19,55 +18,50 @@ import java.util.concurrent.TimeUnit
 @ExperimentalCoroutinesApi
 class WeatherPresenterTest : BaseTest() {
 
+    @get:Rule
+    val coroutinesTestRule = CoroutineTestRule()
+
     @Mock
     private lateinit var mockLocationService: LocationService
 
     @Mock
-    private lateinit var mockWeatherService: WeatherService
+    private lateinit var mockWeatherRepository: WeatherRepository
 
     @Mock
-    private lateinit var mockTimeService: TimeService
+    private lateinit var mockDateTimeProvider: DateTimeProvider
 
     @Mock
-    private lateinit var mockStringResourceService: StringResourceService
+    private lateinit var mockResourceProvider: ResourceProvider
 
     @Mock
     private lateinit var mockView: WeatherContract.View
 
     private lateinit var presenter: WeatherPresenter
 
-    private val testDispatcher = TestCoroutineDispatcher()
-
-
     @Before
     fun setup() {
         presenter = WeatherPresenter(
             mockLocationService,
-            mockTimeService,
-            mockWeatherService,
-            mockStringResourceService,
-            testDispatcher
+            mockDateTimeProvider,
+            mockWeatherRepository,
+            mockResourceProvider,
+            coroutinesTestRule.testDispatcher
         )
-    }
-
-    @After
-    fun tearDown() {
-        testDispatcher.cleanupTestCoroutines()
     }
 
     @Test
     fun whenViewAttachedWithPermissions_fetchesDataAndUpdatesView() = runBlockingTest {
         whenever(mockView.getLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
-        whenever(mockWeatherService.getWeather(any())).thenReturn(Result.success(fakeWeather))
-        whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
+        whenever(mockWeatherRepository.getWeather(any())).thenReturn(Result.success(fakeWeather))
+        whenever(mockDateTimeProvider.getCurrentTime()).thenReturn(fakeTimestamp)
 
         presenter.onAttachView(mockView)
 
         verify(mockView).getLocationPermission()
         verify(mockView).showLoading()
         verify(mockLocationService).getLocation()
-        verify(mockWeatherService).getWeather(fakeLocation)
+        verify(mockWeatherRepository).getWeather(fakeLocation)
         verify(mockView).showWeather(fakeWeather)
     }
 
@@ -77,8 +71,8 @@ class WeatherPresenterTest : BaseTest() {
 
         whenever(mockView.getLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
-        whenever(mockWeatherService.getWeather(any())).thenReturn(Result.success(fakeWeather))
-        whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
+        whenever(mockWeatherRepository.getWeather(any())).thenReturn(Result.success(fakeWeather))
+        whenever(mockDateTimeProvider.getCurrentTime()).thenReturn(fakeTimestamp)
 
         presenter.onRefreshButtonClicked()
 
@@ -89,7 +83,7 @@ class WeatherPresenterTest : BaseTest() {
 
     @Test
     fun whenRefreshButtonClicked_andPermissionDenied_updatesView() = runBlockingTest {
-        whenever(mockStringResourceService.getString(any())).thenReturn(fakeError)
+        whenever(mockResourceProvider.getString(any())).thenReturn(fakeError)
         setupWithLocationDenied()
 
         whenever(mockView.getLocationPermission()).thenReturn(false)
@@ -109,23 +103,29 @@ class WeatherPresenterTest : BaseTest() {
 
         whenever(mockView.getLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
-        whenever(mockWeatherService.getWeather(any())).thenReturn(Result.success(fakeWeather))
-        whenever(mockTimeService.getCurrentTime()).thenReturn(fakeTimestamp)
-        whenever(mockTimeService.getRelativeTimeString(any())).thenReturn(fakeTime)
+        whenever(mockWeatherRepository.getWeather(any())).thenReturn(Result.success(fakeWeather))
+        whenever(mockDateTimeProvider.getCurrentTime()).thenReturn(fakeTimestamp)
+        whenever(mockDateTimeProvider.getRelativeTimeString(any())).thenReturn(fakeTime)
 
         presenter.onAttachView(mockView)
 
         verify(mockView).showWeather(fakeWeather)
         verify(mockView).showLastUpdatedInfo(fakeWeather.location, fakeTime)
-        verify(mockTimeService).getRelativeTimeString(fakeWeather.timestamp)
+        verify(mockDateTimeProvider).getRelativeTimeString(fakeWeather.timestamp)
     }
 
     @Test
     fun whenWeatherServiceFails_updatesView() = runBlockingTest {
-        whenever(mockStringResourceService.getString(any())).thenReturn(fakeError)
+        whenever(mockResourceProvider.getString(any())).thenReturn(fakeError)
         whenever(mockView.getLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).thenReturn(fakeLocation)
-        whenever(mockWeatherService.getWeather(any())).thenReturn(Result.failure(Exception(fakeError)))
+        whenever(mockWeatherRepository.getWeather(any())).thenReturn(
+            Result.failure(
+                Exception(
+                    fakeError
+                )
+            )
+        )
 
         presenter.onAttachView(mockView)
 
@@ -134,7 +134,7 @@ class WeatherPresenterTest : BaseTest() {
 
     @Test
     fun whenLocationServiceTimesOut_updatesView() = runBlockingTest {
-        whenever(mockStringResourceService.getString(any())).thenReturn(fakeError)
+        whenever(mockResourceProvider.getString(any())).thenReturn(fakeError)
         whenever(mockView.getLocationPermission()).thenReturn(true)
         whenever(mockLocationService.getLocation()).doThrow(mock<TimeoutCancellationException>())
 

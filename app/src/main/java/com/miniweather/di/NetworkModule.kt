@@ -2,7 +2,7 @@ package com.miniweather.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.miniweather.provider.BaseUrlProvider
-import com.miniweather.service.network.WeatherApi
+import com.miniweather.repository.api.WeatherApi
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.ExperimentalSerializationApi

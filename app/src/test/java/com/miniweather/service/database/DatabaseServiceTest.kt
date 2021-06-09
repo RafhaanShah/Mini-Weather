@@ -1,5 +1,6 @@
 package com.miniweather.service.database
 
+import com.miniweather.repository.dao.WeatherDao
 import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.fakeLocation
 import com.miniweather.testutil.fakeTimestamp
@@ -8,9 +9,8 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -24,44 +24,51 @@ class DatabaseServiceTest : BaseTest() {
 
     private lateinit var databaseService: DatabaseService
 
-    private val testDispatcher = TestCoroutineDispatcher()
-
     @Before
     fun setup() {
-        databaseService = DatabaseService(mockWeatherDao, testDispatcher)
-    }
-
-    @After
-    fun tearDown() {
-        testDispatcher.cleanupTestCoroutines()
+        databaseService = DatabaseService(mockWeatherDao)
     }
 
     @Test
-    fun whenGetCachedData_callsDao() = runBlockingTest {
-        whenever(mockWeatherDao.getCachedData(any(), any(), any())).thenReturn(listOf(fakeWeather))
+    fun whenExecuteSucceeds_returnsResult() = runBlockingTest {
+        whenever(mockWeatherDao.getCachedData(any(), any(), any())).thenReturn(fakeWeather)
 
-        val actual = databaseService.getCachedData(fakeLocation, fakeTimestamp)
+        val actual = databaseService.execute {
+            getCachedData(
+                fakeLocation.latitude,
+                fakeLocation.longitude,
+                fakeTimestamp
+            )
+        }
 
         verify(mockWeatherDao).getCachedData(
             fakeLocation.latitude,
             fakeLocation.longitude,
             fakeTimestamp
         )
-        assertEquals(listOf(fakeWeather), actual)
+
+        assertEquals(fakeWeather, actual.getOrThrow())
     }
 
     @Test
-    fun whenInsertIntoCache_callsDao() = runBlockingTest {
-        databaseService.insertIntoCache(fakeWeather)
+    fun whenExecuteFails_returnsFailure() = runBlockingTest {
+        whenever(mockWeatherDao.getCachedData(any(), any(), any())).thenReturn(null)
 
-        verify(mockWeatherDao).insertIntoCache(fakeWeather)
-    }
+        val actual = databaseService.execute {
+            getCachedData(
+                fakeLocation.latitude,
+                fakeLocation.longitude,
+                fakeTimestamp
+            )
+        }
 
-    @Test
-    fun whenDeleteInvalidCaches_callsDao() = runBlockingTest {
-        databaseService.deleteInvalidCaches(fakeTimestamp)
+        verify(mockWeatherDao).getCachedData(
+            fakeLocation.latitude,
+            fakeLocation.longitude,
+            fakeTimestamp
+        )
 
-        verify(mockWeatherDao).deleteInvalidCaches(fakeTimestamp)
+        Assert.assertTrue(actual.isFailure)
     }
 
 }

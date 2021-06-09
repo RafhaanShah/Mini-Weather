@@ -1,37 +1,31 @@
 package com.miniweather.ui.weather
 
-import com.miniweather.R
+import com.miniweather.mapper.ErrorMapper
+import com.miniweather.mapper.ErrorType
 import com.miniweather.model.Weather
+import com.miniweather.provider.DateTimeProvider
+import com.miniweather.provider.ResourceProvider
+import com.miniweather.repository.WeatherRepository
 import com.miniweather.service.location.LocationService
-import com.miniweather.service.util.StringResourceService
-import com.miniweather.service.util.TimeService
-import com.miniweather.service.weather.WeatherService
 import com.miniweather.ui.base.BasePresenter
-import kotlinx.coroutines.*
-import retrofit2.HttpException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
 
 class WeatherPresenter @Inject constructor(
     private val locationService: LocationService,
-    private val timeService: TimeService,
-    private val weatherService: WeatherService,
-    private val stringResourceService: StringResourceService,
-    @Named("Main") dispatcher: CoroutineDispatcher
+    private val dateTimeProvider: DateTimeProvider,
+    private val weatherRepository: WeatherRepository,
+    private val resourceProvider: ResourceProvider,
+    @Named("Main") override val dispatcher: CoroutineDispatcher
 ) : BasePresenter<WeatherContract.View>(), WeatherContract.Presenter {
-
-    private val job = Job()
-    private val scope = CoroutineScope(job + dispatcher)
 
     override fun onAttachView(view: WeatherContract.View) {
         super.onAttachView(view)
         checkLocationPermission()
-    }
-
-    override fun onDetachView() {
-        job.cancel()
-        super.onDetachView()
     }
 
     override fun onRefreshButtonClicked() {
@@ -39,12 +33,16 @@ class WeatherPresenter @Inject constructor(
     }
 
     private fun checkLocationPermission() {
-        scope.launch {
+        launch {
             view.let { view ->
                 if (view.getLocationPermission()) {
                     getWeather()
                 } else {
-                    view.showError(stringResourceService.getString(R.string.error_permission_location))
+                    view.showError(
+                        resourceProvider.getString(
+                            ErrorMapper.mapError(ErrorType.LOCATION_PERMISSION)
+                        )
+                    )
                 }
             }
         }
@@ -53,26 +51,28 @@ class WeatherPresenter @Inject constructor(
     private suspend fun getWeather() {
         view.showLoading()
         try {
-            weatherService.getWeather(locationService.getLocation())
+            weatherRepository.getWeather(locationService.getLocation())
                 .onSuccess { showWeather(it) }
                 .onFailure {
-                    val errorMessage = when (it) {
-                        is HttpException -> stringResourceService.getString(R.string.error_network_response)
-                        else -> stringResourceService.getString(R.string.error_network_request)
-                    }
-                    view.showError(errorMessage)
+                    view.showError(
+                        resourceProvider.getString(
+                            ErrorMapper.mapNetworkException(
+                                it
+                            )
+                        )
+                    )
                 }
         } catch (e: TimeoutCancellationException) {
-            view.showError(stringResourceService.getString(R.string.error_location_timeout))
+            view.showError(resourceProvider.getString(ErrorMapper.mapError(ErrorType.LOCATION_TIMEOUT)))
         }
     }
 
     private fun showWeather(weather: Weather) {
         view.showWeather(weather)
-        if (weather.timestamp < (timeService.getCurrentTime() - TimeUnit.MINUTES.toMillis(5))) {
+        if (weather.timestamp < (dateTimeProvider.getCurrentTime() - TimeUnit.MINUTES.toMillis(5))) {
             view.showLastUpdatedInfo(
                 weather.location,
-                timeService.getRelativeTimeString(weather.timestamp)
+                dateTimeProvider.getRelativeTimeString(weather.timestamp)
             )
         }
     }

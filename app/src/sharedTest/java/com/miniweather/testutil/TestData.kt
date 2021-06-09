@@ -1,7 +1,7 @@
 package com.miniweather.testutil
 
+import com.miniweather.mapper.PNG
 import com.miniweather.model.*
-import com.miniweather.service.network.PNG
 
 const val fakeTimestamp: Long = 1623753000000L // 15-06-2021 10:30:00 AM GMT
 
@@ -36,7 +36,7 @@ val fakeWeather = Weather(
     fakeWeatherResponse.wind.speed.toInt(),
     fakeCardinalDirections[2],
     fakeWeatherResponse.location,
-     imageAssets + fakeWeatherResponse.weatherList.first().icon + PNG,
+    imageAssets + fakeWeatherResponse.weatherList.first().icon + PNG,
     fakeTimestamp,
     fakeLocation.latitude,
     fakeLocation.longitude,

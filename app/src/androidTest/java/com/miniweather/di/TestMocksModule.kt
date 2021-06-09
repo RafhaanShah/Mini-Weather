@@ -1,7 +1,7 @@
 package com.miniweather.di
 
 import com.miniweather.provider.BaseUrlProvider
-import com.miniweather.service.util.TimeService
+import com.miniweather.provider.DateTimeProvider
 import dagger.Module
 import dagger.Provides
 import io.mockk.mockk
@@ -19,7 +19,7 @@ interface TestMocksModule {
 
         @Singleton
         @Provides
-        fun provideMockTimeService(): TimeService = spyk(TimeService())
+        fun provideMockTimeService(): DateTimeProvider = spyk(DateTimeProvider())
 
     }
 

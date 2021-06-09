@@ -2,7 +2,7 @@ package com.miniweather.di
 
 import android.content.Context
 import androidx.room.Room
-import com.miniweather.service.database.WeatherDatabase
+import com.miniweather.database.WeatherDatabase
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -15,8 +15,7 @@ interface TestDatabaseModule {
         @Singleton
         @Provides
         fun provideAppDatabase(context: Context): WeatherDatabase =
-            Room.inMemoryDatabaseBuilder(context, WeatherDatabase::class.java)
-                .build()
+            Room.inMemoryDatabaseBuilder(context, WeatherDatabase::class.java).build()
 
     }
 
