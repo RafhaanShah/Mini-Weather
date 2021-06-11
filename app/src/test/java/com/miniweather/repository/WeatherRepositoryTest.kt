@@ -8,8 +8,10 @@ import com.miniweather.repository.dao.WeatherDao
 import com.miniweather.service.database.DatabaseService
 import com.miniweather.service.network.NetworkService
 import com.miniweather.testutil.*
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
@@ -17,7 +19,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
 
 @ExperimentalCoroutinesApi
 class WeatherRepositoryTest : BaseTest() {
@@ -29,16 +30,16 @@ class WeatherRepositoryTest : BaseTest() {
 
     private lateinit var mockNetworkService: NetworkService
 
-    @Mock
+    @MockK
     private lateinit var mockDateTimeProvider: DateTimeProvider
 
-    @Mock
+    @MockK
     private lateinit var weatherResponseMapper: WeatherResponseMapper
 
-    @Mock
+    @MockK
     private lateinit var mockWeatherDao: WeatherDao
 
-    @Mock
+    @MockK
     private lateinit var mockWeatherApi: WeatherApi
 
     private lateinit var weatherRepository: WeatherRepository
@@ -57,7 +58,7 @@ class WeatherRepositoryTest : BaseTest() {
 
     @Before
     fun setup() {
-        whenever(mockDateTimeProvider.getCurrentTime()).thenReturn(fakeTimestamp)
+        every { mockDateTimeProvider.getCurrentTime() } returns fakeTimestamp
 
         mockNetworkService = NetworkService(mockWeatherApi)
         mockDatabaseService = DatabaseService(mockWeatherDao)
@@ -72,20 +73,19 @@ class WeatherRepositoryTest : BaseTest() {
 
     @Test
     fun whenGetWeather_andNetworkServiceSucceeds_returnsWeather_andCaches() = runBlockingTest {
-        whenever(
+        coEvery {
             mockWeatherApi.getWeather(
                 fakeLocationWithDecimals.latitude,
                 fakeLocationWithDecimals.longitude
             )
-        ).thenReturn(fakeWeatherResponse)
-        whenever(weatherResponseMapper.map(fakeWeatherResponse, fakeLocationRounded)).thenReturn(
-            fakeWeather
-        )
+        } returns fakeWeatherResponse
+        every { weatherResponseMapper.map(fakeWeatherResponse, fakeLocationRounded) } returns
+                fakeWeather
 
         val actual = weatherRepository.getWeather(fakeLocationWithDecimals)
 
-        verify(mockWeatherDao).deleteInvalidCaches(fakeTimestamp - maxCacheAge)
-        verify(mockWeatherDao).insertIntoCache(fakeWeather)
+        coVerify { mockWeatherDao.deleteInvalidCaches(fakeTimestamp - maxCacheAge) }
+        coVerify { mockWeatherDao.insertIntoCache(fakeWeather) }
 
         assertEquals(fakeWeather, actual.getOrThrow())
     }
@@ -93,21 +93,19 @@ class WeatherRepositoryTest : BaseTest() {
     @Test
     fun whenGetWeather_andNetworkServiceFails_andValidCacheExists_returnsWeather() =
         runBlockingTest {
-            whenever(
+            coEvery {
                 mockWeatherApi.getWeather(
                     fakeLocationWithDecimals.latitude,
                     fakeLocationWithDecimals.longitude
                 )
-            ).thenThrow(RuntimeException(fakeError))
-            whenever(
+            } throws RuntimeException(fakeError)
+            coEvery {
                 mockWeatherDao.getCachedData(
                     fakeLocationRounded.latitude,
                     fakeLocationRounded.longitude,
                     fakeTimestamp - maxCacheAge
                 )
-            ).thenReturn(
-                fakeWeather
-            )
+            } returns fakeWeather
 
             val actual = weatherRepository.getWeather(fakeLocationWithDecimals)
 
@@ -116,19 +114,19 @@ class WeatherRepositoryTest : BaseTest() {
 
     @Test
     fun whenGetWeather_andNetworkServiceFails_andNoValidCache_returnsFailure() = runBlockingTest {
-        whenever(
+        coEvery {
             mockWeatherApi.getWeather(
                 fakeLocationWithDecimals.latitude,
                 fakeLocationWithDecimals.longitude
             )
-        ).thenThrow(RuntimeException(fakeError))
-        whenever(
+        } throws RuntimeException(fakeError)
+        coEvery {
             mockWeatherDao.getCachedData(
                 fakeLocationRounded.latitude,
                 fakeLocationRounded.longitude,
                 fakeTimestamp - maxCacheAge
             )
-        ).thenThrow(RuntimeException(fakeError))
+        } throws RuntimeException(fakeError)
 
         val actual = weatherRepository.getWeather(fakeLocationWithDecimals)
 

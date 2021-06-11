@@ -1,10 +1,10 @@
 package com.miniweather.app
 
 import com.miniweather.di.AppComponent
-import org.mockito.Mockito
+import io.mockk.mockk
 
 class TestApplication : BaseApplication() {
 
-    override fun getAppComponent(): AppComponent = Mockito.mock(AppComponent::class.java)
+    override fun getAppComponent(): AppComponent = mockk(relaxed = true)
 
 }

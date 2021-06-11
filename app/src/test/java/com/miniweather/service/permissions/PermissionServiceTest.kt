@@ -5,41 +5,39 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import com.miniweather.testutil.BaseInstrumentedTest
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.CapturingSlot
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
-import org.mockito.Mock
 
 @ExperimentalCoroutinesApi
 class PermissionServiceTest : BaseInstrumentedTest() {
 
-    @Mock
+    @MockK
     private lateinit var mockFragment: Fragment
 
-    @Mock
+    @MockK
     private lateinit var mockActivityResultLauncher: ActivityResultLauncher<String>
 
-    @Captor
-    private lateinit var activityResultCaptor: ArgumentCaptor<ActivityResultCallback<Boolean>>
+    private lateinit var activityResultSlot: CapturingSlot<ActivityResultCallback<Boolean>>
 
     private lateinit var permissionService: PermissionService
 
     @Before
     fun setUp() {
-        whenever(
+        activityResultSlot = slot()
+        every {
             mockFragment.registerForActivityResult<String, Boolean>(
                 any(),
-                activityResultCaptor.capture()
+                capture(activityResultSlot)
             )
-        )
-            .thenReturn(mockActivityResultLauncher)
+        } returns mockActivityResultLauncher
         permissionService = PermissionService()
         permissionService.registerForPermissions(mockFragment)
     }
@@ -48,8 +46,8 @@ class PermissionServiceTest : BaseInstrumentedTest() {
     fun whenRequestPermission_andPermissionHasNotBeenGranted_requestsPermission() =
         runBlockingTest {
             val expected = true
-            whenever(mockActivityResultLauncher.launch(any())).then {
-                activityResultCaptor.value.onActivityResult(expected)
+            every { mockActivityResultLauncher.launch(any()) } answers {
+                activityResultSlot.captured.onActivityResult(expected)
             }
 
             val actual = permissionService.requestPermission(

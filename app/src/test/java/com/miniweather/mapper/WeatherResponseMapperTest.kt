@@ -5,32 +5,30 @@ import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.provider.DateTimeProvider
 import com.miniweather.provider.ResourceProvider
 import com.miniweather.testutil.*
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
 
 class WeatherResponseMapperTest : BaseTest() {
 
-    @Mock
+    @MockK
     private lateinit var baseUrlProvider: BaseUrlProvider
 
-    @Mock
+    @MockK
     private lateinit var dateTimeProvider: DateTimeProvider
 
-    @Mock
+    @MockK
     private lateinit var resourceProvider: ResourceProvider
 
     private lateinit var weatherResponseMapper: WeatherResponseMapper
 
     @Before
     fun setup() {
-        whenever(baseUrlProvider.getBaseImageUrl()).thenReturn(imageAssets)
-        whenever(dateTimeProvider.getCurrentTime()).thenReturn(fakeTimestamp)
-        whenever(resourceProvider.getStringArray(R.array.directions)).thenReturn(
-            fakeCardinalDirections
-        )
+        every { baseUrlProvider.getBaseImageUrl() } returns imageAssets
+        every { dateTimeProvider.getCurrentTime() } returns fakeTimestamp
+        every { resourceProvider.getStringArray(R.array.directions) } returns fakeCardinalDirections
 
         weatherResponseMapper = WeatherResponseMapper(
             baseUrlProvider, dateTimeProvider, resourceProvider

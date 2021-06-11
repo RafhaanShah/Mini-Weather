@@ -1,12 +1,13 @@
 package com.miniweather.testutil
 
-import org.junit.Rule
-import org.mockito.junit.MockitoJUnit
-import org.mockito.junit.MockitoRule
+import io.mockk.MockKAnnotations
+import org.junit.Before
 
 abstract class BaseTest {
 
-    @get:Rule
-    val mockitoRule: MockitoRule = MockitoJUnit.rule()
+    @Before
+    fun setupMocks() {
+        MockKAnnotations.init(this, relaxUnitFun = true)
+    }
 
 }

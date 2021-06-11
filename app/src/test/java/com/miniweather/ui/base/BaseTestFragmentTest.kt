@@ -8,18 +8,18 @@ import com.miniweather.databinding.FragmentTestBinding
 import com.miniweather.testutil.BaseFragmentTest
 import com.miniweather.testutil.BasePage
 import com.miniweather.testutil.onPage
-import com.nhaarman.mockitokotlin2.verify
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
 
 @ExperimentalCoroutinesApi
 class BaseTestFragmentTest :
     BaseFragmentTest<TestFragment>(TestFragment::class.java) {
 
-    @Mock
+    @MockK
     private lateinit var mockPresenter: FakeContract.Presenter
 
     @Before
@@ -44,7 +44,7 @@ class BaseTestFragmentTest :
     @Test
     fun whenViewCreated_attachesToPresenter() {
         scenario.onFragment { fragment ->
-            verify(mockPresenter).onAttachView(fragment)
+            verify { mockPresenter.onAttachView(fragment) }
         }
     }
 
@@ -59,7 +59,7 @@ class BaseTestFragmentTest :
     @Test
     fun whenViewDestroyed_detachesFromPresenter() {
         scenario.moveToState(Lifecycle.State.DESTROYED)
-        verify(mockPresenter).onDetachView()
+        verify { mockPresenter.onDetachView() }
     }
 
 }

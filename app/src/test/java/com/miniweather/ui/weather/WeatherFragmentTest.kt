@@ -8,28 +8,26 @@ import com.miniweather.testutil.BaseFragmentTest
 import com.miniweather.testutil.fakeError
 import com.miniweather.testutil.fakeWeather
 import com.miniweather.testutil.onPage
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.coEvery
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
 
 @ExperimentalCoroutinesApi
 class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::class.java) {
 
-    @Mock
+    @MockK
     private lateinit var mockImageService: ImageService
 
-    @Mock
+    @MockK
     private lateinit var mockPermissionsService: PermissionService
 
-    @Mock
+    @MockK
     private lateinit var mockPresenter: WeatherContract.Presenter
 
     @Before
@@ -51,7 +49,9 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
             shouldShowWeather(fakeWeather)
         }
 
-        verify(mockImageService).loadImage(any(), eq(fakeWeather.iconUrl), any())
+        verify {
+            mockImageService.loadImage(any(), fakeWeather.iconUrl, any())
+        }
     }
 
     @Test
@@ -64,7 +64,7 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
             pressRefresh()
         }
 
-        verify(mockPresenter).onRefreshButtonClicked()
+        verify { mockPresenter.onRefreshButtonClicked() }
     }
 
     @Test
@@ -106,11 +106,10 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
     @Test
     fun whenRequestLocationPermission_callsPermissionService() = runBlockingTest {
         val expected = true
-        whenever(
+        coEvery {
             mockPermissionsService
-                .requestPermission(any(), eq(Manifest.permission.ACCESS_FINE_LOCATION))
-        )
-            .thenReturn(expected)
+                .requestPermission(any(), Manifest.permission.ACCESS_FINE_LOCATION)
+        } returns expected
 
         scenario.onFragment { fragment ->
             launch {
@@ -121,3 +120,4 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
     }
 
 }
+
