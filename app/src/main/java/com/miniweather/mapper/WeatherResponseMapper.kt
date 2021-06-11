@@ -19,12 +19,12 @@ class WeatherResponseMapper @Inject constructor(
 
     fun map(response: WeatherResponse, location: Location) =
         Weather(
-            response.weatherList.first().condition,
-            response.temp.value.roundToInt(),
+            response.weather.first().value,
+            response.temperature.value.roundToInt(),
             response.wind.speed.roundToInt(),
-            formatBearing(response.wind.direction),
+            formatBearing(response.wind.deg),
             response.location,
-            baseUrlProvider.getBaseImageUrl() + response.weatherList.first().icon + PNG,
+            baseUrlProvider.getBaseImageUrl() + response.weather.first().icon + PNG,
             dateTimeProvider.getCurrentTime(),
             location.latitude,
             location.longitude

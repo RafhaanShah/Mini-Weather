@@ -20,12 +20,10 @@ interface NetworkModule {
         @ExperimentalSerializationApi
         @Singleton
         @Provides
-        fun provideWeatherRetrofit(baseUrlProvider: BaseUrlProvider): Retrofit =
+        fun provideWeatherRetrofit(baseUrlProvider: BaseUrlProvider, json: Json): Retrofit =
             Retrofit.Builder()
                 .baseUrl(baseUrlProvider.getBaseWeatherUrl())
-                .addConverterFactory(Json {
-                    ignoreUnknownKeys = true
-                }.asConverterFactory("application/json".toMediaType()))
+                .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
                 .client(OkHttpClient.Builder().build())
                 .build()
 
@@ -33,6 +31,13 @@ interface NetworkModule {
         @Provides
         fun provideWeatherApi(retrofit: Retrofit): WeatherApi =
             retrofit.create(WeatherApi::class.java)
+
+        @Provides
+        fun provideJsonSerializer(): Json {
+            return Json {
+                ignoreUnknownKeys = true
+            }
+        }
 
     }
 
