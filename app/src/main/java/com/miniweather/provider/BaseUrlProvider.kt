@@ -1,15 +1,12 @@
 package com.miniweather.provider
 
+import com.miniweather.BuildConfig
 import javax.inject.Inject
 
 class BaseUrlProvider @Inject constructor() {
 
-    fun getBaseWeatherUrl(): String {
-        return "http://api.openweathermap.org/"
-    }
+    val weatherApi: String = BuildConfig.WEATHER_API_BASE_URL
 
-    fun getBaseImageUrl(): String {
-        return "https://openweathermap.org/img/wn/"
-    }
+    val weatherImage: String = BuildConfig.WEATHER_IMAGE_BASE_URL
 
 }

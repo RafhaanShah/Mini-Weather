@@ -18,7 +18,9 @@ android {
         versionCode 1
         versionName "1.0"
 
-        buildConfigField("String", "API_KEY", secretProperties.getProperty("API_KEY"))
+        buildConfigField "String", "WEATHER_API_BASE_URL", '"https://api.openweathermap.org/"'
+        buildConfigField "String", "WEATHER_IMAGE_BASE_URL", '"https://openweathermap.org/img/wn/"'
+        buildConfigField("String", "WEATHER_API_KEY", secretProperties.getProperty("WEATHER_API_KEY"))
 
         // https://developer.android.com/training/testing/junit-runner
         // https://developer.android.com/training/dependency-injection/dagger-android#dagger-end-to-end-tests

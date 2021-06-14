@@ -5,6 +5,6 @@ import com.miniweather.di.AppComponent
 
 abstract class BaseApplication : Application() {
 
-    abstract fun getAppComponent(): AppComponent
+    abstract val appComponent: AppComponent
 
 }

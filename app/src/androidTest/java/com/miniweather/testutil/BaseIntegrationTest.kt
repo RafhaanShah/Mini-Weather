@@ -46,7 +46,7 @@ abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
         WebServer.start(instrumentationContext.assets)
         mocksHandler.initMocks(
             (appContext as IntegrationTestApplication)
-                .getAppComponent() as TestAppComponent
+                .appComponent as TestAppComponent
         )
     }
 

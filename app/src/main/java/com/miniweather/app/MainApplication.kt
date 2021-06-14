@@ -5,17 +5,13 @@ import com.miniweather.di.DaggerAppComponent
 
 class MainApplication : BaseApplication() {
 
-    private lateinit var appComponent: AppComponent
+    override lateinit var appComponent: AppComponent
 
     override fun onCreate() {
         super.onCreate()
         appComponent = DaggerAppComponent
             .factory()
             .create(applicationContext)
-    }
-
-    override fun getAppComponent(): AppComponent {
-        return appComponent
     }
 
 }

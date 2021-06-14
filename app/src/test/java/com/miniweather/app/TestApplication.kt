@@ -5,6 +5,6 @@ import io.mockk.mockk
 
 class TestApplication : BaseApplication() {
 
-    override fun getAppComponent(): AppComponent = mockk(relaxed = true)
+    override val appComponent: AppComponent = mockk(relaxed = true)
 
 }

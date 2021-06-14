@@ -22,7 +22,7 @@ interface NetworkModule {
         @Provides
         fun provideWeatherRetrofit(baseUrlProvider: BaseUrlProvider, json: Json): Retrofit =
             Retrofit.Builder()
-                .baseUrl(baseUrlProvider.getBaseWeatherUrl())
+                .baseUrl(baseUrlProvider.weatherApi)
                 .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
                 .client(OkHttpClient.Builder().build())
                 .build()

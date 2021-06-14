@@ -6,4 +6,4 @@ Small weather app for Android using the OpenWeatherMap API.
 
 Note:
 - A 'secret.properties' file is required at the root of the project to compile
-- This contains the API key for OpenWeatherMap, in the form of: `API_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
+- This contains the API key for OpenWeatherMap, in the form of: `WEATHER_API_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"`

@@ -55,8 +55,8 @@ class TestMocksHandler {
     }
 
     private fun initMockBaseUrl() {
-        every { mockBaseUrlProvider.getBaseWeatherUrl() } returns "http://localhost:${WebServer.getPort()}/"
-        every { mockBaseUrlProvider.getBaseImageUrl() } returns imageAssets
+        every { mockBaseUrlProvider.weatherApi } returns "http://localhost:${WebServer.getPort()}/"
+        every { mockBaseUrlProvider.weatherImage } returns imageAssets
     }
 
 }
