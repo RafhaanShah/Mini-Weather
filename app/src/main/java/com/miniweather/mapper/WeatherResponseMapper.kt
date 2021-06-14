@@ -8,8 +8,9 @@ import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.provider.DateTimeProvider
 import com.miniweather.provider.ResourceProvider
 import javax.inject.Inject
-import kotlin.math.floor
 import kotlin.math.roundToInt
+
+internal const val PNG = ".png"
 
 class WeatherResponseMapper @Inject constructor(
     private val baseUrlProvider: BaseUrlProvider,
@@ -17,28 +18,23 @@ class WeatherResponseMapper @Inject constructor(
     private val resourceProvider: ResourceProvider
 ) {
 
-    fun map(response: WeatherResponse, location: Location) =
+    fun map(response: WeatherResponse, location: Location): Weather =
         Weather(
             response.weather.first().value,
             response.temperature.value.roundToInt(),
             response.wind.speed.roundToInt(),
             formatBearing(response.wind.deg),
             response.location,
-            baseUrlProvider.getBaseImageUrl() + response.weather.first().icon + PNG,
+            formatImageUrl(response.weather.first().icon),
             dateTimeProvider.getCurrentTime(),
             location.latitude,
             location.longitude
         )
 
-    private fun formatBearing(bearing: Double): String {
-        if (bearing < 0 || bearing > 360)
-            return resourceProvider.getString(R.string.unknown)
+    private fun formatBearing(bearing: Double): String =
+        resourceProvider.getStringArray(R.array.directions)[CardinalDirectionMapper.map(bearing)]
 
-        val directions = resourceProvider.getStringArray(R.array.directions)
-        val index = floor(((bearing - 22.5) % 360) / 45).toInt()
-        return directions[index + 1]
-    }
+    private fun formatImageUrl(icon: String): String =
+        baseUrlProvider.weatherImage + icon + PNG
 
 }
-
-internal const val PNG = ".png"

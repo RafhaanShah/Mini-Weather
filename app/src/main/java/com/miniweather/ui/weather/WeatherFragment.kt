@@ -29,7 +29,7 @@ class WeatherFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        permissionService.registerForPermissions(this)
+        permissionService.register(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,7 +47,9 @@ class WeatherFragment :
     override fun bindView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-    ) = FragmentWeatherBinding.inflate(inflater, container, false)
+    ): FragmentWeatherBinding = FragmentWeatherBinding.inflate(
+        inflater, container, false
+    )
 
 
     override fun showWeather(weather: Weather) {
@@ -68,8 +70,8 @@ class WeatherFragment :
         )
     }
 
-    override suspend fun getLocationPermission() =
-        permissionService.requestPermission(requireContext(), permission.ACCESS_FINE_LOCATION)
+    override suspend fun getLocationPermission(): Boolean =
+        permissionService.request(requireContext(), permission.ACCESS_FINE_LOCATION)
 
     override fun showLoading() {
         binding.weatherProgress.visibility = View.VISIBLE

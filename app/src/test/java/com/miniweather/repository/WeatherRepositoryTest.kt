@@ -58,6 +58,8 @@ class WeatherRepositoryTest : BaseTest() {
     @Before
     fun setup() {
         every { mockDateTimeProvider.getCurrentTime() } returns fakeTimestamp
+        every { weatherResponseMapper.map(fakeWeatherResponse, fakeLocationRounded) } returns
+                fakeWeather
 
         mockNetworkService = NetworkService(mockWeatherApi)
         mockDatabaseService = DatabaseService(mockWeatherDao)
@@ -72,19 +74,14 @@ class WeatherRepositoryTest : BaseTest() {
 
     @Test
     fun whenGetWeather_andNetworkServiceSucceeds_returnsWeather_andCaches() = runBlockingTest {
-        coEvery {
-            mockWeatherApi.getWeather(
-                fakeLocationWithDecimals.latitude,
-                fakeLocationWithDecimals.longitude
-            )
-        } returns fakeWeatherResponse
-        every { weatherResponseMapper.map(fakeWeatherResponse, fakeLocationRounded) } returns
-                fakeWeather
+        setApiResponse(successful = true)
 
         val actual = weatherRepository.getWeather(fakeLocationWithDecimals)
 
-        coVerify { mockWeatherDao.deleteInvalidCaches(fakeTimestamp - maxCacheAge) }
-        coVerify { mockWeatherDao.insertIntoCache(fakeWeather) }
+        coVerify {
+            mockWeatherDao.deleteInvalidCaches(fakeTimestamp - maxCacheAge)
+            mockWeatherDao.insertIntoCache(fakeWeather)
+        }
 
         assertThat(actual.getOrThrow()).isEqualTo(fakeWeather)
     }
@@ -92,19 +89,8 @@ class WeatherRepositoryTest : BaseTest() {
     @Test
     fun whenGetWeather_andNetworkServiceFails_andValidCacheExists_returnsWeather() =
         runBlockingTest {
-            coEvery {
-                mockWeatherApi.getWeather(
-                    fakeLocationWithDecimals.latitude,
-                    fakeLocationWithDecimals.longitude
-                )
-            } throws RuntimeException(fakeError)
-            coEvery {
-                mockWeatherDao.getCachedData(
-                    fakeLocationRounded.latitude,
-                    fakeLocationRounded.longitude,
-                    fakeTimestamp - maxCacheAge
-                )
-            } returns fakeWeather
+            setApiResponse(successful = false)
+            setDaoResult(successful = true)
 
             val actual = weatherRepository.getWeather(fakeLocationWithDecimals)
 
@@ -113,23 +99,48 @@ class WeatherRepositoryTest : BaseTest() {
 
     @Test
     fun whenGetWeather_andNetworkServiceFails_andNoValidCache_returnsFailure() = runBlockingTest {
-        coEvery {
-            mockWeatherApi.getWeather(
-                fakeLocationWithDecimals.latitude,
-                fakeLocationWithDecimals.longitude
-            )
-        } throws RuntimeException(fakeError)
-        coEvery {
-            mockWeatherDao.getCachedData(
-                fakeLocationRounded.latitude,
-                fakeLocationRounded.longitude,
-                fakeTimestamp - maxCacheAge
-            )
-        } throws RuntimeException(fakeError)
+        setApiResponse(successful = false)
+        setDaoResult(successful = false)
 
         val actual = weatherRepository.getWeather(fakeLocationWithDecimals)
 
         assertThat(actual.isFailure).isTrue()
+    }
+
+    private fun setApiResponse(successful: Boolean) {
+        if (successful)
+            coEvery {
+                mockWeatherApi.getWeather(
+                    fakeLocationWithDecimals.latitude,
+                    fakeLocationWithDecimals.longitude
+                )
+            } returns fakeWeatherResponse
+        else
+            coEvery {
+                mockWeatherApi.getWeather(
+                    fakeLocationWithDecimals.latitude,
+                    fakeLocationWithDecimals.longitude
+                )
+            } throws RuntimeException(fakeError)
+    }
+
+    private fun setDaoResult(successful: Boolean) {
+        if (successful)
+            coEvery {
+                mockWeatherDao.getCachedData(
+                    fakeLocationRounded.latitude,
+                    fakeLocationRounded.longitude,
+                    fakeTimestamp - maxCacheAge
+                )
+            } returns fakeWeather
+        else
+            coEvery {
+                mockWeatherDao.getCachedData(
+                    fakeLocationRounded.latitude,
+                    fakeLocationRounded.longitude,
+                    fakeTimestamp - maxCacheAge
+                )
+            } throws RuntimeException(fakeError)
     }
 
 }

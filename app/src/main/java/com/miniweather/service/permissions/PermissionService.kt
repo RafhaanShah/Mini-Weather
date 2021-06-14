@@ -14,14 +14,14 @@ class PermissionService @Inject constructor() {
     private lateinit var permissionCompletable: CompletableDeferred<Boolean>
     private lateinit var activityResultLauncher: ActivityResultLauncher<String>
 
-    fun registerForPermissions(fragment: Fragment) {
+    fun register(fragment: Fragment) {
         activityResultLauncher =
             fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                 permissionCompletable.complete(it)
             }
     }
 
-    suspend fun requestPermission(context: Context, permission: String): Boolean {
+    suspend fun request(context: Context, permission: String): Boolean {
         if (hasPermission(context, permission))
             return true
 
@@ -33,7 +33,7 @@ class PermissionService @Inject constructor() {
         return permissionCompletable.await()
     }
 
-    private fun hasPermission(context: Context, permission: String) =
+    private fun hasPermission(context: Context, permission: String): Boolean =
         ContextCompat.checkSelfPermission(
             context,
             permission

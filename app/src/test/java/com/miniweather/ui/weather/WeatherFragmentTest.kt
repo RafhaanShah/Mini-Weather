@@ -108,7 +108,7 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
         val expected = true
         coEvery {
             mockPermissionsService
-                .requestPermission(any(), Manifest.permission.ACCESS_FINE_LOCATION)
+                .request(any(), Manifest.permission.ACCESS_FINE_LOCATION)
         } returns expected
 
         scenario.onFragment { fragment ->

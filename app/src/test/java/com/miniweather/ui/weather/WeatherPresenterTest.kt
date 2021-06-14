@@ -41,6 +41,11 @@ class WeatherPresenterTest : BaseTest() {
     @Before
     fun setup() {
         every { mockResourceProvider.getString(any()) } returns fakeError
+        every { mockDateTimeProvider.getCurrentTime() } returns fakeTimestamp
+        coEvery { mockLocationService.getLocation() } returns fakeLocation
+        coEvery { mockWeatherRepository.getWeather(anyValue()) } returns value(
+            Result.success(fakeWeather)
+        )
 
         presenter = WeatherPresenter(
             mockLocationService,
@@ -53,137 +58,91 @@ class WeatherPresenterTest : BaseTest() {
 
     @Test
     fun whenViewAttachedWithPermissions_fetchesDataAndUpdatesView() = runBlockingTest {
-        coEvery { mockView.getLocationPermission() } returns true
-        coEvery { mockLocationService.getLocation() } returns fakeLocation
-        coEvery { mockWeatherRepository.getWeather(anyValue()) } returns value(
-            Result.success(
-                fakeWeather
-            )
-        )
-        every { mockDateTimeProvider.getCurrentTime() } returns fakeTimestamp
-
-        presenter.onAttachView(mockView)
-
-        coVerify { mockView.getLocationPermission() }
-        verify { mockView.showLoading() }
-        coVerify { mockLocationService.getLocation() }
-        coVerify { mockWeatherRepository.getWeather(fakeLocation) }
-        verify { mockView.showWeather(fakeWeather) }
-    }
-
-    @Test
-    fun whenRefreshButtonClicked_andPermissionGranted_andFetchesData() = runBlockingTest {
-        coEvery { mockView.getLocationPermission() } returns false
-        presenter.onAttachView(mockView)
-
-        coEvery { mockView.getLocationPermission() } returns true
-        coEvery { mockLocationService.getLocation() } returns fakeLocation
-        coEvery { mockWeatherRepository.getWeather(anyValue()) } returns value(
-            Result.success(
-                fakeWeather
-            )
-        )
-        every { mockDateTimeProvider.getCurrentTime() } returns fakeTimestamp
-
-        presenter.onRefreshButtonClicked()
+        attachPresenter(locationPermission = true)
 
         coVerify {
             mockView.getLocationPermission()
-        }
-        verify {
             mockView.showLoading()
-        }
-        coVerify {
-            mockLocationService.getLocation()
-        }
-    }
-
-    @Test
-    fun whenRefreshButtonClicked_andPermissionDenied_updatesView() = runBlockingTest {
-        coEvery { mockView.getLocationPermission() } returns false
-        presenter.onAttachView(mockView)
-
-        coEvery { mockView.getLocationPermission() } returns false
-
-        presenter.onRefreshButtonClicked()
-
-        coVerify {
-            mockView.getLocationPermission()
-        }
-        verify {
-            mockView.showError(fakeError)
-        }
-        verify {
-            mockLocationService wasNot Called
-        }
-    }
-
-    @Test
-    fun whenWeatherServiceReturnsCachedData_updatesView() = runBlockingTest {
-        val fakeWeather =
-            fakeWeather.copy(
-                timestamp = fakeTimestamp - TimeUnit.MINUTES.toMillis(
-                    10
-                )
-            )
-        val fakeTime = "12 hours ago"
-
-        coEvery { mockView.getLocationPermission() } returns true
-        coEvery { mockLocationService.getLocation() } returns fakeLocation
-        coEvery { mockWeatherRepository.getWeather(anyValue()) } returns value(
-            Result.success(
-                fakeWeather
-            )
-        )
-        every { mockDateTimeProvider.getCurrentTime() } returns fakeTimestamp
-        every { mockDateTimeProvider.getRelativeTimeString(any()) } returns fakeTime
-
-        presenter.onAttachView(mockView)
-
-        verify {
             mockView.showWeather(fakeWeather)
         }
-        verify {
-            mockView.showLastUpdatedInfo(fakeWeather.location, fakeTime)
-        }
-        verify {
-            mockDateTimeProvider.getRelativeTimeString(fakeWeather.timestamp)
-        }
-
+        verify(exactly = 0) { mockView.showLastUpdatedInfo(any(), any()) }
     }
 
     @Test
-    fun whenWeatherServiceFails_updatesView() = runBlockingTest {
-        coEvery { mockView.getLocationPermission() } returns true
-        coEvery { mockLocationService.getLocation() } returns fakeLocation
-        coEvery { mockWeatherRepository.getWeather(anyValue()) } returns value(
-            Result.failure(
-                Exception(
-                    fakeError
-                )
-            )
-        )
-
-        presenter.onAttachView(mockView)
-
-        verify {
-            mockView.showError(fakeError)
-        }
-    }
-
-    @Test
-    fun whenLocationServiceTimesOut_updatesView() =
+    fun whenAttachedWithoutPermissions_andRefreshButtonClicked_andPermissionDenied_updatesView() =
         runBlockingTest {
-            coEvery { mockView.getLocationPermission() } returns true
-            coEvery {
-                mockLocationService.getLocation()
-            } throws mockk<TimeoutCancellationException>()
+            attachPresenter(locationPermission = false)
 
-            presenter.onAttachView(mockView)
+            presenter.onRefreshButtonClicked()
 
-            verify {
+            coVerify(exactly = 2) {
+                mockView.getLocationPermission()
                 mockView.showError(fakeError)
             }
+            verify { mockLocationService wasNot Called }
         }
+
+    @Test
+    fun whenRefreshButtonClicked_andPermissionGranted_fetchesDataAndUpdatesView() =
+        runBlockingTest {
+            attachPresenter(locationPermission = false)
+
+            coEvery { mockView.getLocationPermission() } returns true
+
+            presenter.onRefreshButtonClicked()
+
+            coVerify(exactly = 2) {
+                mockView.getLocationPermission()
+            }
+            verify {
+                mockView.showLoading()
+                mockView.showWeather(fakeWeather)
+            }
+        }
+
+    @Test
+    fun whenWeatherRepositoryReturnsCachedData_updatesView() = runBlockingTest {
+        val oldFakeWeather =
+            fakeWeather.copy(timestamp = fakeTimestamp - TimeUnit.MINUTES.toMillis(10))
+        val fakeTime = "10 minutes ago"
+        coEvery { mockWeatherRepository.getWeather(anyValue()) } returns value(
+            Result.success(oldFakeWeather)
+        )
+        every { mockDateTimeProvider.getRelativeTimeString(any()) } returns fakeTime
+
+        attachPresenter(locationPermission = true)
+
+        verify {
+            mockView.showWeather(oldFakeWeather)
+            mockView.showLastUpdatedInfo(oldFakeWeather.location, fakeTime)
+        }
+    }
+
+    @Test
+    fun whenWeatherRepositoryFails_updatesView() = runBlockingTest {
+        coEvery { mockWeatherRepository.getWeather(anyValue()) } returns value(
+            Result.failure(Exception(fakeError))
+        )
+
+        attachPresenter(locationPermission = true)
+
+        verify { mockView.showError(fakeError) }
+    }
+
+    @Test
+    fun whenLocationServiceTimesOut_updatesView() = runBlockingTest {
+        coEvery {
+            mockLocationService.getLocation()
+        } throws mockk<TimeoutCancellationException>()
+
+        attachPresenter(locationPermission = true)
+
+        verify { mockView.showError(fakeError) }
+    }
+
+    private fun attachPresenter(locationPermission: Boolean) {
+        coEvery { mockView.getLocationPermission() } returns locationPermission
+        presenter.onAttachView(mockView)
+    }
 
 }

@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.round
 
+internal val maxCacheAge = TimeUnit.DAYS.toMillis(1)
+
 class WeatherRepository @Inject constructor(
     private val databaseService: DatabaseService,
     private val dateTimeProvider: DateTimeProvider,
@@ -54,12 +56,10 @@ class WeatherRepository @Inject constructor(
 
 
     // Round to 2 decimal places which is roughly 1KM at the equator
-    private fun roundLocation(location: Location) =
+    private fun roundLocation(location: Location): Location =
         Location(
             round(location.latitude * 100.0) / 100.0,
             round(location.longitude * 100.0) / 100.0
         )
 
 }
-
-internal val maxCacheAge = TimeUnit.DAYS.toMillis(1)

@@ -1,6 +1,7 @@
 package com.miniweather.service.database
 
 import com.google.common.truth.Truth.assertThat
+import com.miniweather.model.Weather
 import com.miniweather.repository.dao.WeatherDao
 import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.fakeLocation
@@ -31,21 +32,7 @@ class DatabaseServiceTest : BaseTest() {
     fun whenExecuteSucceeds_returnsResult() = runBlockingTest {
         coEvery { mockWeatherDao.getCachedData(any(), any(), any()) } returns fakeWeather
 
-        val actual = databaseService.execute {
-            getCachedData(
-                fakeLocation.latitude,
-                fakeLocation.longitude,
-                fakeTimestamp
-            )
-        }
-
-        coVerify {
-            mockWeatherDao.getCachedData(
-                fakeLocation.latitude,
-                fakeLocation.longitude,
-                fakeTimestamp
-            )
-        }
+        val actual = execute()
 
         assertThat(actual.getOrThrow()).isEqualTo(fakeWeather)
     }
@@ -54,6 +41,12 @@ class DatabaseServiceTest : BaseTest() {
     fun whenExecuteFails_returnsFailure() = runBlockingTest {
         coEvery { mockWeatherDao.getCachedData(any(), any(), any()) } throws Throwable()
 
+        val actual = execute()
+
+        assertThat(actual.isFailure).isTrue()
+    }
+
+    private suspend fun execute(): Result<Weather> {
         val actual = databaseService.execute {
             getCachedData(
                 fakeLocation.latitude,
@@ -70,7 +63,7 @@ class DatabaseServiceTest : BaseTest() {
             )
         }
 
-        assertThat(actual.isFailure).isTrue()
+        return actual
     }
 
 }

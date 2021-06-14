@@ -18,9 +18,9 @@ class WeatherCardComponent(context: Context, attrs: AttributeSet) : CardView(con
     fun showWeather(weather: Weather) {
         binding.weatherConditionText.text = weather.condition
         binding.weatherTemperatureText.text =
-            context.getString(R.string.weather_temperature_text, weather.temperature)
+            resources.getString(R.string.weather_temperature_text, weather.temperature)
         binding.weatherWindSpeedText.text =
-            context.getString(R.string.weather_wind_speed_text, weather.windSpeed)
+            resources.getString(R.string.weather_wind_speed_text, weather.windSpeed)
         binding.weatherWindDirectionText.text = weather.windDirection
         binding.weatherLastUpdatedText.visibility = View.GONE
     }

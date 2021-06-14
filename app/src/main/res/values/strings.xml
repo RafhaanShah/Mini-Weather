@@ -18,8 +18,6 @@
 
     <string name="description_refresh_button">refresh button</string>
 
-    <string name="unknown">Unknown</string>
-
     <string-array name="directions">
         <item>North</item>
         <item>North East</item>
@@ -29,7 +27,6 @@
         <item>South West</item>
         <item>West</item>
         <item>North West</item>
-        <item>North</item>
     </string-array>
 
 </resources>

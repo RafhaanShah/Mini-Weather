@@ -26,7 +26,7 @@ class WeatherResponseMapperTest : BaseTest() {
 
     @Before
     fun setup() {
-        every { baseUrlProvider.getBaseImageUrl() } returns imageAssets
+        every { baseUrlProvider.weatherImage } returns imageAssets
         every { dateTimeProvider.getCurrentTime() } returns fakeTimestamp
         every { resourceProvider.getStringArray(R.array.directions) } returns fakeCardinalDirections
 

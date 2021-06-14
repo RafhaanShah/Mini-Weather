@@ -5,6 +5,8 @@ import com.miniweather.model.WeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+internal const val weatherPath = "data/2.5/weather?units=metric&appid=" + BuildConfig.WEATHER_API_KEY
+
 interface WeatherApi {
 
     @GET(weatherPath)
@@ -14,5 +16,3 @@ interface WeatherApi {
     ): WeatherResponse
 
 }
-
-internal const val weatherPath = "data/2.5/weather?units=metric&appid=" + BuildConfig.API_KEY

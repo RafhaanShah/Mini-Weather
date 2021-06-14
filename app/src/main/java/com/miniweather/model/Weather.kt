@@ -13,7 +13,6 @@ data class WeatherResponse(
     @SerialName("name")
     val location: String
 ) {
-
     @Serializable
     data class Condition(
         @SerialName("main")

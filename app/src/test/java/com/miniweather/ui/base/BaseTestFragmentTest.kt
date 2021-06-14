@@ -76,7 +76,7 @@ class TestFragment :
         dependenciesInjected = true
     }
 
-    override fun bindView(inflater: LayoutInflater, container: ViewGroup?) =
+    override fun bindView(inflater: LayoutInflater, container: ViewGroup?): FragmentTestBinding =
         FragmentTestBinding.inflate(inflater, container, false)
 
     fun getViewBinding() = binding

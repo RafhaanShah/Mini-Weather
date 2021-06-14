@@ -41,15 +41,17 @@ class LocationServiceTest : BaseInstrumentedTest() {
 
     @Test
     fun whenGetLocationSucceeds_returnsLocation() = runBlockingTest {
+        val expectedLat = 1.0
+        val expectedLon = 2.0
         every { mockLocationTask.isComplete } returns true
         every { mockLocationTask.isCanceled } returns false
-        every { mockLocation.latitude } returns 1.0
-        every { mockLocation.longitude } returns 2.0
+        every { mockLocation.latitude } returns expectedLat
+        every { mockLocation.longitude } returns expectedLon
 
         val actual = locationService.getLocation()
 
-        assertThat(actual.latitude).isEqualTo(1.0)
-        assertThat(actual.longitude).isEqualTo(2.0)
+        assertThat(actual.latitude).isEqualTo(expectedLat)
+        assertThat(actual.longitude).isEqualTo(expectedLon)
     }
 
     @Test(expected = CancellationException::class)

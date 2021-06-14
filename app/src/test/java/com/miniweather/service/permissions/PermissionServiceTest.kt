@@ -38,7 +38,7 @@ class PermissionServiceTest : BaseInstrumentedTest() {
             )
         } returns mockActivityResultLauncher
         permissionService = PermissionService()
-        permissionService.registerForPermissions(mockFragment)
+        permissionService.register(mockFragment)
     }
 
     @Test
@@ -49,7 +49,7 @@ class PermissionServiceTest : BaseInstrumentedTest() {
                 activityResultSlot.captured.onActivityResult(expected)
             }
 
-            val actual = permissionService.requestPermission(
+            val actual = permissionService.request(
                 application,
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
@@ -61,7 +61,7 @@ class PermissionServiceTest : BaseInstrumentedTest() {
     fun whenRequestPermission_andPermissionAlreadyGranted_returnsTrue() = runBlockingTest {
         shadowApplication.grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
 
-        val actual = permissionService.requestPermission(
+        val actual = permissionService.request(
             application,
             Manifest.permission.ACCESS_FINE_LOCATION
         )
@@ -72,7 +72,7 @@ class PermissionServiceTest : BaseInstrumentedTest() {
     @Test(expected = IllegalStateException::class)
     fun whenRequestPermission_withoutRegistering_throwsError() = runBlockingTest {
         val unRegisteredPermissionsService = PermissionService()
-        unRegisteredPermissionsService.requestPermission(
+        unRegisteredPermissionsService.request(
             application,
             Manifest.permission.ACCESS_FINE_LOCATION
         )

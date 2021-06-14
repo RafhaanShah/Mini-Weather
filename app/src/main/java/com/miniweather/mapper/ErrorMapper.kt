@@ -15,12 +15,12 @@ object ErrorMapper {
         return mapError(err)
     }
 
-    fun mapException(t: Throwable): Int {
-        val err = when (t) {
-            else -> ErrorType.GENERIC
-        }
-        return mapError(err)
-    }
+//    fun mapException(t: Throwable): Int {
+//        val err = when (t) {
+//            else -> ErrorType.GENERIC
+//        }
+//        return mapError(err)
+//    }
 
     fun mapError(errorType: ErrorType): Int {
         return when (errorType) {

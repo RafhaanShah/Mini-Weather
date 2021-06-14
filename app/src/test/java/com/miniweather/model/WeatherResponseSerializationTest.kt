@@ -2,14 +2,13 @@ package com.miniweather.model
 
 import com.google.common.truth.Truth.assertThat
 import com.miniweather.di.NetworkModule
-import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.fakeWeatherResponse
 import com.miniweather.testutil.readTestResourceFile
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.junit.Test
 
-class WeatherSerializationTest : BaseTest() {
+class WeatherSerializationTest {
 
     private val jsonFormat: Json = NetworkModule.provideJsonSerializer()
 

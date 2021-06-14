@@ -1,6 +1,7 @@
 package com.miniweather.service.network
 
 import com.google.common.truth.Truth.assertThat
+import com.miniweather.model.WeatherResponse
 import com.miniweather.repository.api.WeatherApi
 import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.fakeError
@@ -31,15 +32,7 @@ class NetworkServiceTest : BaseTest() {
     fun whenCallSucceeds_returnsResult() = runBlockingTest {
         coEvery { mockWeatherApi.getWeather(any(), any()) } returns fakeWeatherResponse
 
-        val actual =
-            networkService.call { getWeather(fakeLocation.latitude, fakeLocation.longitude) }
-
-        coVerify {
-            mockWeatherApi.getWeather(
-                fakeLocation.latitude,
-                fakeLocation.longitude
-            )
-        }
+        val actual = call()
 
         assertThat(actual.getOrThrow()).isEqualTo(fakeWeatherResponse)
     }
@@ -48,6 +41,12 @@ class NetworkServiceTest : BaseTest() {
     fun whenCallFails_returnsFailure() = runBlockingTest {
         coEvery { mockWeatherApi.getWeather(any(), any()) } throws RuntimeException(fakeError)
 
+        val actual = call()
+
+        assertThat(actual.isFailure).isTrue()
+    }
+
+    private suspend fun call(): Result<WeatherResponse> {
         val actual =
             networkService.call { getWeather(fakeLocation.latitude, fakeLocation.longitude) }
 
@@ -58,7 +57,7 @@ class NetworkServiceTest : BaseTest() {
             )
         }
 
-        assertThat(actual.isFailure).isTrue()
+        return actual
     }
 
 }

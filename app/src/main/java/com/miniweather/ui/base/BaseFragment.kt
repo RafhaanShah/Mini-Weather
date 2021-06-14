@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.miniweather.app.BaseApplication
+import com.miniweather.di.AppComponent
 
 abstract class BaseFragment<V : BaseContract.View, P : BaseContract.Presenter<V>, B : ViewBinding> :
     Fragment(),
@@ -54,5 +55,5 @@ abstract class BaseFragment<V : BaseContract.View, P : BaseContract.Presenter<V>
 
 }
 
-val BaseFragment<*, *, *>.injector
-    get() = (requireActivity().application as BaseApplication).getAppComponent()
+val BaseFragment<*, *, *>.injector: AppComponent
+    get() = (requireActivity().application as BaseApplication).appComponent

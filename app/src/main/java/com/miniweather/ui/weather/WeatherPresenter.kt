@@ -13,14 +13,13 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Named
 
 class WeatherPresenter @Inject constructor(
     private val locationService: LocationService,
     private val dateTimeProvider: DateTimeProvider,
     private val weatherRepository: WeatherRepository,
     private val resourceProvider: ResourceProvider,
-    @Named("Main") override val dispatcher: CoroutineDispatcher
+    override val dispatcher: CoroutineDispatcher
 ) : BasePresenter<WeatherContract.View>(), WeatherContract.Presenter {
 
     override fun onAttachView(view: WeatherContract.View) {
