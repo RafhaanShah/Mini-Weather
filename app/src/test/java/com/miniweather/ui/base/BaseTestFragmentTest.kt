@@ -3,6 +3,7 @@ package com.miniweather.ui.base
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
+import com.google.common.truth.Truth.assertThat
 import com.miniweather.R
 import com.miniweather.databinding.FragmentTestBinding
 import com.miniweather.testutil.BaseFragmentTest
@@ -11,7 +12,6 @@ import com.miniweather.testutil.onPage
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -32,7 +32,7 @@ class BaseTestFragmentTest :
     @Test
     fun whenAttached_injectsDependencies() {
         scenario.onFragment { fragment ->
-            assertTrue(fragment.dependenciesInjected)
+            assertThat(fragment.dependenciesInjected).isTrue()
         }
     }
 

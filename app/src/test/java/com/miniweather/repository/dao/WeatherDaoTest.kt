@@ -1,6 +1,7 @@
 package com.miniweather.repository.dao
 
 import androidx.room.Room
+import com.google.common.truth.Truth.assertThat
 import com.miniweather.database.WeatherDatabase
 import com.miniweather.testutil.BaseInstrumentedTest
 import com.miniweather.testutil.CoroutineTestRule
@@ -10,8 +11,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -55,7 +54,7 @@ class WeatherDaoTest : BaseInstrumentedTest() {
             fakeWeather.timestamp - TimeUnit.MINUTES.toMillis(10)
         )
 
-        assertEquals(fakeWeather, actual)
+        assertThat(actual).isEqualTo(fakeWeather)
     }
 
     @Test
@@ -68,7 +67,7 @@ class WeatherDaoTest : BaseInstrumentedTest() {
             fakeWeather.timestamp + TimeUnit.MINUTES.toMillis(10)
         )
 
-        assertNull(actual)
+        assertThat(actual).isNull()
     }
 
     @Test
@@ -91,7 +90,7 @@ class WeatherDaoTest : BaseInstrumentedTest() {
             maxAge
         )
 
-        assertEquals(fakeWeather, actual)
+        assertThat(actual).isEqualTo(fakeWeather)
 
         actual = weatherDao.getCachedData(
             oldWeather.latitude,
@@ -99,7 +98,7 @@ class WeatherDaoTest : BaseInstrumentedTest() {
             maxAge
         )
 
-        assertNull(actual)
+        assertThat(actual).isNull()
     }
 
 }

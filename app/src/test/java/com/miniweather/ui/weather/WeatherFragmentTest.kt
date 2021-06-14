@@ -1,6 +1,7 @@
 package com.miniweather.ui.weather
 
 import android.Manifest
+import com.google.common.truth.Truth.assertThat
 import com.miniweather.pages.WeatherPage
 import com.miniweather.service.network.ImageService
 import com.miniweather.service.permissions.PermissionService
@@ -14,7 +15,6 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -114,7 +114,7 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
         scenario.onFragment { fragment ->
             launch {
                 val actual = fragment.getLocationPermission()
-                assertEquals(expected, actual)
+                assertThat(actual).isEqualTo(expected)
             }
         }
     }

@@ -1,12 +1,11 @@
 package com.miniweather.ui.base
 
+import com.google.common.truth.Truth.assertThat
 import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.CoroutineTestRule
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.isActive
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -32,7 +31,7 @@ class BaseTestPresenterTest : BaseTest() {
 
         val actual = testPresenter.getView()
 
-        assertEquals(fakeView, actual)
+        assertThat(actual).isEqualTo(fakeView)
     }
 
     @Test(expected = IllegalStateException::class)
@@ -65,7 +64,7 @@ class BaseTestPresenterTest : BaseTest() {
 
         testPresenter.onDetachView()
 
-        assertFalse(scope.isActive)
+        assertThat(scope.isActive).isFalse()
     }
 
 }

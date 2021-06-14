@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
+import com.google.common.truth.Truth.assertThat
 import com.miniweather.testutil.BaseInstrumentedTest
 import io.mockk.CapturingSlot
 import io.mockk.every
@@ -11,8 +12,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -55,7 +54,7 @@ class PermissionServiceTest : BaseInstrumentedTest() {
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
 
-            assertEquals(expected, actual)
+            assertThat(actual).isEqualTo(expected)
         }
 
     @Test
@@ -67,7 +66,7 @@ class PermissionServiceTest : BaseInstrumentedTest() {
             Manifest.permission.ACCESS_FINE_LOCATION
         )
 
-        assertTrue(actual)
+        assertThat(actual).isTrue()
     }
 
     @Test(expected = IllegalStateException::class)

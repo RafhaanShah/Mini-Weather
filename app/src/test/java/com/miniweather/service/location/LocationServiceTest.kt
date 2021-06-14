@@ -3,6 +3,7 @@ package com.miniweather.service.location
 import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.tasks.Task
+import com.google.common.truth.Truth.assertThat
 import com.miniweather.testutil.BaseInstrumentedTest
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -10,7 +11,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -47,8 +47,9 @@ class LocationServiceTest : BaseInstrumentedTest() {
         every { mockLocation.longitude } returns 2.0
 
         val actual = locationService.getLocation()
-        assertEquals(actual.latitude, 1.0, 0.0)
-        assertEquals(actual.longitude, 2.0, 0.0)
+
+        assertThat(actual.latitude).isEqualTo(1.0)
+        assertThat(actual.longitude).isEqualTo(2.0)
     }
 
     @Test(expected = CancellationException::class)

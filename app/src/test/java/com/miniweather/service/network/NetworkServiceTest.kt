@@ -1,5 +1,6 @@
 package com.miniweather.service.network
 
+import com.google.common.truth.Truth.assertThat
 import com.miniweather.repository.api.WeatherApi
 import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.fakeError
@@ -10,8 +11,6 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -42,7 +41,7 @@ class NetworkServiceTest : BaseTest() {
             )
         }
 
-        assertEquals(fakeWeatherResponse, (actual.getOrThrow()))
+        assertThat(actual.getOrThrow()).isEqualTo(fakeWeatherResponse)
     }
 
     @Test
@@ -59,7 +58,7 @@ class NetworkServiceTest : BaseTest() {
             )
         }
 
-        assertTrue(actual.isFailure)
+        assertThat(actual.isFailure).isTrue()
     }
 
 }

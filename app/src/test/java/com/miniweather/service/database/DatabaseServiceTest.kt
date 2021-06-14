@@ -1,5 +1,6 @@
 package com.miniweather.service.database
 
+import com.google.common.truth.Truth.assertThat
 import com.miniweather.repository.dao.WeatherDao
 import com.miniweather.testutil.BaseTest
 import com.miniweather.testutil.fakeLocation
@@ -10,8 +11,6 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -48,7 +47,7 @@ class DatabaseServiceTest : BaseTest() {
             )
         }
 
-        assertEquals(fakeWeather, actual.getOrThrow())
+        assertThat(actual.getOrThrow()).isEqualTo(fakeWeather)
     }
 
     @Test
@@ -71,7 +70,7 @@ class DatabaseServiceTest : BaseTest() {
             )
         }
 
-        Assert.assertTrue(actual.isFailure)
+        assertThat(actual.isFailure).isTrue()
     }
 
 }

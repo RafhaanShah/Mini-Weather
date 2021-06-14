@@ -1,5 +1,6 @@
 package com.miniweather.repository
 
+import com.google.common.truth.Truth.assertThat
 import com.miniweather.mapper.WeatherResponseMapper
 import com.miniweather.model.Location
 import com.miniweather.provider.DateTimeProvider
@@ -14,8 +15,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -87,7 +86,7 @@ class WeatherRepositoryTest : BaseTest() {
         coVerify { mockWeatherDao.deleteInvalidCaches(fakeTimestamp - maxCacheAge) }
         coVerify { mockWeatherDao.insertIntoCache(fakeWeather) }
 
-        assertEquals(fakeWeather, actual.getOrThrow())
+        assertThat(actual.getOrThrow()).isEqualTo(fakeWeather)
     }
 
     @Test
@@ -109,7 +108,7 @@ class WeatherRepositoryTest : BaseTest() {
 
             val actual = weatherRepository.getWeather(fakeLocationWithDecimals)
 
-            assertEquals(fakeWeather, actual.getOrThrow())
+            assertThat(actual.getOrThrow()).isEqualTo(fakeWeather)
         }
 
     @Test
@@ -130,7 +129,7 @@ class WeatherRepositoryTest : BaseTest() {
 
         val actual = weatherRepository.getWeather(fakeLocationWithDecimals)
 
-        assertTrue(actual.isFailure)
+        assertThat(actual.isFailure).isTrue()
     }
 
 }

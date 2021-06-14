@@ -1,5 +1,6 @@
 package com.miniweather.mapper
 
+import com.google.common.truth.Truth.assertThat
 import com.miniweather.R
 import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.provider.DateTimeProvider
@@ -7,7 +8,6 @@ import com.miniweather.provider.ResourceProvider
 import com.miniweather.testutil.*
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -37,7 +37,8 @@ class WeatherResponseMapperTest : BaseTest() {
 
     @Test
     fun whenMap_returnsMappedWeather() {
-        assertEquals(fakeWeather, weatherResponseMapper.map(fakeWeatherResponse, fakeLocation))
+        val actual = weatherResponseMapper.map(fakeWeatherResponse, fakeLocation)
+        assertThat(actual).isEqualTo(fakeWeather)
     }
 
 }
