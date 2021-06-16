@@ -28,7 +28,7 @@ class ErrorMapper @Inject constructor(private val resourceProvider: ResourceProv
     fun mapError(errorType: ErrorType): String {
         return when (errorType) {
             ErrorType.NETWORK_SERVER -> getString(R.string.error_network_server)
-            ErrorType.NETWORK_IO -> getString(R.string.error_network_server)
+            ErrorType.NETWORK_IO -> getString(R.string.error_network_io)
             ErrorType.LOCATION_PERMISSION -> getString(R.string.error_location_permission)
             ErrorType.LOCATION_TIMEOUT -> getString(R.string.error_location_timeout)
             ErrorType.GENERIC -> getString(R.string.error_generic)

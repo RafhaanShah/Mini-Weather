@@ -91,7 +91,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/weather_wind_direction_title"
-            tools:text="Last updated: 7:89 London, UK"
+            tools:text="@string/weather_last_updated"
             tools:visibility="visible" />
 
         <ImageView

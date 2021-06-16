@@ -1,6 +1,7 @@
 package com.miniweather.testutil
 
 import android.app.Application
+import android.os.Build
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.miniweather.app.TestApplication
@@ -9,7 +10,10 @@ import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 
-@Config(application = TestApplication::class)
+@Config(
+    application = TestApplication::class,
+    sdk = [Build.VERSION_CODES.R]
+)
 @RunWith(AndroidJUnit4::class)
 abstract class BaseInstrumentedTest : BaseTest() {
 

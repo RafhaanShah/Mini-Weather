@@ -58,7 +58,7 @@
             android:padding="@dimen/large_margin"
             android:textAlignment="center"
             android:textSize="20sp"
-            tools:text="@string/error_network_request" />
+            tools:text="@string/error_generic" />
     </androidx.cardview.widget.CardView>
 
     <ProgressBar
