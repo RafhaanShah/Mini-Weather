@@ -1,7 +1,8 @@
 package com.miniweather.ui.weather
 
+import com.miniweather.mapper.ErrorMapper
+import com.miniweather.mapper.ErrorType
 import com.miniweather.provider.DateTimeProvider
-import com.miniweather.provider.ResourceProvider
 import com.miniweather.repository.WeatherRepository
 import com.miniweather.service.location.LocationService
 import com.miniweather.testutil.*
@@ -31,7 +32,7 @@ class WeatherPresenterTest : BaseTest() {
     private lateinit var mockDateTimeProvider: DateTimeProvider
 
     @MockK
-    private lateinit var mockResourceProvider: ResourceProvider
+    private lateinit var mockErrorMapper: ErrorMapper
 
     @MockK
     private lateinit var mockView: WeatherContract.View
@@ -40,7 +41,6 @@ class WeatherPresenterTest : BaseTest() {
 
     @Before
     fun setup() {
-        every { mockResourceProvider.getString(any()) } returns fakeError
         every { mockDateTimeProvider.getCurrentTime() } returns fakeTimestamp
         coEvery { mockLocationService.getLocation() } returns fakeLocation
         coEvery { mockWeatherRepository.getWeather(anyValue()) } returns value(
@@ -51,7 +51,7 @@ class WeatherPresenterTest : BaseTest() {
             mockLocationService,
             mockDateTimeProvider,
             mockWeatherRepository,
-            mockResourceProvider,
+            mockErrorMapper,
             coroutinesTestRule.testDispatcher
         )
     }
@@ -71,6 +71,7 @@ class WeatherPresenterTest : BaseTest() {
     @Test
     fun whenAttachedWithoutPermissions_andRefreshButtonClicked_andPermissionDenied_updatesView() =
         runBlockingTest {
+            every { mockErrorMapper.mapError(ErrorType.LOCATION_PERMISSION) } returns fakeError
             attachPresenter(locationPermission = false)
 
             presenter.onRefreshButtonClicked()
@@ -85,6 +86,7 @@ class WeatherPresenterTest : BaseTest() {
     @Test
     fun whenRefreshButtonClicked_andPermissionGranted_fetchesDataAndUpdatesView() =
         runBlockingTest {
+            every { mockErrorMapper.mapError(ErrorType.LOCATION_PERMISSION) } returns fakeError
             attachPresenter(locationPermission = false)
 
             coEvery { mockView.getLocationPermission() } returns true
@@ -120,6 +122,7 @@ class WeatherPresenterTest : BaseTest() {
 
     @Test
     fun whenWeatherRepositoryFails_updatesView() = runBlockingTest {
+        every { mockErrorMapper.mapNetworkException(any()) } returns fakeError
         coEvery { mockWeatherRepository.getWeather(anyValue()) } returns value(
             Result.failure(Exception(fakeError))
         )
@@ -131,6 +134,7 @@ class WeatherPresenterTest : BaseTest() {
 
     @Test
     fun whenLocationServiceTimesOut_updatesView() = runBlockingTest {
+        every { mockErrorMapper.mapError(ErrorType.LOCATION_TIMEOUT) } returns fakeError
         coEvery {
             mockLocationService.getLocation()
         } throws mockk<TimeoutCancellationException>()

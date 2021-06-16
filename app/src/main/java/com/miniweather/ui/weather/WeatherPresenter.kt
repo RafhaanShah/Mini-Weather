@@ -4,7 +4,6 @@ import com.miniweather.mapper.ErrorMapper
 import com.miniweather.mapper.ErrorType
 import com.miniweather.model.Weather
 import com.miniweather.provider.DateTimeProvider
-import com.miniweather.provider.ResourceProvider
 import com.miniweather.repository.WeatherRepository
 import com.miniweather.service.location.LocationService
 import com.miniweather.ui.base.BasePresenter
@@ -18,7 +17,7 @@ class WeatherPresenter @Inject constructor(
     private val locationService: LocationService,
     private val dateTimeProvider: DateTimeProvider,
     private val weatherRepository: WeatherRepository,
-    private val resourceProvider: ResourceProvider,
+    private val errorMapper: ErrorMapper,
     override val dispatcher: CoroutineDispatcher
 ) : BasePresenter<WeatherContract.View>(), WeatherContract.Presenter {
 
@@ -38,9 +37,7 @@ class WeatherPresenter @Inject constructor(
                     getWeather()
                 } else {
                     view.showError(
-                        resourceProvider.getString(
-                            ErrorMapper.mapError(ErrorType.LOCATION_PERMISSION)
-                        )
+                        errorMapper.mapError(ErrorType.LOCATION_PERMISSION)
                     )
                 }
             }
@@ -54,15 +51,13 @@ class WeatherPresenter @Inject constructor(
                 .onSuccess { showWeather(it) }
                 .onFailure {
                     view.showError(
-                        resourceProvider.getString(
-                            ErrorMapper.mapNetworkException(
-                                it
-                            )
+                        errorMapper.mapNetworkException(
+                            it
                         )
                     )
                 }
         } catch (e: TimeoutCancellationException) {
-            view.showError(resourceProvider.getString(ErrorMapper.mapError(ErrorType.LOCATION_TIMEOUT)))
+            view.showError(errorMapper.mapError(ErrorType.LOCATION_TIMEOUT))
         }
     }
 

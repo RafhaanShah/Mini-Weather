@@ -1,12 +1,15 @@
 package com.miniweather.mapper
 
+import androidx.annotation.StringRes
 import com.miniweather.R
+import com.miniweather.provider.ResourceProvider
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
-object ErrorMapper {
+class ErrorMapper @Inject constructor(private val resourceProvider: ResourceProvider) {
 
-    fun mapNetworkException(t: Throwable): Int {
+    fun mapNetworkException(t: Throwable): String {
         val err = when (t) {
             is IOException -> ErrorType.NETWORK_IO
             is HttpException -> ErrorType.NETWORK_SERVER
@@ -22,15 +25,17 @@ object ErrorMapper {
 //        return mapError(err)
 //    }
 
-    fun mapError(errorType: ErrorType): Int {
+    fun mapError(errorType: ErrorType): String {
         return when (errorType) {
-            ErrorType.NETWORK_SERVER -> R.string.error_network_server
-            ErrorType.NETWORK_IO -> R.string.error_network_server
-            ErrorType.LOCATION_PERMISSION -> R.string.error_location_permission
-            ErrorType.LOCATION_TIMEOUT -> R.string.error_location_timeout
-            ErrorType.GENERIC -> R.string.error_generic
+            ErrorType.NETWORK_SERVER -> getString(R.string.error_network_server)
+            ErrorType.NETWORK_IO -> getString(R.string.error_network_server)
+            ErrorType.LOCATION_PERMISSION -> getString(R.string.error_location_permission)
+            ErrorType.LOCATION_TIMEOUT -> getString(R.string.error_location_timeout)
+            ErrorType.GENERIC -> getString(R.string.error_generic)
         }
     }
+
+    private fun getString(@StringRes id: Int): String = resourceProvider.getString(id)
 
 }
 
