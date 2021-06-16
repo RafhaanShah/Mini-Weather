@@ -1,7 +1,9 @@
 package com.miniweather.testutil
 
+import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.tasks.Task
+import com.miniweather.app.IntegrationTestApplication
 import com.miniweather.database.WeatherDatabase
 import com.miniweather.di.TestAppComponent
 import com.miniweather.model.Location
@@ -9,9 +11,15 @@ import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.provider.DateTimeProvider
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
-class TestMocksHandler {
+class TestMocksHandler(
+    private val appContext: Context,
+    private val instrumentationContext: Context
+) {
 
     @Inject
     lateinit var mockBaseUrlProvider: BaseUrlProvider
@@ -25,12 +33,20 @@ class TestMocksHandler {
     @Inject
     lateinit var mockDb: WeatherDatabase
 
-    fun initMocks(testAppComponent: TestAppComponent) {
-        testAppComponent.inject(this)
+    private val webserver = TestWebServer()
+
+    fun initialise() {
+        ((appContext as IntegrationTestApplication).appComponent as TestAppComponent)
+            .inject(this)
+        webserver.start()
 
         initMockBaseUrl()
         setMockTime(fakeTimestamp)
         setMockLocation(fakeLocation)
+    }
+
+    fun terminate() {
+        webserver.stop()
     }
 
     fun setMockTime(timeInMillis: Long) {
@@ -54,8 +70,28 @@ class TestMocksHandler {
         every { mockLocation.longitude } returns location.longitude
     }
 
+    fun expectHttpRequest(vararg testHttpCalls: TestHttpCall) {
+        testHttpCalls.forEach {
+            if (it.responseFile != null)
+                it.mockResponse.setBody(readTestAssetFile("responses/${it.responseFile}"))
+            webserver.expectRequest(it.mockRequest, it.mockResponse)
+        }
+    }
+
+    fun <R> executeDbOperation(func: suspend WeatherDatabase.() -> R): R {
+        return runBlocking {
+            func(mockDb)
+        }
+    }
+
+    private fun readTestAssetFile(fileName: String): String =
+        InputStreamReader(
+            instrumentationContext.assets.open(fileName),
+            StandardCharsets.UTF_8
+        ).buffered().readText()
+
     private fun initMockBaseUrl() {
-        every { mockBaseUrlProvider.weatherApi } returns "http://localhost:${WebServer.getPort()}/"
+        every { mockBaseUrlProvider.weatherApi } returns "http://localhost:${webserver.getPort()}/"
         every { mockBaseUrlProvider.weatherImage } returns imageAssets
     }
 

@@ -1,8 +1,8 @@
 package com.miniweather.integration
 
 import androidx.test.rule.GrantPermissionRule
+import com.miniweather.api.MockWeatherApi
 import com.miniweather.pages.WeatherPage
-import com.miniweather.repository.api.weatherPath
 import com.miniweather.testutil.BaseIntegrationTest
 import com.miniweather.testutil.fakeTimestamp
 import com.miniweather.testutil.fakeWeather
@@ -20,7 +20,7 @@ class WeatherIntegrationTest : BaseIntegrationTest<WeatherFragment>(WeatherFragm
 
     @Test
     fun testWeatherJourney() {
-        expectHttpRequest(path = weatherPath, fileName = "weather.json")
+        mocksHandler.expectHttpRequest(MockWeatherApi.GET_WEATHER_SUCCESS)
         launchFragment()
 
         onPage(WeatherPage()) {
@@ -30,8 +30,8 @@ class WeatherIntegrationTest : BaseIntegrationTest<WeatherFragment>(WeatherFragm
 
     @Test
     fun testOfflineWeatherJourney() {
-        expectHttpRequest(path = weatherPath, code = 500)
-        executeDbOperation {
+        mocksHandler.expectHttpRequest(MockWeatherApi.GET_WEATHER_FAILURE)
+        mocksHandler.executeDbOperation {
             weatherDao().insertIntoCache(
                 fakeWeather.copy(timestamp = fakeTimestamp - TimeUnit.MINUTES.toMillis(10))
             )

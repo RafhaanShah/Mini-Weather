@@ -5,14 +5,18 @@ import com.miniweather.model.WeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-internal const val weatherPath = "data/2.5/weather?units=metric&appid=" + BuildConfig.WEATHER_API_KEY
+internal const val pathWeather = "data/2.5/weather"
+internal const val paramLat = "lat"
+internal const val paramLon = "lon"
 
 interface WeatherApi {
 
-    @GET(weatherPath)
+    @GET(pathWeather)
     suspend fun getWeather(
-        @Query("lat") lat: Double,
-        @Query("lon") lon: Double
+        @Query(paramLat) lat: Double,
+        @Query(paramLon) lon: Double,
+        @Query("units") units: String = "metric",
+        @Query("appid") appId: String = BuildConfig.WEATHER_API_KEY,
     ): WeatherResponse
 
 }

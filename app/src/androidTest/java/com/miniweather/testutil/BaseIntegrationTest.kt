@@ -10,11 +10,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.GrantPermissionRule
 import com.miniweather.R
-import com.miniweather.app.IntegrationTestApplication
-import com.miniweather.database.WeatherDatabase
-import com.miniweather.di.TestAppComponent
-import com.miniweather.util.Empty
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -37,24 +32,19 @@ abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
     val storagePermissionRule: GrantPermissionRule =
         GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
+    protected val mocksHandler = TestMocksHandler(appContext, instrumentationContext)
     private lateinit var scenario: FragmentScenario<T>
-    protected val mocksHandler = TestMocksHandler()
 
     @CallSuper
     @Before
     open fun setup() {
-        WebServer.start(instrumentationContext.assets)
-        mocksHandler.initMocks(
-            (appContext as IntegrationTestApplication)
-                .appComponent as TestAppComponent
-        )
+        mocksHandler.initialise()
     }
 
     @CallSuper
     @After
     open fun tearDown() {
-        WebServer.shutdown()
-        WebServer.verifyRequests()
+        mocksHandler.terminate()
     }
 
     protected fun launchFragment(fragmentArgs: Bundle? = null) {
@@ -63,21 +53,6 @@ abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
             fragmentArgs = fragmentArgs,
             themeResId = R.style.AppTheme
         )
-    }
-
-    protected fun expectHttpRequest(
-        path: String = String.Empty,
-        method: String = "GET",
-        code: Int = 200,
-        fileName: String? = null
-    ) = WebServer.expectRequest(
-        path, method, code, fileName
-    )
-
-    protected fun <R> executeDbOperation(func: suspend WeatherDatabase.() -> R): R {
-        return runBlocking {
-            func(mocksHandler.mockDb)
-        }
     }
 
 }
