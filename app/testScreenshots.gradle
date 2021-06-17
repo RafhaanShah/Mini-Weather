@@ -5,6 +5,7 @@ def screenshotsDirectory = "${reportsDirectory}/screenshots"
 def deviceDirectory = "/sdcard/Pictures/${android.defaultConfig.applicationId}.${android.testBuildType}"
 
 def embedScreenshotsTask = task('embedScreenshots', group: 'reporting') {
+    description 'Embeds test screenshots into the HTML reports.'
     doFirst {
         def failureScreenshotsDirectory = new File(screenshotsDirectory)
 
@@ -37,7 +38,8 @@ def embedScreenshotsTask = task('embedScreenshots', group: 'reporting') {
     }
 }
 
-def clearScreenshotsTask = task('clearScreenshots', type: Exec) {
+def clearScreenshotsTask = task('clearScreenshots', type: Exec, group: 'reporting') {
+    description 'Clears test screenshots from the device.'
     ignoreExitValue true
     executable "${android.getAdbExe().toString()}"
     args 'shell', 'rm', '-r', deviceDirectory
@@ -48,6 +50,7 @@ def clearScreenshotsTask = task('clearScreenshots', type: Exec) {
 }
 
 def fetchScreenshotsTask = task('fetchScreenshots', type: Exec, group: 'reporting') {
+    description 'Fetches test screenshots from the device.'
     ignoreExitValue true
     executable "${android.getAdbExe().toString()}"
     args 'pull', "${deviceDirectory}/.", screenshotsDirectory

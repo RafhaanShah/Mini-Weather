@@ -1,0 +1,38 @@
+// https://github.com/pinterest/ktlint
+// https://github.com/JLLeitschuh/ktlint-gradle
+
+// ktlintCheck -> checks all SourceSet files
+// ktlintFormat -> applies formatting to all SourceSet files
+// ktlintApplyToIdea -> generates style file for Android Studio inside .idea/
+// addKtlintFormatGitPreCommitHook -> adds git pre-commit hook to auto format staged files
+
+tasks.named('ktlintFormat') { dependsOn('lintFix') }
+tasks.named('ktlintCheck') { dependsOn('lint') }
+
+task lintCheck {
+    doFirst {
+        println 'Running Lint and Ktlint checks'
+    }
+    finalizedBy {
+        ktlintFormat
+    }
+}
+
+task lintApply {
+    doFirst {
+        println 'Applying Lint and Ktlint fixes'
+    }
+    finalizedBy {
+        ktlintFormat
+    }
+}
+
+task setupKtlint {
+    doFirst {
+        println 'Setting up Ktlint for Android Studio and git hooks'
+    }
+    finalizedBy {
+        ktlintApplyToIdea
+        addKtlintFormatGitPreCommitHook
+    }
+}

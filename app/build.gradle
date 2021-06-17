@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlinx-serialization'
-apply plugin: 'com.adarshr.test-logger'
 
 android {
     compileSdkVersion 30
@@ -100,6 +99,9 @@ android {
         exclude "DebugProbesKt.bin"
     }
 
+    lintOptions {
+        disable "DialogFragmentCallbacksDetector"
+    }
 }
 
 dependencies {
@@ -212,7 +214,14 @@ dependencies {
 
     // Mock web server
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
+}
 
+ktlint {
+    android = true
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML)
+    }
 }
 
 apply from: 'testScreenshots.gradle'
+apply from: 'ktlint.gradle'

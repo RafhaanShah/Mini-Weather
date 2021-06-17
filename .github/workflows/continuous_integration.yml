@@ -1,6 +1,6 @@
-# This workflow will test an Android project
+# This workflow will lint check and test a Kotlin Android project
 
-name: Tests
+name: Continuous integration
 
 on:
   push:
@@ -9,6 +9,39 @@ on:
     branches: [ master ]
 
 jobs:
+  lint_check:
+    name: Run Lint and Ktlint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout latest version of repository
+        uses: actions/checkout@v2
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Create fake secrets file
+        run: cp secret.properties.example secret.properties
+
+      - name: Run Ktlint
+        run: ./gradlew -q ktlintCheck
+
+      - name: Upload Lint Reports
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: lint_reports
+          path: |
+            app/build/reports/lint-results.html
+            app/build/reports/ktlint/
+
   unit_test:
     name: Run Unit Tests
     runs-on: ubuntu-latest
@@ -31,14 +64,14 @@ jobs:
       run: cp secret.properties.example secret.properties
     
     - name: Run Unit Tests
-      run: ./gradlew testDebugUnitTest
+      run: ./gradlew -q testDebugUnitTest
 
-    - name: Upload Test Reports
-      if: ${{ failure() }}
-      uses: actions/upload-artifact@v1
+    - name: Upload Unit Test Reports
+      if: failure()
+      uses: actions/upload-artifact@v2
       with:
-        name: reports
-        path: app/build/reports/tests/testDebugUnitTest
+        name: unit_test_reports
+        path: app/build/reports/tests/testDebugUnitTest/
 
   integration_test:
     name: Run Integration Tests
@@ -69,11 +102,11 @@ jobs:
           arch: x86_64
           profile: pixel
           disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest -PwithScreenshots
+          script: ./gradlew -q connectedDebugAndroidTest -PwithScreenshots
 
-      - name: Upload Test Reports
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v1
+      - name: Upload Integration Test Reports
+        if: failure()
+        uses: actions/upload-artifact@v2
         with:
-          name: reports
-          path: app/build/reports/androidTests/connected
+          name: integration_test_reports
+          path: app/build/reports/androidTests/connected/
