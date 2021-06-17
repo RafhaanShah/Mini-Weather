@@ -51,7 +51,6 @@ class WeatherFragment :
         inflater, container, false
     )
 
-
     override fun showWeather(weather: Weather) {
         hideLoading()
 
@@ -95,5 +94,4 @@ class WeatherFragment :
         binding.weatherProgress.visibility = View.GONE
         binding.weatherRefreshButton.visibility = View.VISIBLE
     }
-
 }

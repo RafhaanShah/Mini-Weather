@@ -5,16 +5,28 @@ import com.miniweather.mapper.ErrorType
 import com.miniweather.provider.DateTimeProvider
 import com.miniweather.repository.WeatherRepository
 import com.miniweather.service.location.LocationService
-import com.miniweather.testutil.*
-import io.mockk.*
+import com.miniweather.testutil.BaseTest
+import com.miniweather.testutil.CoroutineTestRule
+import com.miniweather.testutil.anyValue
+import com.miniweather.testutil.fakeError
+import com.miniweather.testutil.fakeLocation
+import com.miniweather.testutil.fakeTimestamp
+import com.miniweather.testutil.fakeWeather
+import com.miniweather.testutil.value
+import io.mockk.Called
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.verify
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 class WeatherPresenterTest : BaseTest() {
@@ -148,5 +160,4 @@ class WeatherPresenterTest : BaseTest() {
         coEvery { mockView.getLocationPermission() } returns locationPermission
         presenter.onAttachView(mockView)
     }
-
 }

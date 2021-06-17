@@ -3,9 +3,9 @@ package com.miniweather.mapper
 import androidx.annotation.StringRes
 import com.miniweather.R
 import com.miniweather.provider.ResourceProvider
-import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
+import retrofit2.HttpException
 
 class ErrorMapper @Inject constructor(private val resourceProvider: ResourceProvider) {
 
@@ -36,7 +36,6 @@ class ErrorMapper @Inject constructor(private val resourceProvider: ResourceProv
     }
 
     private fun getString(@StringRes id: Int): String = resourceProvider.getString(id)
-
 }
 
 enum class ErrorType {

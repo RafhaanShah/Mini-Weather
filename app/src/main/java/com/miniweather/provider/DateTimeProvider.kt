@@ -16,5 +16,4 @@ class DateTimeProvider @Inject constructor() {
             DateUtils.MINUTE_IN_MILLIS
         ).toString()
     }
-
 }

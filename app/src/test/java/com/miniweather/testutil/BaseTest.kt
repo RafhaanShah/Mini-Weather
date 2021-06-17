@@ -9,5 +9,4 @@ abstract class BaseTest {
     fun setupMocks() {
         MockKAnnotations.init(this, relaxUnitFun = true)
     }
-
 }

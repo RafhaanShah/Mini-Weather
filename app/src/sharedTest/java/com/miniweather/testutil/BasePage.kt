@@ -6,12 +6,14 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import java.util.concurrent.TimeUnit
 import junit.framework.AssertionFailedError
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.not
-import java.util.concurrent.TimeUnit
 
 abstract class BasePage(@IdRes layout: Int) {
 
@@ -38,7 +40,6 @@ abstract class BasePage(@IdRes layout: Int) {
         onView(withId(view))
             .perform(click())
     }
-
 }
 
 fun <T : BasePage> onPage(page: T, func: T.() -> Unit): T = page.apply(func)

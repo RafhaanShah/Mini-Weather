@@ -7,11 +7,11 @@ import com.miniweather.provider.DateTimeProvider
 import com.miniweather.repository.WeatherRepository
 import com.miniweather.service.location.LocationService
 import com.miniweather.ui.base.BasePresenter
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 class WeatherPresenter @Inject constructor(
     private val locationService: LocationService,
@@ -63,12 +63,12 @@ class WeatherPresenter @Inject constructor(
 
     private fun showWeather(weather: Weather) {
         view.showWeather(weather)
-        if (weather.timestamp < (dateTimeProvider.getCurrentTime() - TimeUnit.MINUTES.toMillis(5))) {
+        val recentTime = dateTimeProvider.getCurrentTime() - TimeUnit.MINUTES.toMillis(5)
+        if (weather.timestamp < recentTime) {
             view.showLastUpdatedInfo(
                 weather.location,
                 dateTimeProvider.getRelativeTimeString(weather.timestamp)
             )
         }
     }
-
 }

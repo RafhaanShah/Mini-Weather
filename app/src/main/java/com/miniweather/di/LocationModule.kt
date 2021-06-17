@@ -16,7 +16,5 @@ interface LocationModule {
         @Provides
         fun provideFusedLocationProviderClient(context: Context): FusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(context)
-
     }
-
 }

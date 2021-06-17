@@ -25,5 +25,4 @@ object MockWeatherApi {
         mockRequest = MockRequest(pathWeather),
         mockResponse = MockResponse().setResponseCode(500)
     )
-
 }

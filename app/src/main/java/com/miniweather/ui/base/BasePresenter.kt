@@ -1,11 +1,11 @@
 package com.miniweather.ui.base
 
 import androidx.annotation.CallSuper
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlin.coroutines.CoroutineContext
 
 abstract class BasePresenter<V : BaseContract.View> :
     BaseContract.Presenter<V>, CoroutineScope {
@@ -33,5 +33,4 @@ abstract class BasePresenter<V : BaseContract.View> :
         checkNotNull(_view) { "View is already detached from Presenter" }
         _view = null
     }
-
 }

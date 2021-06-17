@@ -9,5 +9,4 @@ interface BaseContract {
         fun onAttachView(view: V)
         fun onDetachView()
     }
-
 }

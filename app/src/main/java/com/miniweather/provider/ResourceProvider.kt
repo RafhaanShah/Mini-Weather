@@ -10,5 +10,4 @@ class ResourceProvider @Inject constructor(private val resources: Resources) {
     fun getString(@StringRes id: Int): String = resources.getString(id)
 
     fun getStringArray(@ArrayRes id: Int): Array<String> = resources.getStringArray(id)
-
 }

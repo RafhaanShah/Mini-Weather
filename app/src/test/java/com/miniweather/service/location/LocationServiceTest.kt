@@ -1,5 +1,6 @@
 package com.miniweather.service.location
 
+import android.annotation.SuppressLint
 import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.tasks.Task
@@ -14,6 +15,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 
+@SuppressLint("MissingPermission")
 @ExperimentalCoroutinesApi
 class LocationServiceTest : BaseInstrumentedTest() {
 
@@ -68,5 +70,4 @@ class LocationServiceTest : BaseInstrumentedTest() {
 
         locationService.getLocation()
     }
-
 }

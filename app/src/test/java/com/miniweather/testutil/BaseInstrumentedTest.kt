@@ -20,6 +20,5 @@ abstract class BaseInstrumentedTest : BaseTest() {
     protected val application: TestApplication = ApplicationProvider.getApplicationContext()
 
     protected val shadowApplication: ShadowApplication
-            by lazy { Shadows.shadowOf(application as Application) }
-
+        by lazy { Shadows.shadowOf(application as Application) }
 }

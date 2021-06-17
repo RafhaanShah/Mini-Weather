@@ -59,5 +59,4 @@ class NetworkServiceTest : BaseTest() {
 
         return actual
     }
-
 }

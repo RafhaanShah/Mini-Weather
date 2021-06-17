@@ -24,7 +24,7 @@ class TestFailureScreenCaptureProcessor(
         if (!BuildConfig.APPLICATION_ID.endsWith(BuildConfig.BUILD_TYPE))
             screenshotFolderName = screenshotFolderName.plus(".${BuildConfig.BUILD_TYPE}")
 
-        screenshotFolder = "${screenshotFolderName}/$parentFolder"
+        screenshotFolder = "$screenshotFolderName/$parentFolder"
         mDefaultScreenshotPath = File(
             mDefaultScreenshotPath.parentFile, screenshotFolder
         )
@@ -41,12 +41,12 @@ class TestFailureScreenCaptureProcessor(
 
     private fun saveImageWithMediaStore(capture: ScreenCapture): String {
         val format = capture.format.toString().lowercase()
-        val filename = "${capture.name}.${format}"
+        val filename = "${capture.name}.$format"
 
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, filename)
-            put(MediaStore.Images.Media.MIME_TYPE, "image/${format}")
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/${screenshotFolder}/")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/$format")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/$screenshotFolder/")
             put(MediaStore.Images.Media.IS_PENDING, 1)
         }
 
@@ -64,5 +64,4 @@ class TestFailureScreenCaptureProcessor(
 
         return filename
     }
-
 }

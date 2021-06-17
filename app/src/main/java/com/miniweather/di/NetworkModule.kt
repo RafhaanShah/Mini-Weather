@@ -5,12 +5,12 @@ import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.repository.api.WeatherApi
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import javax.inject.Singleton
 
 @Module
 interface NetworkModule {
@@ -38,7 +38,5 @@ interface NetworkModule {
                 ignoreUnknownKeys = true
             }
         }
-
     }
-
 }

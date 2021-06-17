@@ -10,5 +10,4 @@ interface PresenterModule {
 
     @Binds
     fun provideWeatherPresenter(weatherPresenter: WeatherPresenter): WeatherContract.Presenter
-
 }

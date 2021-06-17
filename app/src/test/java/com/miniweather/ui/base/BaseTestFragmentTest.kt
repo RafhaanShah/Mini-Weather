@@ -24,9 +24,11 @@ class BaseTestFragmentTest :
 
     @Before
     fun setup() {
-        launchFragment(TestFragment().apply {
-            this.presenter = mockPresenter
-        })
+        launchFragment(
+            TestFragment().apply {
+                this.presenter = mockPresenter
+            }
+        )
     }
 
     @Test
@@ -61,7 +63,6 @@ class BaseTestFragmentTest :
         scenario.moveToState(Lifecycle.State.DESTROYED)
         verify { mockPresenter.onDetachView() }
     }
-
 }
 
 class TestFragment :
@@ -80,7 +81,6 @@ class TestFragment :
         FragmentTestBinding.inflate(inflater, container, false)
 
     fun getViewBinding() = binding
-
 }
 
 interface FakeContract : BaseContract {
@@ -88,7 +88,6 @@ interface FakeContract : BaseContract {
     interface View : BaseContract.View
 
     interface Presenter : BaseContract.Presenter<View>
-
 }
 
 class TestPage : BasePage(R.id.test_layout)

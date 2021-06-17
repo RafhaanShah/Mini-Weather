@@ -20,7 +20,5 @@ interface TestMocksModule {
         @Singleton
         @Provides
         fun provideMockTimeService(): DateTimeProvider = spyk(DateTimeProvider())
-
     }
-
 }

@@ -23,5 +23,4 @@ class CoroutineTestRule : TestWatcher() {
         Dispatchers.resetMain()
         testDispatcher.cleanupTestCoroutines()
     }
-
 }

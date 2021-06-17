@@ -1,13 +1,13 @@
 package com.miniweather.testutil
 
 import com.miniweather.util.Empty
+import java.util.ArrayDeque
+import java.util.Queue
+import java.util.concurrent.TimeUnit
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import java.util.*
-import java.util.concurrent.TimeUnit
-
 
 class TestWebServer {
 
@@ -39,17 +39,17 @@ class TestWebServer {
             val actual = server.takeRequest(100, TimeUnit.MILLISECONDS)
                 ?: throw Exception(
                     "Did not receive expected request: " +
-                            " ${expected.method} ${expected.path}"
+                        " ${expected.method} ${expected.path}"
                 )
 
             // path does not have a leading slash
             println(actual.path)
-            if ((expected.method != actual.method)
-                || (actual.path?.startsWith("/${expected.path}") == false)
+            if ((expected.method != actual.method) ||
+                (actual.path?.startsWith("/${expected.path}") == false)
             ) {
                 throw Exception(
                     "Expected request ${expected.method} ${expected.path} " +
-                            "did not match actual ${actual.method} ${actual.path}"
+                        "did not match actual ${actual.method} ${actual.path}"
                 )
             }
 
@@ -58,7 +58,7 @@ class TestWebServer {
                 if (actualHeaders[header.key] != header.value) {
                     throw Exception(
                         "Expected header ${header.key}:${header.value} " +
-                                "did not match actual ${actualHeaders[header.key]}"
+                            "did not match actual ${actualHeaders[header.key]}"
                     )
                 }
             }
@@ -69,7 +69,7 @@ class TestWebServer {
                 if (path?.contains("${queryParam.key}=${queryParam.value}") == false) {
                     throw Exception(
                         "Expected query parameter ${queryParam.key}=${queryParam.value} " +
-                                "was not found in: $path"
+                            "was not found in: $path"
                     )
                 }
             }
@@ -77,7 +77,6 @@ class TestWebServer {
             expected.requestBodyVerifier?.validate(actual.body.readUtf8())
         }
     }
-
 }
 
 interface MockRequestBodyVerifier {

@@ -99,8 +99,14 @@ android {
         exclude "DebugProbesKt.bin"
     }
 
+    // https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/dsl/LintOptions
     lintOptions {
-        disable "DialogFragmentCallbacksDetector"
+        abortOnError true
+        checkAllWarnings false
+        checkGeneratedSources false
+        checkTestSources true
+        explainIssues true
+        xmlReport false
     }
 }
 
@@ -218,6 +224,8 @@ dependencies {
 
 ktlint {
     android = true
+    verbose = false
+    outputColorName = "RED"
     reporters {
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML)
     }

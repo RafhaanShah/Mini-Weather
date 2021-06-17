@@ -77,5 +77,4 @@ class PermissionServiceTest : BaseInstrumentedTest() {
             Manifest.permission.ACCESS_FINE_LOCATION
         )
     }
-
 }

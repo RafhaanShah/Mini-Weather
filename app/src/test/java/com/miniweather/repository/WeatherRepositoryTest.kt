@@ -8,7 +8,12 @@ import com.miniweather.repository.api.WeatherApi
 import com.miniweather.repository.dao.WeatherDao
 import com.miniweather.service.database.DatabaseService
 import com.miniweather.service.network.NetworkService
-import com.miniweather.testutil.*
+import com.miniweather.testutil.BaseTest
+import com.miniweather.testutil.CoroutineTestRule
+import com.miniweather.testutil.fakeError
+import com.miniweather.testutil.fakeTimestamp
+import com.miniweather.testutil.fakeWeather
+import com.miniweather.testutil.fakeWeatherResponse
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -59,7 +64,7 @@ class WeatherRepositoryTest : BaseTest() {
     fun setup() {
         every { mockDateTimeProvider.getCurrentTime() } returns fakeTimestamp
         every { weatherResponseMapper.map(fakeWeatherResponse, fakeLocationRounded) } returns
-                fakeWeather
+            fakeWeather
 
         mockNetworkService = NetworkService(mockWeatherApi)
         mockDatabaseService = DatabaseService(mockWeatherDao)
@@ -142,5 +147,4 @@ class WeatherRepositoryTest : BaseTest() {
                 )
             } throws RuntimeException(fakeError)
     }
-
 }

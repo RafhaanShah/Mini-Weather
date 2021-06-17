@@ -6,8 +6,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import kotlinx.coroutines.CompletableDeferred
 import javax.inject.Inject
+import kotlinx.coroutines.CompletableDeferred
 
 class PermissionService @Inject constructor() {
 
@@ -38,5 +38,4 @@ class PermissionService @Inject constructor() {
             context,
             permission
         ) == PackageManager.PERMISSION_GRANTED
-
 }

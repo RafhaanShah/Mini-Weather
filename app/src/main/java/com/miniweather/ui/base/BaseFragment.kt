@@ -52,7 +52,6 @@ abstract class BaseFragment<V : BaseContract.View, P : BaseContract.Presenter<V>
         inflater: LayoutInflater,
         container: ViewGroup?
     ): B
-
 }
 
 val BaseFragment<*, *, *>.injector: AppComponent

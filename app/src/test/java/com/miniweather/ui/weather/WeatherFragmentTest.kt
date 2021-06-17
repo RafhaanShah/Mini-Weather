@@ -32,11 +32,13 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
 
     @Before
     fun setup() {
-        launchFragment(WeatherFragment().apply {
-            this.imageService = mockImageService
-            this.permissionService = mockPermissionsService
-            this.presenter = mockPresenter
-        })
+        launchFragment(
+            WeatherFragment().apply {
+                this.imageService = mockImageService
+                this.permissionService = mockPermissionsService
+                this.presenter = mockPresenter
+            }
+        )
     }
 
     @Test
@@ -118,6 +120,4 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
             }
         }
     }
-
 }
-

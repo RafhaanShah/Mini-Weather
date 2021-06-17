@@ -11,5 +11,4 @@ class NetworkService @Inject constructor(
 
     suspend fun <T> call(apiFunc: suspend WeatherApi.() -> T): Result<T> =
         runCatching { apiFunc(weatherApi) }
-
 }

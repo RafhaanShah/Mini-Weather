@@ -36,5 +36,4 @@ class WeatherResponseMapper @Inject constructor(
 
     private fun formatImageUrl(icon: String): String =
         baseUrlProvider.weatherImage + icon + PNG
-
 }

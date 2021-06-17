@@ -54,5 +54,4 @@ abstract class BaseIntegrationTest<T : Fragment>(private val clazz: Class<T>) {
             themeResId = R.style.AppTheme
         )
     }
-
 }

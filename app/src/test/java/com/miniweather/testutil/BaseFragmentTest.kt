@@ -18,7 +18,7 @@ abstract class BaseFragmentTest<T : Fragment>(private val clazz: Class<T>) :
             themeResId = R.style.AppTheme,
             factory = object : FragmentFactory() {
                 override fun instantiate(classLoader: ClassLoader, className: String) = fragment
-            })
+            }
+        )
     }
-
 }

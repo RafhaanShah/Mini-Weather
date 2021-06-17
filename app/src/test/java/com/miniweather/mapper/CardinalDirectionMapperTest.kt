@@ -36,5 +36,4 @@ class CardinalDirectionMapperTest(private val value: Double, private val expecte
         val actual = CardinalDirectionMapper.map(value)
         assertThat(actual).isEqualTo(expected)
     }
-
 }

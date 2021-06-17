@@ -16,5 +16,4 @@ interface WeatherContract : BaseContract {
     interface Presenter : BaseContract.Presenter<View> {
         fun onRefreshButtonClicked()
     }
-
 }

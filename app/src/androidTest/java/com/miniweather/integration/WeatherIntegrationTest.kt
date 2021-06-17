@@ -8,9 +8,9 @@ import com.miniweather.testutil.fakeTimestamp
 import com.miniweather.testutil.fakeWeather
 import com.miniweather.testutil.onPage
 import com.miniweather.ui.weather.WeatherFragment
+import java.util.concurrent.TimeUnit
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.TimeUnit
 
 class WeatherIntegrationTest : BaseIntegrationTest<WeatherFragment>(WeatherFragment::class.java) {
 
@@ -44,5 +44,4 @@ class WeatherIntegrationTest : BaseIntegrationTest<WeatherFragment>(WeatherFragm
             shouldShowLastUpdated("10 minutes ago", fakeWeather.location)
         }
     }
-
 }

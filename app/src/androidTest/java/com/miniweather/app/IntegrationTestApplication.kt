@@ -13,5 +13,4 @@ class IntegrationTestApplication : BaseApplication() {
             .factory()
             .create(applicationContext)
     }
-
 }

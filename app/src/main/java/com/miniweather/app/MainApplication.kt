@@ -13,5 +13,4 @@ class MainApplication : BaseApplication() {
             .factory()
             .create(applicationContext)
     }
-
 }

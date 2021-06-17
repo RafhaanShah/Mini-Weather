@@ -5,12 +5,11 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.miniweather.model.Location
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-
 
 class LocationService @Inject constructor(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
@@ -28,5 +27,4 @@ class LocationService @Inject constructor(
 
         Location(location.latitude, location.longitude)
     }
-
 }

@@ -27,5 +27,4 @@ interface AppComponent {
     fun inject(application: BaseApplication)
 
     fun inject(fragment: WeatherFragment)
-
 }

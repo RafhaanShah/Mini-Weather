@@ -9,10 +9,10 @@ import com.miniweather.app.IntegrationTestApplication
 class IntegrationTestRunner : AndroidJUnitRunner() {
 
     override fun newApplication(
-        cl: ClassLoader?, className: String?,
+        cl: ClassLoader?,
+        className: String?,
         context: Context?
     ): Application {
         return super.newApplication(cl, IntegrationTestApplication::class.java.name, context)
     }
-
 }

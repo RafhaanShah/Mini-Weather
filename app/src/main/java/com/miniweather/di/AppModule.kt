@@ -17,9 +17,5 @@ interface AppModule {
 
         @Provides
         fun provideResources(context: Context): Resources = context.resources
-
     }
-
 }
-
-

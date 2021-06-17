@@ -11,5 +11,4 @@ internal const val databaseName: String = "weather_database"
 abstract class WeatherDatabase : RoomDatabase() {
 
     abstract fun weatherDao(): WeatherDao
-
 }

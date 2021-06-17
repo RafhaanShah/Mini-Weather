@@ -1,5 +1,6 @@
 package com.miniweather.testutil
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.tasks.Task
@@ -11,10 +12,10 @@ import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.provider.DateTimeProvider
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
+import kotlinx.coroutines.runBlocking
 
 class TestMocksHandler(
     private val appContext: Context,
@@ -53,6 +54,7 @@ class TestMocksHandler(
         every { mockDateTimeProvider.getCurrentTime() } returns timeInMillis
     }
 
+    @SuppressLint("MissingPermission")
     fun setMockLocation(location: Location) {
         val mockLocation: android.location.Location = mockk()
         val mockLocationTask: Task<android.location.Location> = mockk()
@@ -94,5 +96,4 @@ class TestMocksHandler(
         every { mockBaseUrlProvider.weatherApi } returns "http://localhost:${webserver.getPort()}/"
         every { mockBaseUrlProvider.weatherImage } returns imageAssets
     }
-
 }

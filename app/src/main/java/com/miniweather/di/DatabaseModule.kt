@@ -20,9 +20,7 @@ interface DatabaseModule {
             context,
             WeatherDatabase::class.java, databaseName
         ).build()
-
     }
-
 }
 
 @Module
@@ -33,7 +31,5 @@ interface DaoModule {
         @Provides
         fun provideWeatherDao(weatherDatabase: WeatherDatabase): WeatherDao =
             weatherDatabase.weatherDao()
-
     }
-
 }

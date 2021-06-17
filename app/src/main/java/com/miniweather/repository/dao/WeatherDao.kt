@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.miniweather.model.Weather
 
+/* ktlint-disable max-line-length */
 @Dao
 interface WeatherDao {
 
@@ -17,5 +18,5 @@ interface WeatherDao {
 
     @Query("DELETE FROM weather WHERE weather.timestamp < (:maxAge)")
     suspend fun deleteInvalidCaches(maxAge: Long)
-
 }
+/* ktlint-enable max-line-length */

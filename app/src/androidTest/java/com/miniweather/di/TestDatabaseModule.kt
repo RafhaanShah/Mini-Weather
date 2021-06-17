@@ -16,7 +16,5 @@ interface TestDatabaseModule {
         @Provides
         fun provideAppDatabase(context: Context): WeatherDatabase =
             Room.inMemoryDatabaseBuilder(context, WeatherDatabase::class.java).build()
-
     }
-
 }

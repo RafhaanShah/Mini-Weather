@@ -11,5 +11,4 @@ class DatabaseService @Inject constructor(
 
     suspend fun <T> execute(query: suspend WeatherDao.() -> T): Result<T> =
         runCatching { checkNotNull(query(weatherDao)) }
-
 }

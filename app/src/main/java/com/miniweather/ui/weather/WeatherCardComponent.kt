@@ -33,5 +33,4 @@ class WeatherCardComponent(context: Context, attrs: AttributeSet) : CardView(con
     fun updateIcon(imageService: ImageService, url: String) {
         imageService.loadImage(binding.weatherIcon, url)
     }
-
 }

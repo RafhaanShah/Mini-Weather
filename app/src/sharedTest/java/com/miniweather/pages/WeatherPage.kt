@@ -1,6 +1,16 @@
 package com.miniweather.pages
 
-import com.miniweather.R.id.*
+import com.miniweather.R.id.weather_activity_layout
+import com.miniweather.R.id.weather_card
+import com.miniweather.R.id.weather_condition_text
+import com.miniweather.R.id.weather_error_message_card
+import com.miniweather.R.id.weather_error_message_text
+import com.miniweather.R.id.weather_last_updated_text
+import com.miniweather.R.id.weather_progress
+import com.miniweather.R.id.weather_refresh_button
+import com.miniweather.R.id.weather_temperature_text
+import com.miniweather.R.id.weather_wind_direction_text
+import com.miniweather.R.id.weather_wind_speed_text
 import com.miniweather.model.Weather
 import com.miniweather.testutil.BasePage
 
@@ -45,5 +55,4 @@ class WeatherPage : BasePage(weather_activity_layout) {
     fun pressRefresh() {
         performClick(weather_refresh_button)
     }
-
 }

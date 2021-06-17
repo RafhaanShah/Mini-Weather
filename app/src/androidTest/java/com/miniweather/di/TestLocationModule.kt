@@ -14,7 +14,5 @@ interface TestLocationModule {
         @Singleton
         @Provides
         fun provideFusedLocationProviderClient(): FusedLocationProviderClient = mockk()
-
     }
-
 }

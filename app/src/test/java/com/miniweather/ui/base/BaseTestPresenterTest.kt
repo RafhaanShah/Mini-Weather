@@ -66,13 +66,11 @@ class BaseTestPresenterTest : BaseTest() {
 
         assertThat(scope.isActive).isFalse()
     }
-
 }
 
 class TestPresenter(override val dispatcher: CoroutineDispatcher) : BasePresenter<FakeView>() {
 
     fun getView() = view
-
 }
 
 class FakeView : BaseContract.View

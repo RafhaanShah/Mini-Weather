@@ -8,7 +8,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.junit.Test
 
-class WeatherSerializationTest {
+class WeatherResponseSerializationTest {
 
     private val jsonFormat: Json = NetworkModule.provideJsonSerializer()
 
@@ -20,5 +20,4 @@ class WeatherSerializationTest {
 
         assertThat(actual).isEqualTo(fakeWeatherResponse)
     }
-
 }

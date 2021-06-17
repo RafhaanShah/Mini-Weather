@@ -65,5 +65,4 @@ class DatabaseServiceTest : BaseTest() {
 
         return actual
     }
-
 }

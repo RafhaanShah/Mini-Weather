@@ -25,5 +25,4 @@ interface TestAppComponent : AppComponent {
     }
 
     fun inject(testMocksHandler: TestMocksHandler)
-
 }

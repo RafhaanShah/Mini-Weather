@@ -24,5 +24,4 @@ class TestFailureScreenshotRule(private val contentResolver: ContentResolver) : 
             Log.e("TestFailureScreenshotRule", "Error taking screenshot: ", e)
         }
     }
-
 }

@@ -37,5 +37,5 @@ inline fun <reified T : Any> MockKMatcherScope.anyInlineValue(): T {
 
 val KClass<*>.isInline: Boolean
     get() = !isData &&
-            primaryConstructor?.parameters?.size == 1 &&
-            java.declaredMethods.any { it.name == "box-impl" }
+        primaryConstructor?.parameters?.size == 1 &&
+        java.declaredMethods.any { it.name == "box-impl" }

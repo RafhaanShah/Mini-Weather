@@ -7,6 +7,7 @@ import com.miniweather.testutil.BaseInstrumentedTest
 import com.miniweather.testutil.CoroutineTestRule
 import com.miniweather.testutil.fakeTimestamp
 import com.miniweather.testutil.fakeWeather
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.test.runBlockingTest
@@ -14,7 +15,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 class WeatherDaoTest : BaseInstrumentedTest() {
@@ -100,5 +100,4 @@ class WeatherDaoTest : BaseInstrumentedTest() {
 
         assertThat(actual).isNull()
     }
-
 }

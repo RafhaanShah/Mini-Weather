@@ -25,5 +25,4 @@ class ImageService @Inject constructor() {
                 .into(view)
         }
     }
-
 }

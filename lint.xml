@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- http://tools.android.com/tips/lint-checks -->
+    <issue id="UnusedResources" severity="error" />
+    <issue id="ObsoleteSdkInt" severity="informational" />
+</lint>
