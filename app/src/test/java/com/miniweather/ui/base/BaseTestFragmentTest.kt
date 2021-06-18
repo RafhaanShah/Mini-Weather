@@ -90,4 +90,4 @@ interface FakeContract : BaseContract {
     interface Presenter : BaseContract.Presenter<View>
 }
 
-class TestPage : BasePage(R.id.test_layout)
+class TestPage : BasePage(R.id.test_fragment_layout)

@@ -1,24 +1,29 @@
 package com.miniweather.testutil
 
 import android.os.Bundle
+import androidx.annotation.NavigationRes
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.testing.FragmentScenario
+import androidx.navigation.testing.TestNavHostController
 import com.miniweather.R
 
 abstract class BaseFragmentTest<T : Fragment>(private val clazz: Class<T>) :
     BaseInstrumentedTest() {
 
     protected lateinit var scenario: FragmentScenario<T>
+    protected val navController = TestNavHostController(application)
 
-    protected fun launchFragment(fragment: T, fragmentArgs: Bundle? = null) {
-        scenario = FragmentScenario.launchInContainer(
-            fragmentClass = clazz,
-            fragmentArgs = fragmentArgs,
-            themeResId = R.style.AppTheme,
-            factory = object : FragmentFactory() {
-                override fun instantiate(classLoader: ClassLoader, className: String) = fragment
-            }
+    fun launchFragment(
+        fragment: T,
+        fragmentArgs: Bundle? = null,
+        @NavigationRes navGraph: Int = R.navigation.nav_graph_main
+    ) {
+        scenario = FragmentLauncher.launchFragment(
+            clazz,
+            fragment,
+            fragmentArgs,
+            navController,
+            navGraph
         )
     }
 }

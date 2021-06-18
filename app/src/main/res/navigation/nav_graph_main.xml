@@ -2,11 +2,11 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    app:startDestination="@id/weather">
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/weatherScreen">
 
     <fragment
-        android:id="@+id/weather"
+        android:id="@+id/weatherScreen"
         android:name="com.miniweather.ui.weather.WeatherFragment"
         android:label="WeatherFragment"
         tools:layout="@layout/fragment_weather" />
