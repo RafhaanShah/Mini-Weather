@@ -31,7 +31,7 @@ jobs:
         run: cp secret.properties.example secret.properties
 
       - name: Run Ktlint
-        run: ./gradlew -q ktlintCheck
+        run: ./gradlew ktlintCheck
 
       - name: Upload Lint Reports
         if: failure()
@@ -64,7 +64,7 @@ jobs:
       run: cp secret.properties.example secret.properties
     
     - name: Run Unit Tests
-      run: ./gradlew -q testDebugUnitTest
+      run: ./gradlew testDebugUnitTest
 
     - name: Upload Unit Test Reports
       if: failure()
@@ -97,12 +97,14 @@ jobs:
       - name: Run Integration Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
+          # https://github.com/ReactiveCircus/android-emulator-runner/issues/129
+          # https://github.com/ReactiveCircus/android-emulator-runner/issues/140
+          api-level: 29 # 30 causes System UI to hang
           target: google_apis
           arch: x86_64
           profile: pixel
           disable-animations: true
-          script: ./gradlew -q connectedDebugAndroidTest -PwithScreenshots
+          script: ./gradlew connectedDebugAndroidTest -PwithScreenshots
 
       - name: Upload Integration Test Reports
         if: failure()
