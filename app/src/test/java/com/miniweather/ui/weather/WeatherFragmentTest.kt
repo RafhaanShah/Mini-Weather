@@ -1,16 +1,21 @@
 package com.miniweather.ui.weather
 
 import android.Manifest
+import coil.ImageLoader
 import com.google.common.truth.Truth.assertThat
 import com.miniweather.pages.WeatherPage
-import com.miniweather.service.network.ImageService
 import com.miniweather.service.permissions.PermissionService
 import com.miniweather.testutil.BaseFragmentTest
 import com.miniweather.testutil.fakeError
 import com.miniweather.testutil.fakeWeather
 import com.miniweather.testutil.onPage
+import com.miniweather.util.load
+import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.mockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -22,7 +27,7 @@ import org.junit.Test
 class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::class.java) {
 
     @MockK
-    private lateinit var mockImageService: ImageService
+    private lateinit var mockImageLoader: ImageLoader
 
     @MockK
     private lateinit var mockPermissionsService: PermissionService
@@ -32,9 +37,12 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
 
     @Before
     fun setup() {
+        mockkStatic(ImageLoader::load)
+        every { mockImageLoader.load(any(), any()) } just Runs
+
         launchFragment(
             WeatherFragment().apply {
-                this.imageService = mockImageService
+                this.imageLoader = mockImageLoader
                 this.permissionService = mockPermissionsService
                 this.presenter = mockPresenter
             }
@@ -51,9 +59,7 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
             shouldShowWeather(fakeWeather)
         }
 
-        verify {
-            mockImageService.loadImage(any(), fakeWeather.iconUrl, any())
-        }
+        verify { mockImageLoader.load(any(), fakeWeather.iconUrl) }
     }
 
     @Test
@@ -109,8 +115,7 @@ class WeatherFragmentTest : BaseFragmentTest<WeatherFragment>(WeatherFragment::c
     fun whenRequestLocationPermission_callsPermissionService() = runBlockingTest {
         val expected = true
         coEvery {
-            mockPermissionsService
-                .request(any(), Manifest.permission.ACCESS_FINE_LOCATION)
+            mockPermissionsService.request(any(), Manifest.permission.ACCESS_FINE_LOCATION)
         } returns expected
 
         scenario.onFragment { fragment ->

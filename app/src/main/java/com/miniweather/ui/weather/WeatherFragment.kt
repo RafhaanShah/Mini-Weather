@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import coil.ImageLoader
 import com.miniweather.R
 import com.miniweather.databinding.FragmentWeatherBinding
 import com.miniweather.model.Weather
-import com.miniweather.service.network.ImageService
 import com.miniweather.service.permissions.PermissionService
 import com.miniweather.ui.base.BaseFragment
 import com.miniweather.ui.base.injector
@@ -19,7 +19,7 @@ class WeatherFragment :
     WeatherContract.View {
 
     @Inject
-    lateinit var imageService: ImageService
+    lateinit var imageLoader: ImageLoader
 
     @Inject
     lateinit var permissionService: PermissionService
@@ -56,7 +56,7 @@ class WeatherFragment :
 
         binding.weatherCard.visibility = View.VISIBLE
         binding.weatherCard.showWeather(weather)
-        binding.weatherCard.updateIcon(imageService, weather.iconUrl)
+        binding.weatherCard.updateIcon(imageLoader, weather.iconUrl)
     }
 
     override fun showLastUpdatedInfo(location: String, time: String) {

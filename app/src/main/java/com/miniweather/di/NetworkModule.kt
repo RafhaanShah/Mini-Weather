@@ -1,5 +1,8 @@
 package com.miniweather.di
 
+import android.content.Context
+import coil.ImageLoader
+import coil.util.CoilUtils
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.repository.api.WeatherApi
@@ -33,10 +36,21 @@ interface NetworkModule {
             retrofit.create(WeatherApi::class.java)
 
         @Provides
-        fun provideJsonSerializer(): Json {
-            return Json {
+        fun provideJsonSerializer(): Json =
+            Json {
                 ignoreUnknownKeys = true
             }
-        }
+
+        @Singleton
+        @Provides
+        fun provideImageLoader(context: Context): ImageLoader =
+            ImageLoader.Builder(context)
+                .crossfade(true)
+                .okHttpClient {
+                    OkHttpClient.Builder()
+                        .cache(CoilUtils.createDefaultCache(context))
+                        .build()
+                }
+                .build()
     }
 }

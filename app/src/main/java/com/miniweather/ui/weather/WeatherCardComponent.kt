@@ -5,10 +5,11 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.cardview.widget.CardView
+import coil.ImageLoader
 import com.miniweather.R
 import com.miniweather.databinding.ComponentWeatherCardBinding
 import com.miniweather.model.Weather
-import com.miniweather.service.network.ImageService
+import com.miniweather.util.load
 
 class WeatherCardComponent(context: Context, attrs: AttributeSet) : CardView(context, attrs) {
 
@@ -30,7 +31,7 @@ class WeatherCardComponent(context: Context, attrs: AttributeSet) : CardView(con
         binding.weatherLastUpdatedText.text = info
     }
 
-    fun updateIcon(imageService: ImageService, url: String) {
-        imageService.loadImage(binding.weatherIcon, url)
+    fun updateIcon(imageLoader: ImageLoader, url: String) {
+        imageLoader.load(binding.weatherIcon, url)
     }
 }

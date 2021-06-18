@@ -153,9 +153,8 @@ dependencies {
     implementation 'com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0'
 
     // Image loading
-    // https://github.com/bumptech/glide
-    def glide_version = "4.11.0"
-    implementation "com.github.bumptech.glide:glide:$glide_version"
+    // https://github.com/coil-kt/coil
+    implementation "io.coil-kt:coil-base:1.2.2"
 
     // Room db
     // https://developer.android.com/training/data-storage/room
@@ -166,7 +165,6 @@ dependencies {
     // Annotation processors
     kapt "androidx.room:room-compiler:$room_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
-    kapt "com.github.bumptech.glide:compiler:$glide_version"
     kaptTest "com.google.dagger:dagger-compiler:$dagger_version"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
 
