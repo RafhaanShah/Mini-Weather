@@ -6,15 +6,15 @@
 // ktlintApplyToIdea -> generates style file for Android Studio inside .idea/
 // addKtlintFormatGitPreCommitHook -> adds git pre-commit hook to auto format staged files
 
-tasks.named('ktlintFormat') { dependsOn('lintFix') }
 tasks.named('ktlintCheck') { dependsOn('lint') }
+tasks.named('ktlintFormat') { dependsOn('lintFix') }
 
 task lintCheck {
     doFirst {
         println 'Running Lint and Ktlint checks'
     }
     finalizedBy {
-        ktlintFormat
+        ktlintCheck
     }
 }
 

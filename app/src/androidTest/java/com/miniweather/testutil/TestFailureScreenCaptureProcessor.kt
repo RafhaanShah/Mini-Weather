@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import androidx.test.runner.screenshot.BasicScreenCaptureProcessor
 import androidx.test.runner.screenshot.ScreenCapture
 import com.miniweather.BuildConfig
@@ -39,6 +40,7 @@ class TestFailureScreenCaptureProcessor(
         else super.process(capture)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun saveImageWithMediaStore(capture: ScreenCapture): String {
         val format = capture.format.toString().lowercase()
         val filename = "${capture.name}.$format"

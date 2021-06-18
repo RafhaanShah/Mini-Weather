@@ -105,7 +105,9 @@ android {
         checkAllWarnings false
         checkGeneratedSources false
         checkTestSources true
+        disable 'DialogFragmentCallbacksDetector' // crashes lint
         explainIssues true
+        warningsAsErrors true
         xmlReport false
     }
 }
