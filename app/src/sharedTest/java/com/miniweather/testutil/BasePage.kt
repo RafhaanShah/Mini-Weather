@@ -22,6 +22,7 @@ abstract class BasePage(@IdRes layout: Int) {
     }
 
     protected fun shouldHaveText(@IdRes view: Int, text: String) {
+        shouldBeVisible(view)
         onView(withId(view))
             .check(matches(withText(containsString(text))))
     }
@@ -37,6 +38,7 @@ abstract class BasePage(@IdRes layout: Int) {
     }
 
     protected fun performClick(@IdRes view: Int) {
+        shouldBeVisible(view)
         onView(withId(view))
             .perform(click())
     }
@@ -44,17 +46,15 @@ abstract class BasePage(@IdRes layout: Int) {
 
 fun <T : BasePage> onPage(page: T, func: T.() -> Unit): T = page.apply(func)
 
-private const val waitTimeMillis = 100L
-private const val maxRetries = 100
-
 // https://stackoverflow.com/a/56385404/12519442
-fun ViewInteraction.waitUntil(matcher: Matcher<View>): ViewInteraction {
+fun ViewInteraction.waitUntil(matcher: Matcher<View>, timeoutSeconds: Int = 10): ViewInteraction {
+    val maxRetries = timeoutSeconds * 10
     for (i in 1..maxRetries) {
         try {
             check(matches(matcher))
             return this
         } catch (e: AssertionFailedError) {
-            TimeUnit.MILLISECONDS.sleep(waitTimeMillis)
+            TimeUnit.MILLISECONDS.sleep(100L)
         }
     }
 

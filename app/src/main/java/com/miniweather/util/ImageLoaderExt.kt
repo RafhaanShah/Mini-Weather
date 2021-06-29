@@ -9,12 +9,12 @@ fun ImageLoader.load(
     view: ImageView,
     url: String,
     @DrawableRes placeholder: Int? = null,
-    @DrawableRes errorImage: Int? = null
+    @DrawableRes error: Int? = null
 ) {
     enqueue(
         ImageRequest.Builder(view.context).data(url).target(view).apply {
             placeholder?.let { placeholder(it) }
-            errorImage?.let { error(it) }
+            error?.let { error(it) }
         }.build()
     )
 }

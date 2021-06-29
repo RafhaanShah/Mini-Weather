@@ -21,7 +21,7 @@ interface TestAppComponent : AppComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(@BindsInstance applicationContext: Context): AppComponent
+        fun create(@BindsInstance applicationContext: Context): TestAppComponent
     }
 
     fun inject(testMocksHandler: TestMocksHandler)

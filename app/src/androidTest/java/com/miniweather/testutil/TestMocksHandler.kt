@@ -12,14 +12,14 @@ import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.provider.DateTimeProvider
 import io.mockk.every
 import io.mockk.mockk
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
+import okhttp3.mockwebserver.MockResponse
+import javax.inject.Inject
 
 class TestMocksHandler(
     private val appContext: Context,
-    private val instrumentationContext: Context
+    private val instrumentationContext: Context,
+    private val webserver: MockWebServerRule
 ) {
 
     @Inject
@@ -34,20 +34,14 @@ class TestMocksHandler(
     @Inject
     lateinit var mockDb: WeatherDatabase
 
-    private val webserver = TestWebServer()
+    private val injector: TestAppComponent
+        get() = (appContext as IntegrationTestApplication).appComponent
 
     fun initialise() {
-        ((appContext as IntegrationTestApplication).appComponent as TestAppComponent)
-            .inject(this)
-        webserver.start()
-
-        initMockBaseUrl()
+        injector.inject(this)
+        initMockBaseUrl(webserver.getPort())
         setMockTime(fakeTimestamp)
         setMockLocation(fakeLocation)
-    }
-
-    fun terminate() {
-        webserver.stop()
     }
 
     fun setMockTime(timeInMillis: Long) {
@@ -75,8 +69,8 @@ class TestMocksHandler(
     fun expectHttpRequest(vararg testHttpCalls: TestHttpCall) {
         testHttpCalls.forEach {
             if (it.responseFile != null)
-                it.mockResponse.setBody(readTestAssetFile("responses/${it.responseFile}"))
-            webserver.expectRequest(it.mockRequest, it.mockResponse)
+                it.mockResponse.setBody(readTestResourceFile("responses/${it.responseFile}"))
+            webserver.expectMatchingRequest(it.mockRequest, it.mockResponse)
         }
     }
 
@@ -86,14 +80,17 @@ class TestMocksHandler(
         }
     }
 
-    private fun readTestAssetFile(fileName: String): String =
-        InputStreamReader(
-            instrumentationContext.assets.open(fileName),
-            StandardCharsets.UTF_8
-        ).buffered().readText()
+    fun readTestResourceFile(fileName: String) =
+        instrumentationContext.assets.open(fileName).bufferedReader().readText()
 
-    private fun initMockBaseUrl() {
-        every { mockBaseUrlProvider.weatherApi } returns "http://localhost:${webserver.getPort()}/"
+    private fun initMockBaseUrl(port: Int) {
+        every { mockBaseUrlProvider.weatherApi } returns "http://localhost:$port/"
         every { mockBaseUrlProvider.weatherImage } returns imageAssets
     }
 }
+
+data class TestHttpCall(
+    val mockRequest: MockRequest = MockRequest(),
+    val mockResponse: MockResponse = MockResponse().setResponseCode(200),
+    val responseFile: String? = null
+)
