@@ -2,15 +2,15 @@ package com.miniweather.testutil
 
 import android.util.Log
 import com.miniweather.util.Empty
+import java.io.IOException
+import java.util.ArrayDeque
+import java.util.Queue
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.QueueDispatcher
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.rules.ExternalResource
-import java.io.IOException
-import java.util.ArrayDeque
-import java.util.Queue
 
 class MockWebServerRule(
     private val dispatcherMode: DispatcherMode = DispatcherMode.MATCH

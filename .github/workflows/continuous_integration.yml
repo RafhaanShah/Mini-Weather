@@ -1,6 +1,6 @@
-# This workflow will lint check and test a Kotlin Android project
+# This workflow will lint check and test a Gradle Android project
 
-name: Continuous integration
+name: Continuous Integration
 
 on:
   push:

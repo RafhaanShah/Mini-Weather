@@ -12,9 +12,9 @@ import com.miniweather.provider.BaseUrlProvider
 import com.miniweather.provider.DateTimeProvider
 import io.mockk.every
 import io.mockk.mockk
+import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
-import javax.inject.Inject
 
 class TestMocksHandler(
     private val appContext: Context,
